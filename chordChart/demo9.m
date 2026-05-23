@@ -67,6 +67,12 @@ CC.setFont('FontName','Cambria', 'FontSize',17)
 %     end
 % end
 
+% 绘制图例(Draw legend)
+lgdHdl = legend(CC.squareFHdl, rowName, 'Location','eastoutside', 'FontSize',16, 'FontName','Cambria', 'Box','off');
+lgdHdl.ItemTokenSize = [18,8];
+
+
+
 % % 绘制图例(Draw legend)
 % for i = 1:size(dataMat,1)
 %     scatterHdl(i) = scatter(10.*ones(size(dataMat,1),1),10.*ones(size(dataMat,1),1),55, 'filled');
@@ -76,13 +82,3 @@ CC.setFont('FontName','Cambria', 'FontSize',17)
 % end
 % lgdHdl = legend(scatterHdl, rowName, 'Location','best', 'FontSize',16, 'FontName','Cambria', 'Box','off');
 % set(lgdHdl, 'Position',[.7482,.3577,.1658,.3254])
-
-% 绘制图例(Draw legend)
-for i = 1:size(dataMat,1)
-    scatterHdl(i) = scatter(10.*ones(size(dataMat,1),1),10.*ones(size(dataMat,1),1),55, 'filled');
-end
-for i = 1:length(scatterHdl)
-    scatterHdl(i).CData = CListF(i,:);
-end
-lgdHdl = legend(scatterHdl, rowName, 'Location','best', 'FontSize',16, 'FontName','Cambria', 'Box','off');
-set(lgdHdl, 'Position',[.7482,.3577,.1658,.3254])

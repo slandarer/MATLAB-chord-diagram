@@ -207,21 +207,21 @@ classdef biChordChart < handle
                 end
                 theta=linspace(theta1,theta2,100);
                 X=cos(theta);Y=sin(theta);
-                obj.squareHdl(i)=fill([(1.15-.1*obj.OSqRatio).*X,1.15.*X(end:-1:1)],[(1.15-.1*obj.OSqRatio).*Y,1.15.*Y(end:-1:1)],...
+                obj.squareHdl(i)=fill(obj.ax, [(1.15-.1*obj.OSqRatio).*X,1.15.*X(end:-1:1)],[(1.15-.1*obj.OSqRatio).*Y,1.15.*Y(end:-1:1)],...
                     obj.CData(i,:),'EdgeColor','none');
                 theta3=mod((theta1+theta2)/2,2*pi);
                 obj.meanThetaSet(i)=theta3;
                 rotation=theta3/pi*180;
                 if rotation>0&&rotation<180
-                    obj.nameHdl(i)=text(cos(theta3).*obj.LRadius,sin(theta3).*obj.LRadius,obj.Label{i},'FontSize',14,'FontName','Arial',...
+                    obj.nameHdl(i)=text(obj.ax, cos(theta3).*obj.LRadius,sin(theta3).*obj.LRadius,obj.Label{i},'FontSize',14,'FontName','Arial',...
                     'HorizontalAlignment','center','Rotation',-(.5*pi-theta3)./pi.*180,'Tag','BiChordLabel');
                     obj.rotationSet(i)=-(.5*pi-theta3)./pi.*180;
                 else
-                    obj.nameHdl(i)=text(cos(theta3).*obj.LRadius,sin(theta3).*obj.LRadius,obj.Label{i},'FontSize',14,'FontName','Arial',...
+                    obj.nameHdl(i)=text(obj.ax, cos(theta3).*obj.LRadius,sin(theta3).*obj.LRadius,obj.Label{i},'FontSize',14,'FontName','Arial',...
                     'HorizontalAlignment','center','Rotation',-(1.5*pi-theta3)./pi.*180,'Tag','BiChordLabel');
                     obj.rotationSet(i)=-(1.5*pi-theta3)./pi.*180;
                 end
-                obj.RTickHdl(i)=plot(cos(theta).*1.17,sin(theta).*1.17,'Color',[0,0,0],'LineWidth',.8,'Visible','off');
+                obj.RTickHdl(i)=plot(obj.ax, cos(theta).*1.17,sin(theta).*1.17,'Color',[0,0,0],'LineWidth',.8,'Visible','off');
             end
 
             for i=1:numC
@@ -275,14 +275,14 @@ classdef biChordChart < handle
                                 cos(theta3/2+theta4/2).*.99,sin(theta3/2+theta4/2).*.99;
                                 cos(theta3).*.96,sin(theta3).*.96];
                         end
-                        obj.chordMatHdl(i,j)=fill([tLine1(:,1);tline4(:,1);tLine2(end:-1:1,1);tline3(:,1)],...
+                        obj.chordMatHdl(i,j)=fill(obj.ax, [tLine1(:,1);tline4(:,1);tLine2(end:-1:1,1);tline3(:,1)],...
                             [tLine1(:,2);tline4(:,2);tLine2(end:-1:1,2);tline3(:,2)],...
                             obj.CData(i,:),'FaceAlpha',.3,'EdgeColor','none', 'UserData',[i,j], 'ButtonDownFcn', @obj.onChordClick);
                         XF=cos(linspace(theta1,theta2,100));YF=sin(linspace(theta1,theta2,100));
                         XT=cos(linspace(theta3,theta4,100));YT=sin(linspace(theta3,theta4,100));
-                        obj.squareFMatHdl(i,j)=fill([1.05.*XF,(1.05+obj.SSqRatio*.1).*XF(end:-1:1)],[1.05.*YF,(1.05+obj.SSqRatio*.1).*YF(end:-1:1)],...
+                        obj.squareFMatHdl(i,j)=fill(obj.ax, [1.05.*XF,(1.05+obj.SSqRatio*.1).*XF(end:-1:1)],[1.05.*YF,(1.05+obj.SSqRatio*.1).*YF(end:-1:1)],...
                             obj.CData(j,:),'EdgeColor','none');
-                        obj.squareTMatHdl(i,j)=fill([1.05.*XT,(1.05+obj.SSqRatio*.1).*XT(end:-1:1)],[1.05.*YT,(1.05+obj.SSqRatio*.1).*YT(end:-1:1)],...
+                        obj.squareTMatHdl(i,j)=fill(obj.ax, [1.05.*XT,(1.05+obj.SSqRatio*.1).*XT(end:-1:1)],[1.05.*YT,(1.05+obj.SSqRatio*.1).*YT(end:-1:1)],...
                             obj.CData(i,:),'EdgeColor','none');
                     else
                     end
@@ -341,7 +341,7 @@ classdef biChordChart < handle
                         tickY = [sin([obj.thetaFullSet{:}]).*1.17; sin([obj.thetaFullSet{:}]).*1.19; nan.*[obj.thetaFullSet{:}]];
                     end
             end
-            obj.thetaTickHdl = plot(tickX(:),tickY(:), 'Color',[0,0,0], 'LineWidth',.8, 'Visible','off');
+            obj.thetaTickHdl = plot(obj.ax, tickX(:),tickY(:), 'Color',[0,0,0], 'LineWidth',.8, 'Visible','off');
             % #############################################################
 
 
@@ -359,10 +359,10 @@ classdef biChordChart < handle
                     if ~isnan(obj.thetaFullSet{i}(j))
                     if rotation>90&&rotation<270
                         rotation=rotation+180;
-                        obj.thetaTickLabelHdl(i,j)=text(cos(obj.thetaFullSet{i}(j)).*1.2,sin(obj.thetaFullSet{i}(j)).*1.2,num2str(cumsumV(j)),...
+                        obj.thetaTickLabelHdl(i,j)=text(obj.ax, cos(obj.thetaFullSet{i}(j)).*1.2,sin(obj.thetaFullSet{i}(j)).*1.2,num2str(cumsumV(j)),...
                             'Rotation',rotation,'HorizontalAlignment','right','FontSize',9,'FontName','Arial','Visible','off','UserData',cumsumV(j));
                     else
-                        obj.thetaTickLabelHdl(i,j)=text(cos(obj.thetaFullSet{i}(j)).*1.2,sin(obj.thetaFullSet{i}(j)).*1.2,num2str(cumsumV(j)),...
+                        obj.thetaTickLabelHdl(i,j)=text(obj.ax, cos(obj.thetaFullSet{i}(j)).*1.2,sin(obj.thetaFullSet{i}(j)).*1.2,num2str(cumsumV(j)),...
                             'Rotation',rotation,'FontSize',9,'FontName','Arial','Visible','off','UserData',cumsumV(j));
                     end
                     end
@@ -449,7 +449,7 @@ classdef biChordChart < handle
         end
         % version 1.1.0 更新部分
         % 标签旋转状态设置
-        function labelRotate(obj,Rotate)
+        function labelRotate(obj, Rotate)
             obj.LRotate=Rotate;
             for i=1:size(obj.dataMat,1)
                 set(obj.nameHdl(i),'HorizontalAlignment','center','Rotation',obj.rotationSet(i))

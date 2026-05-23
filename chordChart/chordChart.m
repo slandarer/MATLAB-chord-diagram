@@ -228,21 +228,21 @@ classdef chordChart < handle
                 theta2=2*pi-pi*sep1/2-sum(ratioF(1:i+1))*baseLenF-(i-1)*sepLen + obj.Rotation;
                 theta=linspace(theta1,theta2,100);
                 X=cos(theta);Y=sin(theta);
-                obj.squareFHdl(i)=fill([(1.15-.1*obj.OSqRatio).*X,1.15.*X(end:-1:1)],[(1.15-.1*obj.OSqRatio).*Y,1.15.*Y(end:-1:1)],...
+                obj.squareFHdl(i)=fill(obj.ax, [(1.15-.1*obj.OSqRatio).*X,1.15.*X(end:-1:1)],[(1.15-.1*obj.OSqRatio).*Y,1.15.*Y(end:-1:1)],...
                     tColor(1,:),'EdgeColor','none');
                 theta3=mod((theta1+theta2)/2,2*pi);
                 obj.meanThetaSetF(i)=theta3;
                 rotation=mod(theta3/pi*180,360);
                 if rotation>0&&rotation<180
-                    obj.nameFHdl(i)=text(cos(theta3).*obj.LRadius,sin(theta3).*obj.LRadius,tDFrom{i},'FontSize',12,'FontName','Arial',...
+                    obj.nameFHdl(i)=text(obj.ax, cos(theta3).*obj.LRadius,sin(theta3).*obj.LRadius,tDFrom{i},'FontSize',12,'FontName','Arial',...
                     'HorizontalAlignment','center','Rotation',-(.5*pi-theta3)./pi.*180,'Tag','ChordLabel');
                     obj.rotationF(i)=-(.5*pi-theta3)./pi.*180;
                 else
-                    obj.nameFHdl(i)=text(cos(theta3).*obj.LRadius,sin(theta3).*obj.LRadius,tDFrom{i},'FontSize',12,'FontName','Arial',...
+                    obj.nameFHdl(i)=text(obj.ax, cos(theta3).*obj.LRadius,sin(theta3).*obj.LRadius,tDFrom{i},'FontSize',12,'FontName','Arial',...
                     'HorizontalAlignment','center','Rotation',-(1.5*pi-theta3)./pi.*180,'Tag','ChordLabel');
                     obj.rotationF(i)=-(1.5*pi-theta3)./pi.*180;
                 end
-                obj.RTickFHdl(i)=plot(cos(theta).*1.17,sin(theta).*1.17,'Color',[0,0,0],'LineWidth',.8,'Visible','off');
+                obj.RTickFHdl(i)=plot(obj.ax, cos(theta).*1.17,sin(theta).*1.17,'Color',[0,0,0],'LineWidth',.8,'Visible','off');
             end
             % 绘制上方方块
             for j=1:sepNumT
@@ -250,21 +250,21 @@ classdef chordChart < handle
                 theta2=pi-pi*sep1/2-sum(ratioT(1:j+1))*baseLenT-(j-1)*sepLen + obj.Rotation;
                 theta=linspace(theta1,theta2,100);
                 X=cos(theta);Y=sin(theta);
-                obj.squareTHdl(j)=fill([(1.15-.1*obj.OSqRatio).*X,1.15.*X(end:-1:1)],[(1.15-.1*obj.OSqRatio).*Y,1.15.*Y(end:-1:1)],...
+                obj.squareTHdl(j)=fill(obj.ax, [(1.15-.1*obj.OSqRatio).*X,1.15.*X(end:-1:1)],[(1.15-.1*obj.OSqRatio).*Y,1.15.*Y(end:-1:1)],...
                     tColor(2,:),'EdgeColor','none');
                 theta3=mod((theta1+theta2)/2,2*pi);
                 obj.meanThetaSetT(j)=theta3;
                 rotation=theta3/pi*180;
                 if rotation>0&&rotation<180
-                    obj.nameTHdl(j)=text(cos(theta3).*obj.LRadius,sin(theta3).*obj.LRadius,tDTo{j},'FontSize',12,'FontName','Arial',...
+                    obj.nameTHdl(j)=text(obj.ax, cos(theta3).*obj.LRadius,sin(theta3).*obj.LRadius,tDTo{j},'FontSize',12,'FontName','Arial',...
                     'HorizontalAlignment','center','Rotation',-(.5*pi-theta3)./pi.*180,'Tag','ChordLabel');
                     obj.rotationT(j)=-(.5*pi-theta3)./pi.*180;
                 else
-                    obj.nameTHdl(j)=text(cos(theta3).*obj.LRadius,sin(theta3).*obj.LRadius,tDTo{j},'FontSize',12,'FontName','Arial',...
+                    obj.nameTHdl(j)=text(obj.ax, cos(theta3).*obj.LRadius,sin(theta3).*obj.LRadius,tDTo{j},'FontSize',12,'FontName','Arial',...
                     'HorizontalAlignment','center','Rotation',-(1.5*pi-theta3)./pi.*180,'Tag','ChordLabel');
                     obj.rotationT(j)=-(1.5*pi-theta3)./pi.*180;
                 end
-                obj.RTickTHdl(j)=plot(cos(theta).*1.17,sin(theta).*1.17,'Color',[0,0,0],'LineWidth',.8,'Visible','off');
+                obj.RTickTHdl(j)=plot(obj.ax, cos(theta).*1.17,sin(theta).*1.17,'Color',[0,0,0],'LineWidth',.8,'Visible','off');
             end
 
             % version 1.7.0 更新部分
@@ -289,14 +289,14 @@ classdef chordChart < handle
                     theta6=(theta2-theta1).*sum(tRowV(1:(sepNumT+2-j)))+theta1;
                     theta=linspace(theta5,theta6,100);
                     X=cos(theta);Y=sin(theta);
-                    obj.squareFMatHdl(i,j)=fill([1.05.*X,(1.05+obj.SSqRatio*.1).*X(end:-1:1)],[1.05.*Y,(1.05+obj.SSqRatio*.1).*Y(end:-1:1)],...
+                    obj.squareFMatHdl(i,j)=fill(obj.ax, [1.05.*X,(1.05+obj.SSqRatio*.1).*X(end:-1:1)],[1.05.*Y,(1.05+obj.SSqRatio*.1).*Y(end:-1:1)],...
                         tColor(2,:),'EdgeColor','none','Visible','off');
 
                     theta7=(theta3-theta4).*sum(tColV(1:i))+theta4;
                     theta8=(theta3-theta4).*sum(tColV(1:i+1))+theta4;
                     theta=linspace(theta7,theta8,100);
                     X=cos(theta);Y=sin(theta);
-                    obj.squareTMatHdl(i,j)=fill([1.05.*X,(1.05+obj.SSqRatio*.1).*X(end:-1:1)],[1.05.*Y,(1.05+obj.SSqRatio*.1).*Y(end:-1:1)],...
+                    obj.squareTMatHdl(i,j)=fill(obj.ax, [1.05.*X,(1.05+obj.SSqRatio*.1).*X(end:-1:1)],[1.05.*Y,(1.05+obj.SSqRatio*.1).*Y(end:-1:1)],...
                         tColor(2,:),'EdgeColor','none','Visible','off');
 
                     tPnt1=[cos(theta5),sin(theta5)];
@@ -319,7 +319,7 @@ classdef chordChart < handle
                     tLine2=bezierCurve([tPnt2;0,0;tPnt4],200);
                     tline3=[cos(linspace(theta6,theta5,100))',sin(linspace(theta6,theta5,100))'];
                     tline4=[cos(linspace(theta7,theta8,100))',sin(linspace(theta7,theta8,100))'];
-                    obj.chordMatHdl(i,j)=fill([tLine1(:,1);tline4(:,1);tLine2(end:-1:1,1);tline3(:,1)],...
+                    obj.chordMatHdl(i,j)=fill(obj.ax, [tLine1(:,1);tline4(:,1);tLine2(end:-1:1,1);tline3(:,1)],...
                          [tLine1(:,2);tline4(:,2);tLine2(end:-1:1,2);tline3(:,2)],...
                          tDMatUni(i,j),'FaceAlpha',.3,'EdgeColor','none', 'ButtonDownFcn', @obj.onChordClick, ...
                          'UserData',[i,j]);
@@ -366,7 +366,7 @@ classdef chordChart < handle
                             tY = [sin(obj.thetaSetF{i}).*1.17;sin(obj.thetaSetF{i}).*1.19;nan.*ones(1,length(obj.thetaSetF{i}))];
                         end
                 end
-                obj.thetaTickFHdl(i)=plot(tX(:),tY(:),'Color',[0,0,0],'LineWidth',.8,'Visible','off');
+                obj.thetaTickFHdl(i)=plot(obj.ax, tX(:),tY(:),'Color',[0,0,0],'LineWidth',.8,'Visible','off');
             end
             for j=1:sepNumT
                 switch lower(obj.TickMode)
@@ -404,7 +404,7 @@ classdef chordChart < handle
                             tY = [sin(obj.thetaSetT{j}).*1.17;sin(obj.thetaSetT{j}).*1.19;nan.*ones(1,length(obj.thetaSetT{j}))];
                         end
                 end
-                obj.thetaTickTHdl(j)=plot(tX(:),tY(:),'Color',[0,0,0],'LineWidth',.8,'Visible','off');
+                obj.thetaTickTHdl(j)=plot(obj.ax, tX(:),tY(:),'Color',[0,0,0],'LineWidth',.8,'Visible','off');
             end
             % #############################################################
 
@@ -423,10 +423,10 @@ classdef chordChart < handle
                     rotation=obj.thetaSetF{m}(n)/pi*180;
                     if rotation>90&&rotation<270
                         rotation=rotation+180;
-                        obj.thetaTickLabelFHdl(m,n)=text(cos(obj.thetaSetF{m}(n)).*1.2,sin(obj.thetaSetF{m}(n)).*1.2,num2str(cumsumV(n)),...
+                        obj.thetaTickLabelFHdl(m,n)=text(obj.ax, cos(obj.thetaSetF{m}(n)).*1.2,sin(obj.thetaSetF{m}(n)).*1.2,num2str(cumsumV(n)),...
                             'Rotation',rotation,'HorizontalAlignment','right','FontSize',9,'FontName','Arial','Visible','off','UserData',cumsumV(n));
                     else
-                        obj.thetaTickLabelFHdl(m,n)=text(cos(obj.thetaSetF{m}(n)).*1.2,sin(obj.thetaSetF{m}(n)).*1.2,num2str(cumsumV(n)),...
+                        obj.thetaTickLabelFHdl(m,n)=text(obj.ax, cos(obj.thetaSetF{m}(n)).*1.2,sin(obj.thetaSetF{m}(n)).*1.2,num2str(cumsumV(n)),...
                             'Rotation',rotation,'FontSize',9,'FontName','Arial','Visible','off','UserData',cumsumV(n));
                     end
                 end
@@ -442,10 +442,10 @@ classdef chordChart < handle
                     rotation=obj.thetaSetT{m}(n)/pi*180;
                     if rotation>90&&rotation<270
                         rotation=rotation+180;
-                        obj.thetaTickLabelTHdl(m,n)=text(cos(obj.thetaSetT{m}(n)).*1.2,sin(obj.thetaSetT{m}(n)).*1.2,num2str(cumsumV(n)),...
+                        obj.thetaTickLabelTHdl(m,n)=text(obj.ax, cos(obj.thetaSetT{m}(n)).*1.2,sin(obj.thetaSetT{m}(n)).*1.2,num2str(cumsumV(n)),...
                             'Rotation',rotation,'HorizontalAlignment','right','FontSize',9,'FontName','Arial','Visible','off','UserData',cumsumV(n));
                     else
-                        obj.thetaTickLabelTHdl(m,n)=text(cos(obj.thetaSetT{m}(n)).*1.2,sin(obj.thetaSetT{m}(n)).*1.2,num2str(cumsumV(n)),...
+                        obj.thetaTickLabelTHdl(m,n)=text(obj.ax, cos(obj.thetaSetT{m}(n)).*1.2,sin(obj.thetaSetT{m}(n)).*1.2,num2str(cumsumV(n)),...
                             'Rotation',rotation,'FontSize',9,'FontName','Arial','Visible','off','UserData',cumsumV(n));
                     end
                 end

@@ -48,15 +48,18 @@ CBHdl.Position = [0.74,0.25,0.02,0.2];
 text(1.25,-.15, 'LogFC', 'FontSize',16)
 text(1.25,1, 'Terms', 'FontSize',16)
 
-patchHdl = [];
-for i = 1:size(dataMat, 2)
-    patchHdl(i) = fill([10,11,12],[10,13,13], CListT(i,:), 'EdgeColor',[0,0,0]);
-end
-lgdHdl = legend(patchHdl, colName, 'Location','best', 'FontSize',14, 'Box','off');
+% patchHdl = [];
+% for i = 1:size(dataMat, 2)
+%     patchHdl(i) = fill([10,11,12],[10,13,13], CListT(i,:), 'EdgeColor',[0,0,0]);
+% end
+% lgdHdl = legend(patchHdl, colName, 'Location','best', 'FontSize',14, 'Box','off');
+% lgdHdl.Position = [.735,.53,.167,.27];
+% lgdHdl.ItemTokenSize = [18,8];
+
+
+lgdHdl = legend(CC.squareTHdl, colName, 'Location','best', 'FontSize',14, 'Box','off');
 lgdHdl.Position = [.735,.53,.167,.27];
 lgdHdl.ItemTokenSize = [18,8];
-
-
 
 
 
