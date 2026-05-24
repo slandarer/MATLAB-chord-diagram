@@ -1,6 +1,46 @@
 classdef biChordChart < handle
-% Copyright (c) 2022-2026, Zhaoxu Liu / slandarer
+% biChordChart Create and customize bidirectional chord diagrams (有向弦图)
+%   BCC = biChordChart(dataMat); creates a bidirectional chord diagram from
+%   a square numerical matrix where element (i,j) represents flow from i to j.
+%   从方阵数值矩阵创建有向弦图，元素 (i,j) 表示从 i 到 j 的流量。
+%
+%   BCC = biChordChart(dataMat, 'Label', label); specifies labels for the nodes.
+%   指定节点标签。
+%
+%   BCC = biChordChart(ax, ___); creates a bidirectional chord diagram in
+%   the specified axes.
+%   在特定坐标区域生成有向弦图对象。
+%
+%   BCC = biChordChart(___, propName, propVal); specifies property name-value
+%   pairs when creating the bidirectional chord diagram object.
+%   创建有向弦图对象时为其设置属性。
+%   
+%   BCC.propName = propVal; sets properties for the bidirectional chord diagram
+%   object after creation, before rendering.
+%   创建有向弦图对象后，绘图前为其设置属性。
+%
+%   BCC = BCC.draw(); renders the bidirectional chord diagram.
+%   渲染有向弦图对象。
+%
+% Note:
+%   Unlike chordChart which has separate bottom and top blocks, biChordChart
+%   arranges all nodes in a full circle, with chords flowing in both directions
+%   between nodes. The element dataMat(i, j) represents the flow from node i to
+%   node j, which determines the width of the chord on the source side.
+%   The 'Arrow' property turns the chord ends into sharp corners to indicate
+%   the flow direction.
+%   与 chordChart 不同（分上下方块），biChordChart 将所有节点排列在完整圆周上，
+%   节点之间的弦可双向流动。dataMat(i, j) 表示从节点 i 到节点 j 的流量，
+%   该数值决定源端弦的宽度。'Arrow' 属性可将弦的末端变成尖角以展示流向。
+%
+% Basic usage:
+%   dataMat = randi([0,8], [6,6]);
+%   BCC = biChordChart(dataMat, 'Arrow', 'on');
+%   BCC = BCC.draw();
+
+
 % =========================================================================
+% Copyright (c) 2022-2026, Zhaoxu Liu / slandarer
 % @author : slandarer
 % 公众号  : slandarer随笔
 % 知乎    : slandarer
@@ -9,103 +49,97 @@ classdef biChordChart < handle
 % (https://www.mathworks.com/matlabcentral/fileexchange/121043-bichordchart-bidirectional-chord-diagram), 
 % MATLAB Central File Exchange. Retrieved April 14, 2026.
 % =========================================================================
-% 使用示例(Basic usage)：
-% -------------------------------------------------------------------------
-% dataMat = randi([0,8], [6,6]);
-% 
-% BCC = biChordChart(dataMat, 'Arrow','on');
-% BCC = BCC.draw();
-% 
-% % 添加刻度
-% BCC.tickState('on')
-% 
-% % 修改字体，字号及颜色
-% BCC.setFont('FontName','Cambria', 'FontSize',17)
+
+
 % =========================================================================
-% 版本更新(Version update)：
-% -------------------------------------------------------------------------
+% Version History (版本更新)
+% =========================================================================
 % # version 1.1.0
-% + 增添了可调节标签半径的属性'LRadius'
-%   Added attribute 'LRadius' with adjustable Label radius
-% + 增添了可调节标签旋转的属性'LRotate'及函数 `labelRatato`(demo3)
-%   Added attribute 'LRotate' and function `labelRatato` with adjustable Label rotate(demo3)
-% + 可使用函数`tickLabelState`显示刻度标签(demo4)
-%   Use function `tickLabelState` to display tick labels(demo4)
+%   + Added 'LRadius' property for adjustable label radius
+%     (增添了可调节标签半径的属性)
+%   + Added 'LRotate' property and labelRotate function
+%     (增添了可调节标签旋转的属性)
+%   + Added tickLabelState function to display tick labels
+%     (可使用函数显示刻度标签)
 % -------------------------------------------------------------------------
 % # version 2.0.0
-% + 新增两种标志刻度的方法
-%   Added 2 methods to adjust ticks
-%   try : CC = chordChart(..., 'TickMode','auto', ...)
-%
-%   + 'value'  : default
-% 
-%   + 'auto'   : 当有刻度离得很近的时候，绘制斜线将其距离拉远       
-%                When there are scales that are very close, draw a diagonal line
-%                to distance them further apart
-%   + 'linear' : 均匀的绘制刻度线
-%                Draw tick marks evenly
-%
-%   Properties related to linear scales        
-%   % 刻度的设置要在draw()之前
-%   % the setting of tick should before draw()
-%   % 刻度的紧密程度，数值越高刻度线数量越多
-%   % The compact degree of ticks, The higher the value, the more scales there are
-%   BCC.linearTickCompactDegree = 2;
-%   % 是否开启次刻度线
-%   % Minor ticks 'on'/'off'
-%   BCC.linearMinorTick = 'on';
+%   + Added two new tick marking methods (新增两种标志刻度的方法)
+%     - 'value' : default (默认)
+%     - 'auto'  : Automatically adjust overlapping tick labels (自动调整重叠刻度)
+%     - 'linear': Draw evenly spaced tick marks (均匀绘制刻度线)
+%   + Added linearTickCompactDegree and linearMinorTick properties
+%     (线性刻度相关属性)
 % -------------------------------------------------------------------------
 % # version 3.0.0
-% + 可使用`SSqRatio`属性调整弦末端弧形块占比
-%   The 'SSqRatio' attribute can be used to adjust 
-%   the ratio of arc-shaped blocks at the end of the chord 
-% + 新增辅助属性`OSqRatio`用来调整原本弧形块占比 (demo11)
-%   The 'OSqRatio' attribute can be used to adjust
-%   the ratio of original arc-shaped blocks(demo11)
-% + 新增辅助属性`Rotation`用来整体旋转图形
-%   The 'Rotation' attribute is used to rotate the entire shape(demo11)
-%   当`Rotation`为数组时，可设置每一个弧形块所处角度
-%   When `Rotation` is an array, it allows the setting of the angle for
-%   each arc-shaped blocks(demo10)
+%   + Added 'SSqRatio' property to adjust arc-shaped block ratio at chord ends
+%     (可使用 SSqRatio 属性调整弦末端弧形块占比)
+%   + Added 'OSqRatio' property to adjust original arc block ratio
+%     (新增 OSqRatio 属性)
+%   + Added 'Rotation' property for global diagram rotation
+%     (新增 Rotation 属性)
 % -------------------------------------------------------------------------
 % # version 4.0.0
-% + 左键添加数据提示框，右键隐藏高亮 
-%   Left-click to add data tooltip, right-click to hide highlight
+%   + Left-click to add data tooltip, right-click to hide highlight
+%     (左键添加数据提示框，右键隐藏高亮)
+% -------------------------------------------------------------------------
 % # version 4.1.0
-% + 使用 addHighlightArrow 添加提示箭头
-%   Use function addHighlightArrow to add arrow(demo13)
-% + 节点可分组
-%   Nodes are groupable(demo14)
+%   + Added addHighlightArrow function to add arrow indicators (添加提示箭头)
+%   + Nodes are groupable (节点可分组)
 
 
     properties
-        ax
-        arginList={'Label','Sep','Arrow','CData','LRadius','LRotate',...
-            'SSqRatio','OSqRatio','Rotation','TickMode'}
-        dataMat     % 数值矩阵
-        Label={}    % 标签文本
-        % -----------------------------------------------------------
-        squareHdl     % 绘制方块的图形对象矩阵
-        squareFMatHdl % 流入拆分矩阵
-        squareTMatHdl % 流入拆分矩阵
+        % Axes and configuration (坐标区与配置)
+        ax                                                     % Axes handle (坐标区句柄)
+        % Name-value pair list (名称-值对参数列表)
+        arginList = {'Label','Sep','Arrow','CData','LRadius','LRotate',...
+                     'SSqRatio','OSqRatio','Rotation','TickMode'}   
+        
+        % Data storage (数据存储)
+        dataMat                                                % Numerical matrix (数值矩阵)
+        Label = {}                                             % Node labels (节点标签)
+        
+        % Graphics handles - blocks (图形句柄 - 方块)
+        squareHdl                                              % Block handles (方块句柄)
+        squareFMatHdl                                          % Bottom split blocks (流入拆分方块)
+        squareTMatHdl                                          % Top split blocks (流出拆分方块)
 
-        nameHdl       % 绘制文本的图形对象矩阵
-        chordMatHdl   % 绘制弦的图形对象矩阵
-        thetaTickHdl  % 刻度句柄
-        RTickHdl      % 轴线句柄
-        TickMode = 'value' % 'value'/'auto'/'linear'
-        thetaTickLabelHdl
+        % Graphics handles - text and chords (图形句柄 - 文本与弦)
+        nameHdl                                                % Text handles (文本句柄)
+        chordMatHdl                                            % Chord handles (弦句柄)
+        
+        % Tick configuration (刻度配置)
+        thetaTickHdl                                           % Theta tick line handles (角度刻度线句柄)
+        RTickHdl                                               % Radial tick line handles (径向刻度线句柄)
+        TickMode = 'value'                                     % Tick mode: 'value'/'auto'/'linear' (刻度模式)
+        thetaTickLabelHdl                                      % Theta tick label handles (角度刻度标签句柄)
 
-        %               color                               text format
-        dataTipFormat = {'k', 'Source:', 'Target:', 'Value:', 'auto'}
+        % Data tip configuration (数据提示框配置)
+        % {color, srcLabel, tgtLabel, valLabel, format} (颜色、源标签、目标标签、数值标签、格式)
+        dataTipFormat = {'k', 'Source:', 'Target:', 'Value:', 'auto'}   
+        
+        % Angular positions (角度位置) % read only
+        thetaSet = []                                          % Angular positions for blocks (方块角度位置)
+        meanThetaSet; iMidThetaSet; jMidThetaSet               % Midpoint angles (中点角度)
+        rotationSet; thetaFullSet                              % Rotation angles and full theta set (旋转角度与完整角度集)
 
-        thetaSet=[]; meanThetaSet; iMidThetaSet; jMidThetaSet;
-        rotationSet; thetaFullSet
+        % Layout parameters (布局参数)
+        Sep                                                    % Gap between chord groups (弦组间隙)
+        Arrow                                                  % Arrow mode: 'on'/'off' (箭头模式)
+        CData                                                  % Color data (颜色数据)
+        Group                                                  % Group assignment for nodes (节点分组)
+        GroupSep                                               % Gap between groups (组间间隙)
 
-        Sep; Arrow; CData; Group; GroupSep
-
-        LRadius=1.28; LRotate='off'; SSqRatio=0; OSqRatio=1; Rotation=0;
-        linearTickSep, linearTickCompactDegree = 3.5, linearMinorTick = 'off';
+        % Appearance parameters (外观参数)
+        LRadius = 1.28                                         % Label radius (标签半径)
+        LRotate = 'off'                                        % Label rotation mode (标签旋转模式)
+        SSqRatio = 0                                           % Square ratio at chord ends (弦末端方块比例)
+        OSqRatio = 1                                           % Original arc block ratio (原始弧形块比例)
+        Rotation = 0                                           % Global rotation angle (全局旋转角度)
+        
+        % Linear tick parameters (线性刻度参数)
+        linearTickSep                                          % Linear tick spacing (线性刻度间隔)
+        linearTickCompactDegree = 3.5                          % Linear tick compact degree (线性刻度紧密程度)
+        linearMinorTick = 'off'                                % Minor tick mode (次刻度线模式)
     end
 
     methods

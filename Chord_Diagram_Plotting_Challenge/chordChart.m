@@ -1,133 +1,147 @@
 classdef chordChart < handle
-% Copyright (c) 2022-2026, Zhaoxu Liu / slandarer
+% chordChart Create and customize chord diagrams (弦图)
+%   CC = chordChart(dataMat); creates a chord diagram from a numerical matrix.
+%   从数值矩阵创建弦图。
+%
+%   CC = chordChart(dataMat, 'rowName', rowName, 'colName', colName); specifies
+%   row and column names for the diagram.
+%   指定图表的行名和列名。
+%
+%   CC = chordChart(ax, ___); creates a chord diagram in the specified axes.
+%   在指定坐标区创建弦图。
+%
+%   CC = chordChart(___, propName, propVal); specifies property name-value pairs
+%   when creating the chord diagram object.
+%   创建弦图对象时指定属性名-属性值对。
+%   
+%   CC.propName = propVal; sets properties for the chord diagram object
+%   after creation, before rendering.
+%   创建弦图对象后、绘图前设置其属性。
+%
+%   CC = CC.draw(); renders the chord diagram.
+%   渲染弦图。
+%
+% Note:
+%   The element dataMat(i, j) represents the flow value from the i-th bottom
+%   block (squareF) to the j-th top block (squareT), which determines the
+%   width of the corresponding chord (ribbon).
+%   dataMat(i, j) 的值代表从第 i 个下方方块 (squareF) 到第 j 个上方方块 (squareT)
+%   的流量数值，该数值决定对应弦（连接带）的宽度。
+%
+% Basic usage:
+%   dataMat = [2 0 1 2 5 1 2;
+%              3 5 1 4 2 0 1;
+%              4 0 5 5 2 4 3];
+%   colName = {'G1','G2','G3','G4','G5','G6','G7'};
+%   rowName = {'S1','S2','S3'};
+%   CC = chordChart(dataMat, 'rowName', rowName, 'colName', colName);
+%   CC = CC.draw();
+
+
 % =========================================================================
-% @author : slandarer
-% 公众号  : slandarer随笔
-% 知乎    : slandarer
+% Copyright (c) 2022-2026, Zhaoxu Liu / slandarer
 % -------------------------------------------------------------------------
 % Zhaoxu Liu / slandarer (2026). chordChart (chord diagram | 弦图) 
 % (https://www.mathworks.com/matlabcentral/fileexchange/116550-chordchart-chord-diagram), 
 % MATLAB Central File Exchange. Retrieved April 14, 2026.
 % =========================================================================
-% 使用示例(Basic usage)：
-% -------------------------------------------------------------------------
-% dataMat=[2 0 1 2 5 1 2;
-%          3 5 1 4 2 0 1;
-%          4 0 5 5 2 4 3];
-% colName={'G1','G2','G3','G4','G5','G6','G7'};
-% rowName={'S1','S2','S3'};
-% 
-% CC=chordChart(dataMat,'rowName',rowName,'colName',colName);
-% CC=CC.draw()
+
+
 % =========================================================================
-% 版本更新(Version update)：
-% -------------------------------------------------------------------------
+% Version History (版本更新)
+% =========================================================================
 % # version 1.5.0
-% + 修复了老版本 sum(....,[1,2])的bug
-%   Fixed the bug of the old version(sum(....,[1,2]))
-% + 增添了可调节方块间距的属性'Sep'
-%   Added attribute 'Sep' with adjustable square spacing
-% + 增添demo3 旋转标签角度示例(demo3)
-%   demo3 is added to show how to rotate the label(demo3)
+%   + Fixed bug with sum(....,[1,2]) in older versions (修复老版本 sum 函数 Bug)
+%   + Added 'Sep' property for adjustable square spacing (增添可调节方块间距属性)
+%   + Added demo3 for label rotation (增添旋转标签角度示例)
 % -------------------------------------------------------------------------
 % # version 1.7.0
-% + 增添了可调节标签半径的属性'LRadius'
-%   Added attribute 'LRadius' with adjustable Label radius
-% + 增添了可调节标签旋转的属性'LRotate'及函数 `labelRatato`(demo3)
-%   Added attribute 'LRotate' and function `labelRatato` with adjustable Label rotate(demo3)
-% + 可直接使用`colormap`函数调整颜色(demo4)
-%   Colors can be adjusted directly using the function `colormap`(demo4)
-% + 可使用函数`tickLabelState`显示刻度标签(demo5)
-%   Use function `tickLabelState` to display tick labels(demo5)
+%   + Added 'LRadius' property for adjustable label radius (增添可调节标签半径属性)
+%   + Added 'LRotate' property and labelRotate function (增添可调节标签旋转属性)
+%   + Direct colormap adjustment using `colormap` function (可直接使用 colormap 调整颜色)
+%   + Added `tickLabelState` function to display tick labels (可使用函数显示刻度标签)
 % -------------------------------------------------------------------------
 % # version 2.1.0
-% + 修复了老版本部分标签错误旋转的bug
-%   Fixed a bug with incorrect rotation of some labels in older versions
-% + 单独设置每一个弦末端方块(demo8)
-%   Set individual end blocks for each chord(demo8)
-%   Use obj.setEachSquareF_Prop 
-%   or  obj.setEachSquareT_Prop
-%   F means from (blocks below)
-%   T means to   (blocks above)
+%   + Fixed incorrect label rotation bug in older versions (修复老版本标签错误旋转 Bug)
+%   + Added setEachSquareF_Prop / setEachSquareT_Prop for individual chord end blocks
+%     (单独设置每一个弦末端方块)
 % -------------------------------------------------------------------------
 % # version 2.2.0
-% + 可使用`SSqRatio`属性调整弦末端弧形块占比
-%   The 'SSqRatio' attribute can be used to adjust 
-%   the ratio of arc-shaped blocks at the end of the chord 
+%   + Added 'SSqRatio' property to adjust arc-shaped block ratio at chord ends
+%     (可使用 SSqRatio 属性调整弦末端弧形块占比)
 % -------------------------------------------------------------------------
 % # version 3.0.0
-% + 新增两种标志刻度的方法
-%   Added 2 methods to adjust ticks
-%   try : CC = chordChart(..., 'TickMode','auto', ...)
-%
-%   + 'value'  : default
-% 
-%   + 'auto'   : 当有刻度离得很近的时候，绘制斜线将其距离拉远       
-%                When there are scales that are very close, draw a diagonal line
-%                to distance them further apart
-%   + 'linear' : 均匀的绘制刻度线
-%                Draw tick marks evenly
-%
-%   Properties related to linear scales        
-%   % 刻度的设置要在draw()之前
-%   % the setting of tick should before draw()
-%   % 刻度的紧密程度，数值越高刻度线数量越多
-%   % The compact degree of ticks, The higher the value, the more scales there are
-%   BCC.linearTickCompactDegree = 2;
-%   % 是否开启次刻度线
-%   % Minor ticks 'on'/'off'
-%   BCC.linearMinorTick = 'on';
+%   + Added two new tick marking methods (新增两种标志刻度的方法)
+%     - 'auto' : Automatically adjust overlapping tick labels
+%     - 'linear': Draw evenly spaced tick marks
+%   + Added linearTickCompactDegree and linearMinorTick properties
+%     (线性刻度相关属性)
 % -------------------------------------------------------------------------
 % # version 3.1.0
-% + 新增辅助属性`OSqRatio`用来调整原本弧形块占比 (demo9)
-%   The 'OSqRatio' attribute can be used to adjust
-%   the ratio of original arc-shaped blocks(demo9)
-% + 新增辅助属性`Rotation`用来整体旋转图形
-%   The 'Rotation' attribute is used to rotate the entire shape(demo12)
+%   + Added 'OSqRatio' property to adjust original arc block ratio (新增 OSqRatio 属性)
+%   + Added 'Rotation' property for global diagram rotation (新增 Rotation 属性)
 % -------------------------------------------------------------------------
 % # version 4.0.0
-% + 左键添加数据提示框，右键隐藏高亮 
-%   Left-click to add data tooltip, right-click to hide highlight
+%   + Left-click to add data tooltip, right-click to hide highlight
+%     (左键添加数据提示框，右键隐藏高亮)
+% -------------------------------------------------------------------------
 % # version 4.1.0
-% + 使用 addHighlightArrow 添加提示箭头
-%   Use function addHighlightArrow to add arrow(demo13)
+%   + Added addHighlightArrow function to add arrow indicators (添加提示箭头)
 
     properties
-        ax
-        arginList={'colName','rowName','Sep','LRadius','LRotate','SSqRatio','OSqRatio','Rotation','TickMode'}
-        chordTable  % table数组
-        dataMat     % 数值矩阵
-        colName={}; % 列名称
-        rowName={}; % 行名称
-        thetaSetF;meanThetaSetF;rotationF
-        thetaSetT;meanThetaSetT;rotationT
-        % -----------------------------------------------------------
-        squareFHdl  % 绘制下方方块的图形对象矩阵
-        squareTHdl  % 绘制下上方方块的图形对象矩阵
-        squareFMatHdl % 流入拆分矩阵
-        squareTMatHdl % 流入拆分矩阵
-
-        nameFHdl    % 绘制下方文本的图形对象矩阵
-        nameTHdl    % 绘制上方文本的图形对象矩阵
-        chordMatHdl % 绘制弦的图形对象矩阵
-        TickMode = 'value' % 'value'/'auto'/'linear'
-        thetaTickFHdl % 刻度句柄
-        thetaTickTHdl % 刻度句柄
-        RTickFHdl % 轴线句柄
-        RTickTHdl % 轴线句柄
-        thetaTickLabelFHdl
-        thetaTickLabelTHdl
-
-        %               color                               text format
-        dataTipFormat = {'k', 'Source:', 'Target:', 'Value:', 'auto'}
-
-        Sep;
+        % Axes and configuration (坐标区与配置)
+        ax                                                     % Axes handle (坐标区句柄)
+        % Name-value pair list (名称-值对参数列表)
+        arginList = {'colName','rowName','Sep','LRadius','LRotate',...   
+                     'SSqRatio','OSqRatio','Rotation','TickMode'}
         
-        LRadius=1.28; LRotate='off'; SSqRatio=1; OSqRatio=1; Rotation=0;
-        linearTickSep, linearTickCompactDegree = 2.5, linearMinorTick = 'off';
-
-        iMidThetaSet;
-        jMidThetaSet;
+        % Data storage (数据存储)
+        chordTable                                            % Table array (表格数组)
+        dataMat                                               % Numerical matrix (数值矩阵)
+        colName = {}                                          % Column names (列名称)
+        rowName = {}                                          % Row names (行名称)
+        
+        % Angular positions (角度位置)
+        thetaSetF; meanThetaSetF; rotationF % read only       % Source node angles (源节点角度)
+        thetaSetT; meanThetaSetT; rotationT % read only       % Target node angles (目标节点角度)
+        
+        % Graphics handles for square blocks (方块图形句柄)
+        squareFHdl                                            % Bottom row blocks (下方方块)
+        squareTHdl                                            % Top row blocks (上方方块)
+        squareFMatHdl                                         % Bottom split blocks for chord ends (弦末端下方拆分方块)
+        squareTMatHdl                                         % Top split blocks for chord ends (弦末端上方拆分方块)
+        
+        % Graphics handles - text and chords (图形句柄 - 文本与弦)
+        nameFHdl                                              % Bottom labels (下方标签)
+        nameTHdl                                              % Top labels (上方标签)
+        chordMatHdl                                           % Chord ribbons (弦)
+        
+        % Tick configuration (刻度配置)
+        TickMode = 'value'                                    % 'value'/'auto'/'linear'
+        thetaTickFHdl; thetaTickTHdl                          % Theta tick lines (角度刻度线)
+        RTickFHdl; RTickTHdl                                  % Radial tick lines (径向刻度线)
+        thetaTickLabelFHdl; thetaTickLabelTHdl                % Theta tick labels (角度刻度标签)
+        
+        % Data tip configuration (数据提示框配置)
+        dataTipFormat = {'k', 'Source:', 'Target:',...        % {color, srcLabel, tgtLabel, valLabel, format}
+                         'Value:', 'auto'}                    % (颜色、源标签、目标标签、数值标签、格式)
+        
+        % Layout parameters (布局参数)
+        Sep                                                   % Gap between chord groups (弦组间隙)
+        LRadius = 1.28                                        % Label radius (标签半径)
+        LRotate = 'off'                                       % Label rotation mode (标签旋转模式)
+        SSqRatio = 1                                          % Square ratio at chord ends (弦末端方块比例)
+        OSqRatio = 1                                          % Original arc block ratio (原始弧形块比例)
+        Rotation = 0                                          % Global rotation angle (全局旋转角度)
+        
+        % Linear tick parameters (线性刻度参数)
+        linearTickSep                                         % Linear tick spacing (线性刻度间隔)
+        linearTickCompactDegree = 2.5                         % Compact degree (紧密程度)
+        linearMinorTick = 'off'                               % Minor tick mode (次刻度线模式)
+        
+        % Midpoint angles for chord connections (弦连接中点角度) % read only
+        iMidThetaSet                                          % Source side midpoints (源侧中点)
+        jMidThetaSet                                          % Target side midpoints (目标侧中点)
     end
 
     methods
@@ -582,7 +596,7 @@ classdef chordChart < handle
                 set(obj.nameTHdl(j),'Rotation',obj.rotationT(j),'HorizontalAlignment','center');
             end
             if isequal(obj.LRotate,'on')
-            textHdl=findobj(gca,'Tag','ChordLabel');
+            textHdl=findobj(obj.ax,'Tag','ChordLabel');
             for i=1:length(textHdl)
                 if textHdl(i).Rotation<-90
                     textHdl(i).Rotation=textHdl(i).Rotation+180;
