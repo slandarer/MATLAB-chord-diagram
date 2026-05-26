@@ -97,246 +97,286 @@ classdef biChordChart < handle
         % Data storage (数据存储)
         dataMat                                                % Numerical matrix (数值矩阵)
         Label = {}                                             % Node labels (节点标签)
-        
-        % Graphics handles - blocks (图形句柄 - 方块)
-        squareHdl                                              % Block handles (方块句柄)
-        squareFMatHdl                                          % Bottom split blocks (流入拆分方块)
-        squareTMatHdl                                          % Top split blocks (流出拆分方块)
-
-        % Graphics handles - text and chords (图形句柄 - 文本与弦)
-        nameHdl                                                % Text handles (文本句柄)
-        chordMatHdl                                            % Chord handles (弦句柄)
-        
-        % Tick configuration (刻度配置)
-        thetaTickHdl                                           % Theta tick line handles (角度刻度线句柄)
-        RTickHdl                                               % Radial tick line handles (径向刻度线句柄)
-        TickMode = 'value'                                     % Tick mode: 'value'/'auto'/'linear' (刻度模式)
-        thetaTickLabelHdl                                      % Theta tick label handles (角度刻度标签句柄)
 
         % Data tip configuration (数据提示框配置)
         % {color, srcLabel, tgtLabel, valLabel, format} (颜色、源标签、目标标签、数值标签、格式)
         dataTipFormat = {'k', 'Source:', 'Target:', 'Value:', 'auto'}   
-        
+
+        % Appearance parameters (外观参数)
+        Sep      = 1/10                                        % Gap between chord groups (弦组间隙)
+        Arrow    = 'off'                                       % Arrow mode: 'on'/'off' (箭头模式)
+        CData    = [127, 91, 93; 187,128,110; 197,173,143;
+                     59, 71,111;104,  95,126;  76,103, 86;
+                    112,112,124;  72, 39, 24; 197,119,106;
+                    160,126, 88; 238,208,146]./255;            % Color data (颜色数据)
+        Group    = []                                          % Group assignment for nodes (节点分组)
+        GroupSep = 1/15                                        % Gap between groups (组间间隙)
+        LRadius  = 1.28                                        % Label radius (标签半径)
+        LRotate  = 'off'                                       % Label rotation mode (标签旋转模式)
+        SSqRatio = 0                                           % Square ratio at chord ends (弦末端方块比例)
+        OSqRatio = 1                                           % Original arc block ratio (原始弧形块比例)
+        Rotation = 0                                           % Global rotation angle (全局旋转角度)
+        TickMode = 'value'                                     % Tick mode: 'value'/'auto'/'linear' (刻度模式)
+        linearTickSep                                          % Linear tick spacing (线性刻度间隔)
+        linearTickCompactDegree = 3.5                          % Linear tick compact degree (线性刻度紧密程度)
+        linearMinorTick = 'off'                                % Minor tick mode (次刻度线模式)
+
+
         % Angular positions (角度位置) % read only
         thetaSet = []                                          % Angular positions for blocks (方块角度位置)
         meanThetaSet; iMidThetaSet; jMidThetaSet               % Midpoint angles (中点角度)
         rotationSet; thetaFullSet                              % Rotation angles and full theta set (旋转角度与完整角度集)
 
-        % Layout parameters (布局参数)
-        Sep                                                    % Gap between chord groups (弦组间隙)
-        Arrow                                                  % Arrow mode: 'on'/'off' (箭头模式)
-        CData                                                  % Color data (颜色数据)
-        Group                                                  % Group assignment for nodes (节点分组)
-        GroupSep                                               % Gap between groups (组间间隙)
-
-        % Appearance parameters (外观参数)
-        LRadius = 1.28                                         % Label radius (标签半径)
-        LRotate = 'off'                                        % Label rotation mode (标签旋转模式)
-        SSqRatio = 0                                           % Square ratio at chord ends (弦末端方块比例)
-        OSqRatio = 1                                           % Original arc block ratio (原始弧形块比例)
-        Rotation = 0                                           % Global rotation angle (全局旋转角度)
-        
-        % Linear tick parameters (线性刻度参数)
-        linearTickSep                                          % Linear tick spacing (线性刻度间隔)
-        linearTickCompactDegree = 3.5                          % Linear tick compact degree (线性刻度紧密程度)
-        linearMinorTick = 'off'                                % Minor tick mode (次刻度线模式)
+        % Graphics handles (图形句柄)
+        squareHdl                                              % Blocks (节点方块)
+        squareFMatHdl                                          % From-side split blocks (源端拆分方块)
+        squareTMatHdl                                          % To-side split blocks (目标端拆分方块)
+        nameHdl                                                % Labels (标签)
+        chordMatHdl                                            % Chord ribbons (弦)
+        thetaTickHdl                                           % Theta tick lines (角度刻度线)
+        RTickHdl                                               % Radius tick lines (半径刻度线)
+        thetaTickLabelHdl                                      % Theta tick labels (角度刻度标签)
     end
 
     methods
-        function obj=biChordChart(varargin)
-            obj.Sep=1/10;
-            obj.GroupSep = 1/15;
-            obj.Arrow='off';
-            obj.CData=[127,91,93;187,128,110;197,173,143;59,71,111;104,95,126;76,103,86;112,112,124;
-                72,39,24;197,119,106;160,126,88;238,208,146]./255;
-            if isa(varargin{1},'matlab.graphics.axis.Axes')
-                obj.ax=varargin{1};varargin(1)=[];
+% =========================================================================
+% Constructor (构造函数)
+% =========================================================================
+        function obj = biChordChart(varargin)
+            % Parse axes handle (解析坐标区句柄)
+            if isa(varargin{1}, 'matlab.graphics.axis.Axes')
+                obj.ax = varargin{1};
+                varargin(1) = [];
             else
-                obj.ax=gca;
-            end  
-            obj.ax.NextPlot='add';
-            obj.dataMat=varargin{1};varargin(1)=[];
-            obj.Group = ones(1, size(obj.dataMat, 2));
-            % 获取其他数据
-            for i=1:2:(length(varargin)-1)
-                tid=ismember(lower(obj.arginList), lower(varargin{i}));
+                obj.ax = gca;
+            end
+            obj.ax.NextPlot = 'add';
+
+            % Parse data matrix (解析数据矩阵)
+            obj.dataMat = varargin{1};
+            varargin(1) = [];
+            % obj.Group = ones(1, size(obj.dataMat, 2));
+
+            % Parse name-value pairs (解析名称-值对)
+            for i = 1:2:(length(varargin) - 1)
+                tid = ismember(lower(obj.arginList), lower(varargin{i}));
                 if any(tid)
-                obj.(obj.arginList{tid})=varargin{i+1};
+                    obj.(obj.arginList{tid}) = varargin{i + 1};
                 end
             end
-            % 名称标签预设
-            if isempty(obj.Label)||length(obj.Label)<size(obj.dataMat,1)
+
+            % Set default labels if not provided (若未提供则设置默认标签)
+            if isempty(obj.Label) || length(obj.Label) < size(obj.dataMat, 1)
                 obj.Label = compose('C%d', 1:size(obj.dataMat, 1));
             end
-            % 调整不合理间隙
-            if obj.Sep>1/2
-                obj.Sep=1/2;
+
+            % Validate gap parameters (验证间隙参数)
+            if obj.Sep > 1/2, obj.Sep = 1/2; end
+            if obj.GroupSep > 1/2, obj.GroupSep = 1/2; end
+
+            % Adjust color count if needed (调整颜色数量)
+            if size(obj.CData, 1) < size(obj.dataMat, 1)
+                obj.CData = [obj.CData; rand([size(obj.dataMat, 1), 3]) * 0.5 + 0.5];
             end
-            if obj.GroupSep>1/2
-                obj.GroupSep=1/2;
+
+            % Ensure diagonal elements are non-negative (确保对角线元素非负)
+            for i = 1:size(obj.dataMat, 1)
+                obj.dataMat(i, i) = abs(obj.dataMat(i, i));
             end
-            % 调整颜色数量
-            if size(obj.CData,1)<size(obj.dataMat,1)
-                obj.CData=[obj.CData;rand([size(obj.dataMat,1),3]).*.5+ones([size(obj.dataMat,1),3]).*.5];
+
+            % Validate label radius (验证标签半径)
+            if obj.LRadius > 2 || obj.LRadius < 1.2
+                obj.LRadius = 1.28;
             end
-            % 调整对角线
-            for i=1:size(obj.dataMat,1)
-                obj.dataMat(i,i)=abs(obj.dataMat(i,i));
-            end
-            % 调整标签间距
-            if obj.LRadius>2||obj.LRadius<1.2
-                obj.LRadius=1.28;
-            end
-            % help biChordChart
         end
 
-        function obj=draw(obj)
-            obj.ax.XLim=[-1.38,1.38];
-            obj.ax.YLim=[-1.38,1.38];
-            obj.ax.XTick=[];
-            obj.ax.YTick=[];
-            obj.ax.XColor='none';
-            obj.ax.YColor='none';
-            obj.ax.PlotBoxAspectRatio=[1,1,1];
-            % 计算比例
+% =========================================================================
+% Main drawing method (主绘图方法)
+% =========================================================================
+        function obj = draw(obj)
+            % Configure axes (配置坐标区)
+            obj.ax.XLim = [-1.38, 1.38];
+            obj.ax.YLim = [-1.38, 1.38];
+            obj.ax.XTick = [];
+            obj.ax.YTick = [];
+            obj.ax.XColor = 'none';
+            obj.ax.YColor = 'none';
+            obj.ax.PlotBoxAspectRatio = [1, 1, 1];
+
+            % Compute ratios (计算比例)
             if length(obj.Group) < size(obj.dataMat, 1)
                 obj.Group = ones(1, size(obj.dataMat, 2));
             end
-            
+
             tGroup = groupConsecutive(obj.Group);
             groupNum = max(tGroup) - (obj.Group(end) == obj.Group(1));
-            
 
-            numC=size(obj.dataMat,1);
-            ratioC1=sum(abs(obj.dataMat),2)./sum(sum(abs(obj.dataMat)));
-            ratioC2=sum(abs(obj.dataMat),1)./sum(sum(abs(obj.dataMat)));
-            ratioC=(ratioC1'+ratioC2)./2;
-            ratioC=[0,ratioC];
+            numC = size(obj.dataMat, 1);
+            ratioC1 = sum(abs(obj.dataMat), 2) ./ sum(sum(abs(obj.dataMat)));
+            ratioC2 = sum(abs(obj.dataMat), 1) ./ sum(sum(abs(obj.dataMat)));
+            ratioC = (ratioC1' + ratioC2) ./ 2;
+            ratioC = [0, ratioC];
 
-            % version 2.0.0 更新部分
-            obj.linearTickSep = obj.getTick(sum(sum(obj.dataMat))./(size(obj.dataMat,1)+size(obj.dataMat,2)).*2, obj.linearTickCompactDegree);
-            
+            % # version 2.0.0 Linear tick spacing (线性刻度间隔)
+            obj.linearTickSep = obj.getTick(sum(sum(obj.dataMat))./(size(obj.dataMat, 1) + size(obj.dataMat, 2))*2, obj.linearTickCompactDegree);
+
+            % # version 4.1.0 Separation lengths (分离长度)
             if groupNum == 0
                 gsepLen = 0;
-                sepLen = (2*pi*obj.Sep)./numC;
-                baseLen = 2*pi*(1-obj.Sep);
+                sepLen   = (2 * pi * obj.Sep) ./ numC;
+                baseLen  = 2 * pi * (1 - obj.Sep);
             else
-                gsepLen = (2*pi*obj.GroupSep)./groupNum;
-                sepLen = (2*pi*obj.Sep*(1 - obj.GroupSep))./numC;
-                baseLen = 2*pi*(1 - obj.Sep)*(1 - obj.GroupSep);
+                gsepLen = (2 * pi * obj.GroupSep) ./ groupNum;
+                sepLen  = (2 * pi * obj.Sep * (1 - obj.GroupSep)) ./ numC;
+                baseLen = 2 * pi * (1 - obj.Sep) * (1 - obj.GroupSep);
             end
 
             if length(obj.Rotation) < 2
-                obj.Rotation = repmat(obj.Rotation, [numC,1]);
+                obj.Rotation = repmat(obj.Rotation, [numC, 1]);
             end
 
-            % 绘制方块
-            for i=1:numC
-                theta1 = sum(ratioC(1:i))*baseLen + (i - 1 + .5)*sepLen + obj.Rotation(i) + (tGroup(i) - 1 + .5)*gsepLen;
-                theta2 = sum(ratioC(1:i+1))*baseLen + (i - 1 + .5)*sepLen + obj.Rotation(i) + (tGroup(i) - 1 + .5)*gsepLen;
+            % =============================================================
+            % Draw blocks and labels (绘制方块和标签)
+            % =============================================================
+            for i = 1:numC
+                theta1 = sum(ratioC(1:i)) * baseLen + (i - 1 + 0.5) * sepLen + obj.Rotation(i) + (tGroup(i) - 1 + 0.5) * gsepLen;
+                theta2 = sum(ratioC(1:i+1)) * baseLen + (i - 1 + 0.5) * sepLen + obj.Rotation(i) + (tGroup(i) - 1 + 0.5) * gsepLen;
                 diffTheta(i) = theta2 - theta1;
-                if abs(obj.Rotation(1) - obj.Rotation(2))>eps
-                    theta1=obj.Rotation(i) - diffTheta(i)/2;
-                    theta2=obj.Rotation(i) + diffTheta(i)/2;
+
+                if abs(obj.Rotation(1) - obj.Rotation(2)) > eps
+                    theta1 = obj.Rotation(i) - diffTheta(i) / 2;
+                    theta2 = obj.Rotation(i) + diffTheta(i) / 2;
                 end
-                theta=linspace(theta1,theta2,100);
-                X=cos(theta);Y=sin(theta);
-                obj.squareHdl(i)=fill(obj.ax, [(1.15-.1*obj.OSqRatio).*X,1.15.*X(end:-1:1)],[(1.15-.1*obj.OSqRatio).*Y,1.15.*Y(end:-1:1)],...
-                    obj.CData(i,:),'EdgeColor','none');
-                theta3=mod((theta1+theta2)/2,2*pi);
-                obj.meanThetaSet(i)=theta3;
-                rotation=theta3/pi*180;
-                if rotation>0&&rotation<180
-                    obj.nameHdl(i)=text(obj.ax, cos(theta3).*obj.LRadius,sin(theta3).*obj.LRadius,obj.Label{i},'FontSize',14,'FontName','Arial',...
-                    'HorizontalAlignment','center','Rotation',-(.5*pi-theta3)./pi.*180,'Tag','BiChordLabel');
-                    obj.rotationSet(i)=-(.5*pi-theta3)./pi.*180;
+
+                theta = linspace(theta1, theta2, 100);
+                X = cos(theta);
+                Y = sin(theta);
+
+                % Draw blocks (节点绘制)
+                obj.squareHdl(i) = fill(obj.ax, [(1.15 - 0.1 * obj.OSqRatio) .* X, 1.15 .* X(end:-1:1)], ...
+                                             [(1.15 - 0.1 * obj.OSqRatio) .* Y, 1.15 .* Y(end:-1:1)], ...
+                                             obj.CData(i, :), 'EdgeColor', 'none');
+
+                % Label position and rotation (标签位置与旋转)
+                theta3 = mod((theta1 + theta2) / 2, 2 * pi);
+                obj.meanThetaSet(i) = theta3;
+                rotation = theta3 / pi * 180;
+
+                if rotation > 0 && rotation < 180
+                    obj.nameHdl(i) = text(obj.ax, cos(theta3) * obj.LRadius, sin(theta3) * obj.LRadius, obj.Label{i}, ...
+                        'FontSize', 14, 'FontName', 'Arial', 'HorizontalAlignment', 'center', ...
+                        'Rotation', -(0.5 * pi - theta3) / pi * 180, 'Tag', 'BiChordLabel');
+                    obj.rotationSet(i) = -(0.5 * pi - theta3) / pi * 180;
                 else
-                    obj.nameHdl(i)=text(obj.ax, cos(theta3).*obj.LRadius,sin(theta3).*obj.LRadius,obj.Label{i},'FontSize',14,'FontName','Arial',...
-                    'HorizontalAlignment','center','Rotation',-(1.5*pi-theta3)./pi.*180,'Tag','BiChordLabel');
-                    obj.rotationSet(i)=-(1.5*pi-theta3)./pi.*180;
+                    obj.nameHdl(i) = text(obj.ax, cos(theta3) * obj.LRadius, sin(theta3) * obj.LRadius, obj.Label{i}, ...
+                        'FontSize', 14, 'FontName', 'Arial', 'HorizontalAlignment', 'center', ...
+                        'Rotation', -(1.5 * pi - theta3) / pi * 180, 'Tag', 'BiChordLabel');
+                    obj.rotationSet(i) = -(1.5 * pi - theta3) / pi * 180;
                 end
-                obj.RTickHdl(i)=plot(obj.ax, cos(theta).*1.17,sin(theta).*1.17,'Color',[0,0,0],'LineWidth',.8,'Visible','off');
+                obj.RTickHdl(i) = plot(obj.ax, cos(theta) .* 1.17, sin(theta) .* 1.17, ...
+                    'Color', [0, 0, 0], 'LineWidth', 0.8, 'Visible', 'off');
             end
 
-            for i=1:numC
-                for j=1:numC
-                    theta_i_1 = sum(ratioC(1:i))*baseLen + (i - 1 + .5)*sepLen + (tGroup(i) - 1 + .5)*gsepLen;
-                    theta_i_2 = sum(ratioC(1:i+1))*baseLen + (i - 1 + .5)*sepLen + (tGroup(i) - 1 + .5)*gsepLen;
-                    theta_i_3=theta_i_1+(theta_i_2-theta_i_1).*sum(abs(obj.dataMat(:,i)))./(sum(abs(obj.dataMat(:,i)))+sum(abs(obj.dataMat(i,:))));
-                    
-                    theta_j_1 = sum(ratioC(1:j))*baseLen + (j - 1 + .5)*sepLen + (tGroup(j) - 1 + .5)*gsepLen;
-                    theta_j_2 = sum(ratioC(1:j+1))*baseLen + (j - 1 + .5)*sepLen + (tGroup(j) - 1 + .5)*gsepLen;
-                    theta_j_3 = theta_j_1+(theta_j_2-theta_j_1).*sum(abs(obj.dataMat(:,j)))./(sum(abs(obj.dataMat(:,j)))+sum(abs(obj.dataMat(j,:))));
+            % =============================================================
+            % Draw chords (绘制弦)
+            % =============================================================
+            for i = 1:numC
+                for j = 1:numC
+                    % Theta calculations for source and target (源与目标的角度计算)
+                    theta_i_1 = sum(ratioC(1:i)) * baseLen + (i - 1 + 0.5) * sepLen + (tGroup(i) - 1 + 0.5) * gsepLen;
+                    theta_i_2 = sum(ratioC(1:i+1)) * baseLen + (i - 1 + 0.5) * sepLen + (tGroup(i) - 1 + 0.5) * gsepLen;
+                    theta_i_3 = theta_i_1 + (theta_i_2 - theta_i_1) .* sum(abs(obj.dataMat(:, i))) ./ ...
+                               (sum(abs(obj.dataMat(:, i))) + sum(abs(obj.dataMat(i, :))));
 
-                    ratio_i_1=obj.dataMat(i,:);ratio_i_1=[0,ratio_i_1./sum(ratio_i_1)];
-                    ratio_j_2=obj.dataMat(:,j)';ratio_j_2=[0,ratio_j_2./sum(ratio_j_2)];
-                    if true
-                        theta1=theta_i_2+(theta_i_3-theta_i_2).*sum(ratio_i_1(1:j))  + obj.Rotation(i);
-                        theta2=theta_i_2+(theta_i_3-theta_i_2).*sum(ratio_i_1(1:j+1))  + obj.Rotation(i);
-                        theta3=theta_j_3+(theta_j_1-theta_j_3).*sum(ratio_j_2(1:i))  + obj.Rotation(j);
-                        theta4=theta_j_3+(theta_j_1-theta_j_3).*sum(ratio_j_2(1:i+1))  + obj.Rotation(j);
-                        if abs(obj.Rotation(1) - obj.Rotation(2))>eps
-                            theta1=theta1 - diffTheta(i)/2 - theta_i_1;
-                            theta2=theta2 - diffTheta(i)/2 - theta_i_1;
-                            theta3=theta3 - diffTheta(j)/2 - theta_j_1;
-                            theta4=theta4 - diffTheta(j)/2 - theta_j_1;
-                        end
+                    theta_j_1 = sum(ratioC(1:j)) * baseLen + (j - 1 + 0.5) * sepLen + (tGroup(j) - 1 + 0.5) * gsepLen;
+                    theta_j_2 = sum(ratioC(1:j+1)) * baseLen + (j - 1 + 0.5) * sepLen + (tGroup(j) - 1 + 0.5) * gsepLen;
+                    theta_j_3 = theta_j_1 + (theta_j_2 - theta_j_1) .* sum(abs(obj.dataMat(:, j))) ./ ...
+                               (sum(abs(obj.dataMat(:, j))) + sum(abs(obj.dataMat(j, :))));
 
+                    ratio_i_1 = obj.dataMat(i, :);
+                    ratio_i_1 = [0, ratio_i_1 ./ sum(ratio_i_1)];
+                    ratio_j_2 = obj.dataMat(:, j)';
+                    ratio_j_2 = [0, ratio_j_2 ./ sum(ratio_j_2)];
 
-                        tPnt1=[cos(theta1),sin(theta1)];
-                        tPnt2=[cos(theta2),sin(theta2)];
-                        tPnt3=[cos(theta3),sin(theta3)];
-                        tPnt4=[cos(theta4),sin(theta4)];
-                        obj.thetaFullSet{i}(j)=theta1;
-                        obj.thetaFullSet{i}(j+1)=theta2;
-                        obj.thetaFullSet{j}(i+numC)=theta3;
-                        obj.thetaFullSet{j}(i+numC+1)=theta4;
-                        obj.iMidThetaSet(i, j) = (theta1 + theta2)./2;
-                        obj.jMidThetaSet(i, j) = (theta3 + theta4)./2;
+                    theta1 = theta_i_2 + (theta_i_3 - theta_i_2) .* sum(ratio_i_1(1:j)) + obj.Rotation(i);
+                    theta2 = theta_i_2 + (theta_i_3 - theta_i_2) .* sum(ratio_i_1(1:j+1)) + obj.Rotation(i);
+                    theta3 = theta_j_3 + (theta_j_1 - theta_j_3) .* sum(ratio_j_2(1:i)) + obj.Rotation(j);
+                    theta4 = theta_j_3 + (theta_j_1 - theta_j_3) .* sum(ratio_j_2(1:i+1)) + obj.Rotation(j);
 
-                        if strcmp(obj.Arrow,'off')
-                            % 计算贝塞尔曲线
-                            tLine1=bezierCurve([tPnt1;0,0;tPnt4],200);
-                            tLine2=bezierCurve([tPnt2;0,0;tPnt3],200);
-                            tline3=[cos(linspace(theta2,theta1,100))',sin(linspace(theta2,theta1,100))'];
-                            tline4=[cos(linspace(theta4,theta3,100))',sin(linspace(theta4,theta3,100))'];
-                        else
-                            % 计算贝塞尔曲线
-                            tLine1=bezierCurve([tPnt1;0,0;tPnt4.*.96],200);
-                            tLine2=bezierCurve([tPnt2;0,0;tPnt3.*.96],200);
-                            tline3=[cos(linspace(theta2,theta1,100))',sin(linspace(theta2,theta1,100))'];
-                            tline4=[cos(theta4).*.96,sin(theta4).*.96;
-                                cos(theta3/2+theta4/2).*.99,sin(theta3/2+theta4/2).*.99;
-                                cos(theta3).*.96,sin(theta3).*.96];
-                        end
-                        obj.chordMatHdl(i,j)=fill(obj.ax, [tLine1(:,1);tline4(:,1);tLine2(end:-1:1,1);tline3(:,1)],...
-                            [tLine1(:,2);tline4(:,2);tLine2(end:-1:1,2);tline3(:,2)],...
-                            obj.CData(i,:),'FaceAlpha',.3,'EdgeColor','none', 'UserData',[i,j], 'ButtonDownFcn', @obj.onChordClick);
-                        XF=cos(linspace(theta1,theta2,100));YF=sin(linspace(theta1,theta2,100));
-                        XT=cos(linspace(theta3,theta4,100));YT=sin(linspace(theta3,theta4,100));
-                        obj.squareFMatHdl(i,j)=fill(obj.ax, [1.05.*XF,(1.05+obj.SSqRatio*.1).*XF(end:-1:1)],[1.05.*YF,(1.05+obj.SSqRatio*.1).*YF(end:-1:1)],...
-                            obj.CData(j,:),'EdgeColor','none');
-                        obj.squareTMatHdl(i,j)=fill(obj.ax, [1.05.*XT,(1.05+obj.SSqRatio*.1).*XT(end:-1:1)],[1.05.*YT,(1.05+obj.SSqRatio*.1).*YT(end:-1:1)],...
-                            obj.CData(i,:),'EdgeColor','none');
-                    else
+                    if abs(obj.Rotation(1) - obj.Rotation(2)) > eps
+                        theta1 = theta1 - diffTheta(i) / 2 - theta_i_1;
+                        theta2 = theta2 - diffTheta(i) / 2 - theta_i_1;
+                        theta3 = theta3 - diffTheta(j) / 2 - theta_j_1;
+                        theta4 = theta4 - diffTheta(j) / 2 - theta_j_1;
                     end
+
+                    tPnt1 = [cos(theta1), sin(theta1)];
+                    tPnt2 = [cos(theta2), sin(theta2)];
+                    tPnt3 = [cos(theta3), sin(theta3)];
+                    tPnt4 = [cos(theta4), sin(theta4)];
+
+                    % Store angles for tick marks (存储角度用于刻度)
+                    obj.thetaFullSet{i}(j)       = theta1;
+                    obj.thetaFullSet{i}(j + 1)   = theta2;
+                    obj.thetaFullSet{j}(i + numC)     = theta3;
+                    obj.thetaFullSet{j}(i + numC + 1) = theta4;
+                    obj.iMidThetaSet(i, j) = (theta1 + theta2) / 2;
+                    obj.jMidThetaSet(i, j) = (theta3 + theta4) / 2;
+
+                    % Bezier curves and rendering (贝塞尔曲线与渲染)
+                    if strcmp(obj.Arrow, 'off')
+                        tLine1 = bezierCurve([tPnt1; 0, 0; tPnt4], 200);
+                        tLine2 = bezierCurve([tPnt2; 0, 0; tPnt3], 200);
+                        tline3 = [cos(linspace(theta2, theta1, 100))', sin(linspace(theta2, theta1, 100))'];
+                        tline4 = [cos(linspace(theta4, theta3, 100))', sin(linspace(theta4, theta3, 100))'];
+                    else
+                        tLine1 = bezierCurve([tPnt1; 0, 0; tPnt4 .* 0.96], 200);
+                        tLine2 = bezierCurve([tPnt2; 0, 0; tPnt3 .* 0.96], 200);
+                        tline3 = [cos(linspace(theta2, theta1, 100))', sin(linspace(theta2, theta1, 100))'];
+                        tline4 = [cos(theta4) .* 0.96, sin(theta4) .* 0.96;
+                                  cos((theta3 + theta4) / 2) .* 0.99, sin((theta3 + theta4) / 2) .* 0.99;
+                                  cos(theta3) .* 0.96, sin(theta3) .* 0.96];
+                    end
+
+                    % Chord fill (弦填充)
+                    obj.chordMatHdl(i, j) = fill(obj.ax, [tLine1(:, 1); tline4(:, 1); tLine2(end:-1:1, 1); tline3(:, 1)], ...
+                                                       [tLine1(:, 2); tline4(:, 2); tLine2(end:-1:1, 2); tline3(:, 2)], ...
+                                                       obj.CData(i, :), 'FaceAlpha', 0.3, 'EdgeColor', 'none', ...
+                                                       'UserData', [i, j], 'ButtonDownFcn', @obj.onChordClick);
+
+                    % Split blocks at chord ends (弦末端拆分方块)
+                    XF = cos(linspace(theta1, theta2, 100));
+                    YF = sin(linspace(theta1, theta2, 100));
+                    XT = cos(linspace(theta3, theta4, 100));
+                    YT = sin(linspace(theta3, theta4, 100));
+
+                    obj.squareFMatHdl(i, j) = fill(obj.ax, [1.05 .* XF, (1.05 + obj.SSqRatio * 0.1) .* XF(end:-1:1)], ...
+                                                         [1.05 .* YF, (1.05 + obj.SSqRatio * 0.1) .* YF(end:-1:1)], ...
+                                                         obj.CData(j, :), 'EdgeColor', 'none');
+                    obj.squareTMatHdl(i, j) = fill(obj.ax, [1.05 .* XT, (1.05 + obj.SSqRatio * 0.1) .* XT(end:-1:1)], ...
+                                                         [1.05 .* YT, (1.05 + obj.SSqRatio * 0.1) .* YT(end:-1:1)], ...
+                                                         obj.CData(i, :), 'EdgeColor', 'none');
                 end
             end
+
+            % Remove NaN entries from thetaFullSet (移除 NaN 条目)
             for i = 1:numC
                 tTFS = obj.thetaFullSet{i};
                 isNANListF{i} = isnan(tTFS);
                 obj.thetaFullSet{i} = tTFS(~isNANListF{i});
             end
-            % #############################################################
-            % version 2.0.0 更新部分
-            % 绘制刻度线
+
+            % =============================================================
+            % Draw tick marks (绘制刻度线)
+            % =============================================================
             for i = 1:numC
                 [obj.thetaFullSet{i}, uniListF{i}] = unique(obj.thetaFullSet{i}, 'stable');
             end
+
             switch lower(obj.TickMode)
                 case 'value'
-                    tickX = [cos([obj.thetaFullSet{:}]).*1.17; cos([obj.thetaFullSet{:}]).*1.19; nan.*[obj.thetaFullSet{:}]];
-                    tickY = [sin([obj.thetaFullSet{:}]).*1.17; sin([obj.thetaFullSet{:}]).*1.19; nan.*[obj.thetaFullSet{:}]];
+                    tickX = [cos([obj.thetaFullSet{:}]) .* 1.17; cos([obj.thetaFullSet{:}]) .* 1.19; nan .* [obj.thetaFullSet{:}]];
+                    tickY = [sin([obj.thetaFullSet{:}]) .* 1.17; sin([obj.thetaFullSet{:}]) .* 1.19; nan .* [obj.thetaFullSet{:}]];
                 case 'auto'
                     for i = 1:numC
                         tTFS0{i} = obj.thetaFullSet{i};
@@ -346,72 +386,92 @@ classdef biChordChart < handle
                             tTFSB = [inf, tTFSA] < mean(tTFSA)/2 | [tTFSA, inf] < mean(tTFSA)/2;
                             if ~isempty(tTFS1{i})
                                 tTFS2 = linspace(tTFS1{i}(1), tTFS1{i}(end), length(tTFS1{i}));
-                                tTFSC = tTFS1{i}; tTFSC(tTFSB) = tTFS2(tTFSB);
+                                tTFSC = tTFS1{i};
+                                tTFSC(tTFSB) = tTFS2(tTFSB);
                                 tTFSC(tTFSC > tTFS1{i} + pi/30) = tTFS1{i}(tTFSC > tTFS1{i} + pi/30) + pi/30;
                                 tTFSC(tTFSC < tTFS1{i} - pi/30) = tTFS1{i}(tTFSC < tTFS1{i} - pi/30) - pi/30;
-                                obj.thetaFullSet{i} = sort((2.*tTFS1{i} + tTFSC)./3, 'descend');
+                                obj.thetaFullSet{i} = sort((2 .* tTFS1{i} + tTFSC) ./ 3, 'descend');
                             end
                         end
                     end
-                    
-                    tickX = [cos([tTFS0{:}]).*1.17; cos([tTFS0{:}]).*(1.17 + 1/3*.02); cos([obj.thetaFullSet{:}]).*(1.17 + 2/3*.02); cos([obj.thetaFullSet{:}]).*1.19; nan.*[obj.thetaFullSet{:}]];
-                    tickY = [sin([tTFS0{:}]).*1.17; sin([tTFS0{:}]).*(1.17 + 1/3*.02); sin([obj.thetaFullSet{:}]).*(1.17 + 2/3*.02); sin([obj.thetaFullSet{:}]).*1.19; nan.*[obj.thetaFullSet{:}]];
+
+                    tickX = [cos([tTFS0{:}]) .* 1.17; cos([tTFS0{:}]) .* (1.17 + 1/3*0.02); ...
+                             cos([obj.thetaFullSet{:}]) .* (1.17 + 2/3*0.02); cos([obj.thetaFullSet{:}]) .* 1.19; ...
+                             nan .* [obj.thetaFullSet{:}]];
+                    tickY = [sin([tTFS0{:}]) .* 1.17; sin([tTFS0{:}]) .* (1.17 + 1/3*0.02); ...
+                             sin([obj.thetaFullSet{:}]) .* (1.17 + 2/3*0.02); sin([obj.thetaFullSet{:}]) .* 1.19; ...
+                             nan .* [obj.thetaFullSet{:}]];
                 case 'linear'
                     for i = 1:numC
                         tTFS = obj.thetaFullSet{i};
                         if ~isempty(tTFS)
-                            obj.thetaFullSet{i} = (tTFS(end) - tTFS(1))./(sum(obj.dataMat(i,:)) + sum(obj.dataMat(:,i))).*(0:obj.linearTickSep:(sum(obj.dataMat(i,:)) + sum(obj.dataMat(:,i)))) + tTFS(1);
-                            tMTFS{i} = (tTFS(end) - tTFS(1))./(sum(obj.dataMat(i,:)) + sum(obj.dataMat(:,i))).*(0:obj.linearTickSep/5:(sum(obj.dataMat(i,:)) + sum(obj.dataMat(:,i)))) + tTFS(1);
-
+                            totalFlow = sum(obj.dataMat(i, :)) + sum(obj.dataMat(:, i));
+                            obj.thetaFullSet{i} = (tTFS(end) - tTFS(1)) ./ totalFlow .* (0:obj.linearTickSep:totalFlow) + tTFS(1);
+                            tMTFS{i} = (tTFS(end) - tTFS(1)) ./ totalFlow .* (0:obj.linearTickSep/5:totalFlow) + tTFS(1);
                         else
-                            tMTFS{i}=[];
+                            tMTFS{i} = [];
                         end
                     end
+
                     if strcmp(obj.linearMinorTick, 'on')
-                        tickX = [cos([tMTFS{:}]).*1.17, cos([obj.thetaFullSet{:}]).*1.17; cos([tMTFS{:}]).*1.18, cos([obj.thetaFullSet{:}]).*1.19; nan.*[[obj.thetaFullSet{:}],[tMTFS{:}]]];
-                        tickY = [sin([tMTFS{:}]).*1.17, sin([obj.thetaFullSet{:}]).*1.17; sin([tMTFS{:}]).*1.18, sin([obj.thetaFullSet{:}]).*1.19; nan.*[[obj.thetaFullSet{:}],[tMTFS{:}]]];
+                        tickX = [cos([tMTFS{:}]) .* 1.17, cos([obj.thetaFullSet{:}]) .* 1.17;
+                                 cos([tMTFS{:}]) .* 1.18, cos([obj.thetaFullSet{:}]) .* 1.19;
+                                 nan .* [[obj.thetaFullSet{:}], [tMTFS{:}]]];
+                        tickY = [sin([tMTFS{:}]) .* 1.17, sin([obj.thetaFullSet{:}]) .* 1.17;
+                                 sin([tMTFS{:}]) .* 1.18, sin([obj.thetaFullSet{:}]) .* 1.19;
+                                 nan .* [[obj.thetaFullSet{:}], [tMTFS{:}]]];
                     else
-                        tickX = [cos([obj.thetaFullSet{:}]).*1.17; cos([obj.thetaFullSet{:}]).*1.19; nan.*[obj.thetaFullSet{:}]];
-                        tickY = [sin([obj.thetaFullSet{:}]).*1.17; sin([obj.thetaFullSet{:}]).*1.19; nan.*[obj.thetaFullSet{:}]];
+                        tickX = [cos([obj.thetaFullSet{:}]) .* 1.17; cos([obj.thetaFullSet{:}]) .* 1.19; nan .* [obj.thetaFullSet{:}]];
+                        tickY = [sin([obj.thetaFullSet{:}]) .* 1.17; sin([obj.thetaFullSet{:}]) .* 1.19; nan .* [obj.thetaFullSet{:}]];
                     end
             end
-            obj.thetaTickHdl = plot(obj.ax, tickX(:),tickY(:), 'Color',[0,0,0], 'LineWidth',.8, 'Visible','off');
-            % #############################################################
+            obj.thetaTickHdl = plot(obj.ax, tickX(:), tickY(:), 'Color', [0, 0, 0], 'LineWidth', 0.8, 'Visible', 'off');
 
-
-            % version 1.1.0 更新部分
-            for i=1:numC          
-                if strcmpi(obj.TickMode,'linear')
-                    cumsumV=0:obj.linearTickSep:(sum(obj.dataMat(i,:)) + sum(obj.dataMat(:,i)));
+            % =============================================================
+            % Draw tick labels (绘制刻度标签)
+            % =============================================================
+            for i = 1:numC
+                if strcmpi(obj.TickMode, 'linear')
+                    cumsumV = 0:obj.linearTickSep:(sum(obj.dataMat(i, :)) + sum(obj.dataMat(:, i)));
                 else
-                    cumsumV=[0,cumsum([obj.dataMat(i,:),obj.dataMat(:,i).'])];
-                    cumsumV=cumsumV(~isNANListF{i});
-                    cumsumV=cumsumV(uniListF{i});
+                    cumsumV = [0, cumsum([obj.dataMat(i, :), obj.dataMat(:, i)'])];
+                    cumsumV = cumsumV(~isNANListF{i});
+                    cumsumV = cumsumV(uniListF{i});
                 end
-                for j=1:length(obj.thetaFullSet{i})
-                    rotation=mod(obj.thetaFullSet{i}(j)/pi*180,360);
+
+                for j = 1:length(obj.thetaFullSet{i})
+                    rotation = mod(obj.thetaFullSet{i}(j) / pi * 180, 360);
                     if ~isnan(obj.thetaFullSet{i}(j))
-                    if rotation>90&&rotation<270
-                        rotation=rotation+180;
-                        obj.thetaTickLabelHdl(i,j)=text(obj.ax, cos(obj.thetaFullSet{i}(j)).*1.2,sin(obj.thetaFullSet{i}(j)).*1.2,num2str(cumsumV(j)),...
-                            'Rotation',rotation,'HorizontalAlignment','right','FontSize',9,'FontName','Arial','Visible','off','UserData',cumsumV(j));
-                    else
-                        obj.thetaTickLabelHdl(i,j)=text(obj.ax, cos(obj.thetaFullSet{i}(j)).*1.2,sin(obj.thetaFullSet{i}(j)).*1.2,num2str(cumsumV(j)),...
-                            'Rotation',rotation,'FontSize',9,'FontName','Arial','Visible','off','UserData',cumsumV(j));
-                    end
+                        if rotation > 90 && rotation < 270
+                            rotation = rotation + 180;
+                            obj.thetaTickLabelHdl(i, j) = text(obj.ax, cos(obj.thetaFullSet{i}(j)) .* 1.2, ...
+                                sin(obj.thetaFullSet{i}(j)) .* 1.2, num2str(cumsumV(j)), ...
+                                'Rotation', rotation, 'HorizontalAlignment', 'right', 'FontSize', 9, ...
+                                'FontName', 'Arial', 'Visible', 'off', 'UserData', cumsumV(j));
+                        else
+                            obj.thetaTickLabelHdl(i, j) = text(obj.ax, cos(obj.thetaFullSet{i}(j)) .* 1.2, ...
+                                sin(obj.thetaFullSet{i}(j)) .* 1.2, num2str(cumsumV(j)), ...
+                                'Rotation', rotation, 'FontSize', 9, 'FontName', 'Arial', ...
+                                'Visible', 'off', 'UserData', cumsumV(j));
+                        end
                     end
                 end
             end
 
-            % 贝塞尔函数
-            function pnts=bezierCurve(pnts,N)
-                t=linspace(0,1,N);
-                p=size(pnts,1)-1;
-                coe1=factorial(p)./factorial(0:p)./factorial(p:-1:0);
-                coe2=((t).^((0:p)')).*((1-t).^((p:-1:0)'));
-                pnts=(pnts'*(coe1'.*coe2))';
+            % =============================================================
+            % Helper functions (辅助函数)
+            % =============================================================
+            function pnts = bezierCurve(pnts, N)
+                % Bezier curve calculation (贝塞尔曲线计算)
+                t = linspace(0, 1, N);
+                p = size(pnts, 1) - 1;
+                coe1 = factorial(p) ./ factorial(0:p) ./ factorial(p:-1:0);
+                coe2 = ((t) .^ ((0:p)')) .* ((1 - t) .^ ((p:-1:0)'));
+                pnts = (pnts' * (coe1' .* coe2))';
             end
+
             function group_id = groupConsecutive(arr)
+                % Consecutive group numbering (连续分组编号)
                 if isempty(arr)
                     group_id = [];
                     return;
@@ -419,170 +479,205 @@ classdef biChordChart < handle
                 group_id = ones(size(arr));
                 current_group = 1;
                 for ind = 2:length(arr)
-                    if arr(ind) ~= arr(ind-1)
+                    if arr(ind) ~= arr(ind - 1)
                         current_group = current_group + 1;
                     end
                     group_id(ind) = current_group;
                 end
             end
 
+            % Apply label rotation (应用标签旋转)
             obj.labelRotate(obj.LRotate)
         end
-        % -----------------------------------------------------------------
-        % 方块属性设置
-        function setSquareN(obj,n,varargin)
-            set(obj.squareHdl(n),varargin{:});
+
+
+% =========================================================================
+% Block property settings (方块属性设置)
+% =========================================================================
+        function setSquareN(obj, n, varargin)
+            % Set properties for a specific block (设置特定方块的属性)
+            set(obj.squareHdl(n), varargin{:});
         end
-        % 单独设置每一个弦末端方块
-        function setEachSquareT_Prop(obj,m,n,varargin)
-            set(obj.squareTMatHdl(m,n),'Visible','on',varargin{:})
+
+        function setEachSquareT_Prop(obj, m, n, varargin)
+            % Set properties for a specific target-side block (设置特定目标端方块的属性)
+            set(obj.squareTMatHdl(m, n), 'Visible', 'on', varargin{:})
         end
-        function setEachSquareF_Prop(obj,m,n,varargin)
-            set(obj.squareFMatHdl(m,n),'Visible','on',varargin{:})
+
+        function setEachSquareF_Prop(obj, m, n, varargin)
+            % Set properties for a specific source-side block (设置特定源端方块的属性)
+            set(obj.squareFMatHdl(m, n), 'Visible', 'on', varargin{:})
         end
-        % -----------------------------------------------------------------
-        % 批量弦属性设置
-        function setChordN(obj,n,varargin)
-            for i=n
-                for j=1:size(obj.dataMat,2)
-                    set(obj.chordMatHdl(i,j),varargin{:});
+
+% =========================================================================
+% Chord property settings (弦属性设置)
+% =========================================================================
+        function setChordN(obj, n, varargin)
+            % Set properties for all chords from node n (设置从节点 n 出发的所有弦的属性)
+            for i = n
+                for j = 1:size(obj.dataMat, 2)
+                    set(obj.chordMatHdl(i, j), varargin{:});
                 end
             end
         end
-        % -----------------------------------------------------------------
-        % 单独弦属性设置
-        function setChordMN(obj,m,n,varargin)
-            set(obj.chordMatHdl(m,n),varargin{:});
+        function setChordMN(obj, m, n, varargin)
+            % Set properties for a specific chord (设置特定弦的属性)
+            set(obj.chordMatHdl(m, n), varargin{:});
         end
-        % -----------------------------------------------------------------
-        % 字体设置
-        function setFont(obj,varargin)
-            for i=1:size(obj.dataMat,1)
-                set(obj.nameHdl(i),varargin{:});
+
+% =========================================================================
+% Set labels (标签设置)
+% =========================================================================
+        function setFont(obj, varargin)
+            % Set font properties for all labels (设置所有标签的字体属性)
+            for i = 1:size(obj.dataMat, 1)
+                set(obj.nameHdl(i), varargin{:});
             end
         end
-        function setFontN(obj,n,varargin)
-                set(obj.nameHdl(n),varargin{:});
+
+        function setFontN(obj, n, varargin)
+            % Set font properties for a specific label (设置特定标签的字体属性)
+            set(obj.nameHdl(n), varargin{:});
         end
-        function setTickFont(obj,varargin)
-            for m=1:length(obj.thetaFullSet)
-                for n=1:length(obj.thetaFullSet{m})
-                    if obj.thetaTickLabelHdl(m,n)
-                        set(obj.thetaTickLabelHdl(m,n),varargin{:})
-                    end
-                end
+
+        % version 1.1.0 update (版本 1.1.0 更新部分)
+        % Set label radius (设置标签半径)
+        function obj = setLabelRadius(obj, Radius)
+            obj.LRadius = Radius;
+            for i = 1:size(obj.dataMat, 1)
+                set(obj.nameHdl(i), 'Position', [cos(obj.meanThetaSet(i)), sin(obj.meanThetaSet(i))] .* obj.LRadius);
             end
         end
-        % version 1.1.0 更新部分
-        % 标签文字距离设置
-        function obj=setLabelRadius(obj,Radius)
-            obj.LRadius=Radius;
-            for i=1:size(obj.dataMat,1)
-                set(obj.nameHdl(i),'Position',[cos(obj.meanThetaSet(i)),sin(obj.meanThetaSet(i))].*obj.LRadius);
-            end
-        end
-        % version 1.1.0 更新部分
-        % 标签旋转状态设置
+
+        % version 1.1.0 update (版本 1.1.0 更新部分)
+        % Label rotation adjustment (标签旋转状态设置)
         function labelRotate(obj, Rotate)
-            obj.LRotate=Rotate;
-            for i=1:size(obj.dataMat,1)
-                set(obj.nameHdl(i),'HorizontalAlignment','center','Rotation',obj.rotationSet(i))
+            obj.LRotate = Rotate;
+            for i = 1:size(obj.dataMat, 1)
+                set(obj.nameHdl(i), 'HorizontalAlignment', 'center', 'Rotation', obj.rotationSet(i))
             end
-            if isequal(obj.LRotate,'on')
-            textHdl=findobj(obj.ax,'Tag','BiChordLabel');
-            for i=1:length(textHdl)
-                if textHdl(i).Rotation<-90
-                    textHdl(i).Rotation=textHdl(i).Rotation+180;
-                end
-                switch true
-                    case textHdl(i).Rotation<0&&textHdl(i).Position(2)>0
-                        textHdl(i).Rotation=textHdl(i).Rotation+90;
-                        textHdl(i).HorizontalAlignment='left';
-                    case textHdl(i).Rotation>=0&&textHdl(i).Position(2)>0
-                        textHdl(i).Rotation=textHdl(i).Rotation-90;
-                        textHdl(i).HorizontalAlignment='right';
-                    case textHdl(i).Rotation<0&&textHdl(i).Position(2)<=0
-                        textHdl(i).Rotation=textHdl(i).Rotation+90;
-                        textHdl(i).HorizontalAlignment='right';
-                    case textHdl(i).Rotation>=0&&textHdl(i).Position(2)<=0
-                        textHdl(i).Rotation=textHdl(i).Rotation-90;
-                        textHdl(i).HorizontalAlignment='left';
-                end
-            end
-            end
-        end
-        % -----------------------------------------------------------------
-        % 刻度开关
-        function tickState(obj,state)
-            for i=1:size(obj.dataMat,1)
-                set(obj.RTickHdl(i),'Visible',state);
-            end
-            set(obj.thetaTickHdl,'Visible',state);
-        end
-        % version 1.1.0 更新部分
-        function tickLabelState(obj,state)
-            for m=1:length(obj.thetaFullSet)
-                for n=1:length(obj.thetaFullSet{m})
-                    if obj.thetaTickLabelHdl(m,n)
-                    if ~(n<length(obj.thetaFullSet{m})&&abs(obj.thetaFullSet{m}(n)-obj.thetaFullSet{m}(n+1))<eps)
-                    set(obj.thetaTickLabelHdl(m,n),'Visible',state)
+            if isequal(obj.LRotate, 'on')
+                textHdl = findobj(obj.ax, 'Tag', 'BiChordLabel');
+                for i = 1:length(textHdl)
+                    if textHdl(i).Rotation < -90
+                        textHdl(i).Rotation = textHdl(i).Rotation + 180;
                     end
+                    switch true                        
+                        case textHdl(i).Rotation < 0 && textHdl(i).Position(2) > 0
+                            textHdl(i).Rotation = textHdl(i).Rotation + 90;
+                            textHdl(i).HorizontalAlignment = 'left';
+                        case textHdl(i).Rotation >= 0 && textHdl(i).Position(2) > 0
+                            textHdl(i).Rotation = textHdl(i).Rotation - 90;
+                            textHdl(i).HorizontalAlignment = 'right';
+                        case textHdl(i).Rotation < 0 && textHdl(i).Position(2) <= 0
+                            textHdl(i).Rotation = textHdl(i).Rotation + 90;
+                            textHdl(i).HorizontalAlignment = 'right';
+                        case textHdl(i).Rotation >= 0 && textHdl(i).Position(2) <= 0
+                            textHdl(i).Rotation = textHdl(i).Rotation - 90;
+                            textHdl(i).HorizontalAlignment = 'left';
                     end
                 end
             end
         end
-        function setTickLabelFormat(obj,func)
-            for m=1:length(obj.thetaFullSet)
-                for n=1:length(obj.thetaFullSet{m})
-                    if obj.thetaTickLabelHdl(m,n)
-                    tStr=func(get(obj.thetaTickLabelHdl(m,n),'UserData'));
-                    set(obj.thetaTickLabelHdl(m,n),'String',tStr)
+
+% =========================================================================
+% Set ticks (刻度设置)
+% =========================================================================
+        function tickState(obj, state)
+            % Show/hide tick marks (显示/隐藏刻度线)
+            for i = 1:size(obj.dataMat, 1)
+                set(obj.RTickHdl(i), 'Visible', state);
+            end
+            set(obj.thetaTickHdl, 'Visible', state);
+        end
+
+        % version 1.1.0 update (版本 1.1.0 更新部分)
+        function tickLabelState(obj, state)
+            % Show/hide tick labels (显示/隐藏刻度标签)
+            for m = 1:length(obj.thetaFullSet)
+                for n = 1:length(obj.thetaFullSet{m})
+                    if obj.thetaTickLabelHdl(m, n)
+                        if ~(n < length(obj.thetaFullSet{m}) && abs(obj.thetaFullSet{m}(n) - obj.thetaFullSet{m}(n+1)) < eps)
+                            set(obj.thetaTickLabelHdl(m, n), 'Visible', state)
+                        end
                     end
                 end
             end
         end
-        % -----------------------------------------------------------------
-        % 功能函数
+
+        function setTickFont(obj, varargin)
+            % Set font properties for all tick labels (设置所有刻度标签的字体属性)
+            for m = 1:length(obj.thetaFullSet)
+                for n = 1:length(obj.thetaFullSet{m})
+                    if obj.thetaTickLabelHdl(m, n)
+                        set(obj.thetaTickLabelHdl(m, n), varargin{:})
+                    end
+                end
+            end
+        end
+
+        function setTickLabelFormat(obj, func)
+            % Set custom format for tick labels (设置刻度标签的自定义格式)
+            for m = 1:length(obj.thetaFullSet)
+                for n = 1:length(obj.thetaFullSet{m})
+                    if obj.thetaTickLabelHdl(m, n)
+                        tStr = func(get(obj.thetaTickLabelHdl(m, n), 'UserData'));
+                        set(obj.thetaTickLabelHdl(m, n), 'String', tStr)
+                    end
+                end
+            end
+        end
+
+% =========================================================================
+% Utility functions (功能函数)
+% =========================================================================
         function tXS = getTick(~, Len, N)
+            % Calculate optimal tick spacing (计算最优刻度间隔)
             tXS = Len / N;
             tXN = ceil(log(tXS) / log(10));
-            tXS = round(round(tXS / 10^(tXN-2)) / 5) * 5 * 10^(tXN-2);
+            tXS = round(round(tXS / 10^(tXN-2)) / 5) * 5 * 10^(tXN - 2);
         end
+
         function tHdl = addHighlightArrow(obj, i, j)
+            % Add an arrow to highlight flow between nodes (添加箭头高亮节点间的流向)
             tPnt1 = [cos(obj.iMidThetaSet(i, j)), sin(obj.iMidThetaSet(i, j))];
             tPnt2 = [cos(obj.jMidThetaSet(i, j)), sin(obj.jMidThetaSet(i, j))];
-            tLine = bezierCurve([tPnt1;0,0;tPnt2],200);
-            tHdl.Line = plot(obj.ax, tLine(:,1), tLine(:,2), 'LineWidth',1, 'Color',[0,0,0]);
+            tLine = bezierCurve([tPnt1; 0, 0; tPnt2], 200);
+            tHdl.Line = plot(obj.ax, tLine(:, 1), tLine(:, 2), 'LineWidth', 1, 'Color', [0, 0, 0]);
 
-            tPnt3 = [cos(obj.jMidThetaSet(i, j) - pi/100).*.95, sin(obj.jMidThetaSet(i, j) - pi/100).*.95];
-            tPnt4 = [cos(obj.jMidThetaSet(i, j) + pi/100).*.95, sin(obj.jMidThetaSet(i, j) + pi/100).*.95];
-            tHdl.Arrow = fill(obj.ax, [tPnt2(1), tPnt3(1), tPnt4(1)], [tPnt2(2), tPnt3(2), tPnt4(2)], [0,0,0]);
+            tPnt3 = [cos(obj.jMidThetaSet(i, j) - pi/100) .* 0.95, sin(obj.jMidThetaSet(i, j) - pi/100) .* 0.95];
+            tPnt4 = [cos(obj.jMidThetaSet(i, j) + pi/100) .* 0.95, sin(obj.jMidThetaSet(i, j) + pi/100) .* 0.95];
+            tHdl.Arrow = fill(obj.ax, [tPnt2(1), tPnt3(1), tPnt4(1)], [tPnt2(2), tPnt3(2), tPnt4(2)], [0, 0, 0]);
 
-            function pnts=bezierCurve(pnts,N)
-                t=linspace(0,1,N);
-                p=size(pnts,1)-1;
-                coe1=factorial(p)./factorial(0:p)./factorial(p:-1:0);
-                coe2=((t).^((0:p)')).*((1-t).^((p:-1:0)'));
-                pnts=(pnts'*(coe1'.*coe2))';
+            function pnts = bezierCurve(pnts, N)
+                t = linspace(0, 1, N);
+                p = size(pnts, 1) - 1;
+                coe1 = factorial(p) ./ factorial(0:p) ./ factorial(p:-1:0);
+                coe2 = ((t) .^ ((0:p)')) .* ((1 - t) .^ ((p:-1:0)'));
+                pnts = (pnts' * (coe1' .* coe2))';
             end
         end
+
         function onChordClick(obj, src, event)
+            % Chord click callback for data tips (弦点击回调：数据提示框)
+            % Left click: show data tooltip (左键: 显示数据提示框)
+            % Right click: hide highlight (右键: 隐藏高亮)
             if ~verLessThan('matlab', '9.7')
-            if event.Button == 1
-                src.EdgeColor = obj.dataTipFormat{1};
-                src.LineWidth = 1;
-                datatip(src, event.IntersectionPoint(1), event.IntersectionPoint(2));
-                src.DataTipTemplate.DataTipRows(1) = ...
-                dataTipTextRow(obj.dataTipFormat{2}, repmat(obj.Label(src.UserData(1)), length(src.XData), 1));
-                src.DataTipTemplate.DataTipRows(2) = ...
-                dataTipTextRow(obj.dataTipFormat{3}, repmat(obj.Label(src.UserData(2)), length(src.XData), 1));
-                src.DataTipTemplate.DataTipRows(3) = ...
-                dataTipTextRow(obj.dataTipFormat{4}, repmat(obj.dataMat(src.UserData(1),src.UserData(2)), ...
-                [length(src.XData), 1]), obj.dataTipFormat{5});
-            else
-                src.EdgeColor = 'none';
-                src.LineWidth = 0.5;
-            end
+                if event.Button == 1
+                    src.EdgeColor = obj.dataTipFormat{1};
+                    src.LineWidth = 1;
+                    datatip(src, event.IntersectionPoint(1), event.IntersectionPoint(2));
+                    src.DataTipTemplate.DataTipRows(1) = ...
+                        dataTipTextRow(obj.dataTipFormat{2}, repmat(obj.Label(src.UserData(1)), length(src.XData), 1));
+                    src.DataTipTemplate.DataTipRows(2) = ...
+                        dataTipTextRow(obj.dataTipFormat{3}, repmat(obj.Label(src.UserData(2)), length(src.XData), 1));
+                    src.DataTipTemplate.DataTipRows(3) = ...
+                        dataTipTextRow(obj.dataTipFormat{4}, repmat(obj.dataMat(src.UserData(1), src.UserData(2)), ...
+                        [length(src.XData), 1]), obj.dataTipFormat{5});
+                else
+                    src.EdgeColor = 'none';
+                    src.LineWidth = 0.5;
+                end
             end
         end
     end
