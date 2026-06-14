@@ -1,9 +1,4 @@
-% demo9
-% @author : slandarer
-% 公众号  : slandarer随笔
-% 知乎    : slandarer
-
-% The automatic adjustment of scale density
+%% The automatic adjustment of scale density
 
 rng(1)
 dataMat=randi([0,5],[8,8]);
@@ -14,7 +9,7 @@ CList=[75,146,241;252,180,65;224,64,10;5,100,146;191,191,191;
 
 figure('Units','normalized','Position',[.02,.05,.6,.85])
 % TickMode 'value'(default)/'linear'/auto
-BCC=biChordChart(dataMat,'Arrow','on','CData',CList,...
+BCC = biChordChart(dataMat,'Arrow','on','CData',CList,...
     'TickMode','auto','SSqRatio',-30/100, 'OSqRatio',80/100);
 
 BCC=BCC.draw();

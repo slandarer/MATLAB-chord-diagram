@@ -1,9 +1,4 @@
-% demo 1
-% @author : slandarer
-% 公众号  : slandarer随笔
-% 知乎    : slandarer
-
-% Basic use of chord chart
+%% Basic use of chord chart
 
 dataMat=randi([0,8],[5,5]);
 

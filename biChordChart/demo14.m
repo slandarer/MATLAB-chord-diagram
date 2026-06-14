@@ -1,5 +1,4 @@
-% demo14 
-% Group
+%% Group
 
 rng(1)
 dataMat=randi([0,8], [6,6]);

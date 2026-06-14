@@ -1,7 +1,4 @@
-% demo10
-% @author : slandarer
-% 公众号  : slandarer随笔
-% 知乎    : slandarer
+%% Adjust the angle of each square individually
 
 links = {'N','NE',252.4; 'NW','N',44.7; 'NW','W',11.4; 'NW','SW',7.9
 'W','NW',43.1; 'SW','NW',35; 'SW','W',37.4; 'SW','S',10.6
@@ -27,12 +24,12 @@ BCC.tickState('on')
 BCC.tickLabelState('on')
 
 BCC.labelRotate('on')
-txtHdl=findobj(gca,'Tag','BiChordLabel');
-for i=1:length(txtHdl)
-    if abs(txtHdl(i).Position(2))>1
-        set(txtHdl(i),'Rotation',0,'HorizontalAlignment','center');
-    end
-end
+% txtHdl=findobj(gca,'Tag','BiChordLabel');
+% for i=1:length(txtHdl)
+%     if abs(txtHdl(i).Position(2))>1
+%         set(txtHdl(i),'Rotation',0,'HorizontalAlignment','center');
+%     end
+% end
 
 
 % 修改字体，字号及颜色

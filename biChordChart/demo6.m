@@ -1,7 +1,4 @@
-% demo6
-% @author : slandarer
-% 公众号  : slandarer随笔
-% 知乎    : slandarer
+%% Change color
 
 dataMat=rand([15,15]);
 dataMat(dataMat>.15)=0;

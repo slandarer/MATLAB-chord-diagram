@@ -1,23 +1,53 @@
-% demo9
-% @author : slandarer
-% 公众号  : slandarer随笔
-% 知乎    : slandarer
+%% Set SSqRatio and OSqRatio
 
 
-dataMat = rand([11,4]);
-dataMat = round(10.*dataMat.*((11:-1:1).'+1))./10;
-
+dataMat = round(10.*rand([11,4]).*((11:-1:1).'+1))./10;
 colName = {'A','B','C','D'};
 rowName = {'Acidobacteriota', 'Actinobacteriota', 'Proteobacteria', ...
            'Chloroflexi', 'Bacteroidota', 'Firmicutes', 'Gemmatimonadota', ...
            'Verrucomicrobiota', 'Patescibacteria', 'Planctomyetota', 'Others'};
 
-figure('Units','normalized', 'Position',[.02,.05,.8,.85])
-% CC = chordChart(dataMat, 'colName',colName, 'Sep',1/80, 'SSqRatio',30/100);
 
-% SSqRatio Range : [-50/100, 100/100]; OSqRatio Range : [0, 100/100]
+figure('Units','normalized', 'Position',[.02,.05,.8,.85])
 CC = chordChart(dataMat, 'colName',colName, 'Sep',1/80, 'SSqRatio',-30/100, 'OSqRatio',80/100);
 CC = CC.draw();
+
+% 修改上方方块颜色(Modify the color of the blocks above)
+CListT = [.93,.60,.62; .55,.80,.99; .95,.82,.18; 1.0,.81,.91];
+CC.setSquareColorT(CListT)
+% 修改下方方块颜色(Modify the color of the blocks below)
+CListF = [.75,.73,.86; .56,.83,.78; .00,.60,.20; 1.0,.49,.02; .78,.77,.95; .59,.24,.36; 
+          .98,.51,.45; .96,.55,.75; .47,.71,.84; .65,.35,.16; .40,.00,.64];
+CC.setSquareColorF(CListF)
+% 修改弦颜色(Modify chord color)
+CC.setChordColorBySquareF()
+% CC.setChordColorBySquareT()
+
+% 添加刻度
+CC.tickState('on')
+% 修改字体，字号及颜色
+CC.setFont('FontName','Cambria', 'FontSize',17)
+
+% 绘制图例(Draw legend)
+lgdHdl = legend(CC.squareFHdl, rowName, 'Location','eastoutside', ...
+    'FontSize',16, 'FontName','Cambria', 'Box','off');
+lgdHdl.ItemTokenSize = [18,8];
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%{
+
 
 % 修改上方方块颜色(Modify the color of the blocks above)
 CListT = [0.93,0.60,0.62; 0.55,0.80,0.99; 0.95,0.82,0.18; 1.00,0.81,0.91];
@@ -59,26 +89,9 @@ CC.tickState('on')
 % 修改字体，字号及颜色
 CC.setFont('FontName','Cambria', 'FontSize',17)
 
-% % 隐藏下方标签
-% textHdl = findobj(gca, 'Tag','ChordLabel');
-% for i = 1:length(textHdl)
-%     if textHdl(i).Position(2) < 0
-%         set(textHdl(i), 'Visible','off')
-%     end
-% end
-
 % 绘制图例(Draw legend)
 lgdHdl = legend(CC.squareFHdl, rowName, 'Location','eastoutside', 'FontSize',16, 'FontName','Cambria', 'Box','off');
 lgdHdl.ItemTokenSize = [18,8];
 
 
-
-% % 绘制图例(Draw legend)
-% for i = 1:size(dataMat,1)
-%     scatterHdl(i) = scatter(10.*ones(size(dataMat,1),1),10.*ones(size(dataMat,1),1),55, 'filled');
-% end
-% for i = 1:length(scatterHdl)
-%     scatterHdl(i).CData = CListF(i,:);
-% end
-% lgdHdl = legend(scatterHdl, rowName, 'Location','best', 'FontSize',16, 'FontName','Cambria', 'Box','off');
-% set(lgdHdl, 'Position',[.7482,.3577,.1658,.3254])
+%}

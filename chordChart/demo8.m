@@ -1,7 +1,4 @@
-% demo8
-% @author : slandarer
-% 公众号  : slandarer随笔
-% 知乎    : slandarer
+%% Set color for top split blocks/squares for chord ends
 rng(3)
 dataMat = randi([1, 15], [7, 22]);
 dataMat(dataMat < 11) = 0;
@@ -13,7 +10,7 @@ rowName = {'Lung', 'Spleen', 'Liver', 'Heart',...
            'Renal cortex', 'Renal medulla', 'Thyroid'};
 
 figure('Units','normalized', 'Position',[.02, .05, .6, .85])
-CC = chordChart(dataMat, 'rowName',rowName, 'colName',colName, 'Sep',1/80, 'LRadius',1.21);
+CC = chordChart(dataMat, 'rowName',rowName, 'colName',colName, 'Sep',1/80, 'LRadius',1.21, 'SSqRatio',1);
 CC = CC.draw();
 CC.labelRotate('on')
 

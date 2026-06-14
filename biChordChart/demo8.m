@@ -1,9 +1,4 @@
-% demo8
-% @author : slandarer
-% 公众号  : slandarer随笔
-% 知乎    : slandarer
-
-% Linear ticks
+%% Linear tick mode
 
 rng(1)
 dataMat=randi([0,5],[8,8]);

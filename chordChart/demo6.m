@@ -1,7 +1,4 @@
-% demo6
-% @author : slandarer
-% 公众号  : slandarer随笔
-% 知乎    : slandarer
+%% Adjust numeric string format for tick label
 dataMat=[2 0 1 2 5 1 2;
          3 5 1 4 2 0 1;
          4 0 5 5 2 4 3];

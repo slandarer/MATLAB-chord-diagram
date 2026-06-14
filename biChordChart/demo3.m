@@ -1,9 +1,4 @@
-% demo 3
-% @author : slandarer
-% 公众号  : slandarer随笔
-% 知乎    : slandarer
-
-% Chord chart with label rotated
+%% Chord chart with label rotated
 
 dataMat=randi([0,8],[6,6]);
 

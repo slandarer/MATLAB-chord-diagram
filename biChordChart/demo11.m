@@ -1,7 +1,4 @@
-% demo11
-% @author : slandarer
-% 公众号  : slandarer随笔
-% 知乎    : slandarer
+%% Reproduction of a Nature figure example
 
 % Data source : 
 % Lake, B.B., Menon, R., Winfree, S. et al. 

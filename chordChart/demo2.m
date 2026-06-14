@@ -1,7 +1,4 @@
-% demo 2
-% @author : slandarer
-% 公众号  : slandarer随笔
-% 知乎    : slandarer
+%% Set properties for squares and chord ribbons
 
 dataMat=[2 0 1 2 5 1 2;
          3 5 1 4 2 0 1;

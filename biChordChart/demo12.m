@@ -1,5 +1,4 @@
-% demo12 
-% Features under testing
+%% Features under testing
 
 dataMat=randi([0,8],[5,5]);
 

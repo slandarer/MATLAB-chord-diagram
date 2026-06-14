@@ -1,11 +1,10 @@
-% demo13 
-% Add highlight arrow
+%% Add highlight arrow
 
 rng(1)
 dataMat=randi([1,8], [4,4]);
 
 % 创建弦图对象(Create bichord diagram object)
-BCC=biChordChart(dataMat,'Arrow','on','Sep',1/12);
+BCC=biChordChart(dataMat,'Arrow','on','Sep',1/12,'TickMode','linear');
 
 % 开始绘图(Start drawing)
 BCC=BCC.draw();

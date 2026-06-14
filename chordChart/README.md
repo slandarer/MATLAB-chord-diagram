@@ -132,7 +132,7 @@ ___
 ## 4 字体调整(Set font)
 使用`setFont`函数对字体进行调整，所有text对象具有的属性均可以修饰，举个例子(更改文本的字号、字体和颜色)：Use the `setFont` function to adjust the font; any property possessed by a text object can be modified. For example (changing the text size, font, and color):
 ```matlab
-CC.setFont('FontSize',17,'FontName','Cambria','Color',[0,0,.8])
+CC.setFont('FontSize',30,'FontName','Cambria','Color',[0,0,.8])
 ```
 ![输入图片说明](gallery/8.png)
 ___

@@ -1,7 +1,4 @@
-% demo 7
-% @author : slandarer
-% 公众号  : slandarer随笔
-% 知乎    : slandarer
+%% Create chord chart from source-target-value cell array
 
 links = {'A','A',1;'A','B',1.2;'A','C',2.5;
          'B','A',.5;'B','B',0;'B','C',1.5;

@@ -1,9 +1,4 @@
-% demo 10
-% @author : slandarer
-% 公众号  : slandarer随笔
-% 知乎    : slandarer
-
-% Linear ticks
+%% Linear ticks
 
 rng(1)
 dataMat = randi([0,5], [14,3]);

@@ -1,7 +1,4 @@
-% demo 1
-% @author : slandarer
-% 公众号  : slandarer随笔
-% 知乎    : slandarer
+%% Basic usage
 
 dataMat=[2 0 1 2 5 1 2;
          3 5 1 4 2 0 1;
@@ -20,6 +17,7 @@ CC=CC.draw();
 % Set Font for labels and show ticks
 CC.setFont('FontSize',17,'FontName','Cambria')
 CC.tickState('on')
+CC.tickLabelState('on')
 
 % CC.dataTipFormat = {'r', 'Source:', 'Target:', 'Value:', '%.2f'};
 % CC.dataTipFormat = {'r', '来源:', '目标:', '数值:', '%.2f'};

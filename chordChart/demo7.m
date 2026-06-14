@@ -1,7 +1,11 @@
-% demo7
-% @author : slandarer
-% 公众号  : slandarer随笔
-% 知乎    : slandarer
+%% Reproduction of a iMeta figure example
+
+
+% Reproduced from: 
+% Gut microbiota composition in the sympatric and diet-sharing Drosophila simulans 
+% and Dicranocephalus wallichii bowringi shaped largely 
+% by community assembly processes rather than regional species pool. iMeta.
+
 rng(2)
 
 dataMat=randi([1,7],[11,5]);

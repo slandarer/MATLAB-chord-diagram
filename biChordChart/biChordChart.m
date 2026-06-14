@@ -71,9 +71,9 @@ classdef biChordChart < handle
 %     (线性刻度相关属性)
 % -------------------------------------------------------------------------
 % # version 3.0.0
-%   + Added 'SSqRatio' property to adjust arc-shaped block ratio at chord ends
+%   + Added 'SSqRatio' property to adjust arc block/square ratio at chord ends
 %     (可使用 SSqRatio 属性调整弦末端弧形块占比)
-%   + Added 'OSqRatio' property to adjust original arc block ratio
+%   + Added 'OSqRatio' property to adjust original arc block/square ratio
 %     (新增 OSqRatio 属性)
 %   + Added 'Rotation' property for global diagram rotation
 %     (新增 Rotation 属性)
@@ -85,14 +85,33 @@ classdef biChordChart < handle
 % # version 4.1.0
 %   + Added addHighlightArrow function to add arrow indicators (添加提示箭头)
 %   + Nodes are groupable (节点可分组)
+% -------------------------------------------------------------------------
+% # version 5.0.0
+%   + Added 'TickRadius' property to control tick radius
+%     (新增 TickRadius 属性)
+%   + Added 'SquareRadius' property to control the 
+%     inner and outer radius of the arc block/square
+%     (新增 SquareRadius 属性)
+%   + Property shorthands (属性简写)
+%     TRadius    % TickRadius       - Tick mark radius / 刻度线半径
+%     SRadius    % SquareRadius     - Arc block radial range [inner, outer] / 弧块径向范围
+%     LRadius    % LabelRadius      - Category label radius / 分类标签半径
+%     LRotate    % LabelRotate      - Label rotation mode / 标签是否旋转
+%     SSqRatio   % SubSquareRatio   - Subordinate square size ratio / 从属方块大小比例
+%     OSqRatio   % OriSquareRatio   - Origin square size ratio / 起点方块大小比例
 
 
     properties
         % Axes and configuration (坐标区与配置)
         ax                                                     % Axes handle (坐标区句柄)
         % Name-value pair list (名称-值对参数列表)
-        arginList = {'Label','Sep','Arrow','CData','LRadius','LRotate',...
-                     'SSqRatio','OSqRatio','Rotation','TickMode'}   
+        arginList = {'Label','Sep','GroupSep','Arrow','CData','Rotation','TickMode',...
+                     'TRadius' , 'TickRadius', ...
+                     'SRadius' , 'SquareRadius', ...
+                     'LRadius' , 'LabelRadius', ...
+                     'LRotate' , 'LabelRotate', ...
+                     'SSqRatio', 'SubSquareRatio', ...
+                     'OSqRatio', 'OriSquareRatio'}   
         
         % Data storage (数据存储)
         dataMat                                                % Numerical matrix (数值矩阵)
@@ -103,7 +122,7 @@ classdef biChordChart < handle
         dataTipFormat = {'k', 'Source:', 'Target:', 'Value:', 'auto'}   
 
         % Appearance parameters (外观参数)
-        Sep      = 1/10                                        % Gap between chord groups (弦组间隙)
+        Sep      = 1/10                                        % Gap between block/square nodes (弧形块间隙)
         Arrow    = 'off'                                       % Arrow mode: 'on'/'off' (箭头模式)
         CData    = [127, 91, 93; 187,128,110; 197,173,143;
                      59, 71,111;104,  95,126;  76,103, 86;
@@ -111,10 +130,12 @@ classdef biChordChart < handle
                     160,126, 88; 238,208,146]./255;            % Color data (颜色数据)
         Group    = []                                          % Group assignment for nodes (节点分组)
         GroupSep = 1/15                                        % Gap between groups (组间间隙)
-        LRadius  = 1.28                                        % Label radius (标签半径)
-        LRotate  = 'off'                                       % Label rotation mode (标签旋转模式)
-        SSqRatio = 0                                           % Square ratio at chord ends (弦末端方块比例)
-        OSqRatio = 1                                           % Original arc block ratio (原始弧形块比例)
+        TickRadius = 1.17                                      % Tick radius (刻度半径)
+        SquareRadius = [1.05, 1.15]                            % Inner and outer radius of the arc block/square (弦块的内外半径)
+        LabelRadius  = 1.28                                    % Label radius (标签半径)
+        LabelRotate  = 'off'                                   % Label rotation mode (标签旋转模式)
+        SubSquareRatio = 0                                     % Subordinate square ratio: Square ratio at chord ends (弦末端方块比例)
+        OriSquareRatio = 1                                     % Original square ratio (原始弧形块比例)
         Rotation = 0                                           % Global rotation angle (全局旋转角度)
         TickMode = 'value'                                     % Tick mode: 'value'/'auto'/'linear' (刻度模式)
         linearTickSep                                          % Linear tick spacing (线性刻度间隔)
@@ -123,14 +144,14 @@ classdef biChordChart < handle
 
 
         % Angular positions (角度位置) % read only
-        thetaSet = []                                          % Angular positions for blocks (方块角度位置)
+        thetaSet = []                                          % Angular positions for blocks/squares (方块角度位置)
         meanThetaSet; iMidThetaSet; jMidThetaSet               % Midpoint angles (中点角度)
         rotationSet; thetaFullSet                              % Rotation angles and full theta set (旋转角度与完整角度集)
 
         % Graphics handles (图形句柄)
-        squareHdl                                              % Blocks (节点方块)
-        squareFMatHdl                                          % From-side split blocks (源端拆分方块)
-        squareTMatHdl                                          % To-side split blocks (目标端拆分方块)
+        squareHdl                                              % Blocks/squares (节点方块)
+        squareFMatHdl                                          % From-side split blocks/squares (源端拆分方块)
+        squareTMatHdl                                          % To-side split blocks/squares (目标端拆分方块)
         nameHdl                                                % Labels (标签)
         chordMatHdl                                            % Chord ribbons (弦)
         thetaTickHdl                                           % Theta tick lines (角度刻度线)
@@ -138,7 +159,31 @@ classdef biChordChart < handle
         thetaTickLabelHdl                                      % Theta tick labels (角度刻度标签)
     end
 
-    methods
+    % Shorthands / alias
+    properties (Dependent)
+        TRadius    % TickRadius
+        SRadius    % SquareRadius
+        LRadius    % LabelRadius
+        LRotate    % LabelRotate
+        SSqRatio   % SubSquareRatio
+        OSqRatio   % OriSquareRatio
+    end
+
+    methods 
+        function val = get.TRadius(obj),  val = obj.TickRadius;     end
+        function val = get.SRadius(obj),  val = obj.SquareRadius;   end
+        function val = get.LRadius(obj),  val = obj.LabelRadius;    end
+        function val = get.LRotate(obj),  val = obj.LabelRotate;    end
+        function val = get.SSqRatio(obj), val = obj.SubSquareRatio; end
+        function val = get.OSqRatio(obj), val = obj.OriSquareRatio; end
+        
+        function set.TRadius(obj, val),  obj.TickRadius = val;      end
+        function set.SRadius(obj, val),  obj.SquareRadius = val;    end
+        function set.LRadius(obj, val),  obj.LabelRadius = val;     end
+        function set.LRotate(obj, val),  obj.LabelRotate = val;     end
+        function set.SSqRatio(obj, val), obj.SubSquareRatio = val;  end
+        function set.OSqRatio(obj, val), obj.OriSquareRatio = val;  end
+
 % =========================================================================
 % Constructor (构造函数)
 % =========================================================================
@@ -170,6 +215,16 @@ classdef biChordChart < handle
                 obj.Label = compose('C%d', 1:size(obj.dataMat, 1));
             end
 
+            % Ensure diagonal elements are non-negative (确保对角线元素非负)
+            for i = 1:size(obj.dataMat, 1)
+                obj.dataMat(i, i) = abs(obj.dataMat(i, i));
+            end
+        end
+
+% =========================================================================
+% Main drawing method (主绘图方法)
+% =========================================================================
+        function obj = draw(obj)
             % Validate gap parameters (验证间隙参数)
             if obj.Sep > 1/2, obj.Sep = 1/2; end
             if obj.GroupSep > 1/2, obj.GroupSep = 1/2; end
@@ -179,21 +234,24 @@ classdef biChordChart < handle
                 obj.CData = [obj.CData; rand([size(obj.dataMat, 1), 3]) * 0.5 + 0.5];
             end
 
-            % Ensure diagonal elements are non-negative (确保对角线元素非负)
-            for i = 1:size(obj.dataMat, 1)
-                obj.dataMat(i, i) = abs(obj.dataMat(i, i));
-            end
-
             % Validate label radius (验证标签半径)
-            if obj.LRadius > 2 || obj.LRadius < 1.2
-                obj.LRadius = 1.28;
+            if obj.LabelRadius < 1
+                obj.LabelRadius = 1;
             end
-        end
 
-% =========================================================================
-% Main drawing method (主绘图方法)
-% =========================================================================
-        function obj = draw(obj)
+            % Validate Tick radius (验证刻度半径)
+            if obj.TickRadius < 1
+                obj.TickRadius = 1;
+            end
+
+            % Validate square radius (验证节点弧形块半径)
+            obj.SquareRadius = sort(abs(obj.SquareRadius));
+            if obj.SquareRadius(1) < 1
+                obj.SquareRadius(1) = 1;
+            end
+
+            % =============================================================
+
             % Configure axes (配置坐标区)
             obj.ax.XLim = [-1.38, 1.38];
             obj.ax.YLim = [-1.38, 1.38];
@@ -238,6 +296,7 @@ classdef biChordChart < handle
             % =============================================================
             % Draw blocks and labels (绘制方块和标签)
             % =============================================================
+            diffTheta = zeros(1, numC);
             for i = 1:numC
                 theta1 = sum(ratioC(1:i)) * baseLen + (i - 1 + 0.5) * sepLen + obj.Rotation(i) + (tGroup(i) - 1 + 0.5) * gsepLen;
                 theta2 = sum(ratioC(1:i+1)) * baseLen + (i - 1 + 0.5) * sepLen + obj.Rotation(i) + (tGroup(i) - 1 + 0.5) * gsepLen;
@@ -253,8 +312,8 @@ classdef biChordChart < handle
                 Y = sin(theta);
 
                 % Draw blocks (节点绘制)
-                obj.squareHdl(i) = fill(obj.ax, [(1.15 - 0.1 * obj.OSqRatio) .* X, 1.15 .* X(end:-1:1)], ...
-                                             [(1.15 - 0.1 * obj.OSqRatio) .* Y, 1.15 .* Y(end:-1:1)], ...
+                obj.squareHdl(i) = fill(obj.ax, [(obj.SquareRadius(2) - diff(obj.SquareRadius) * obj.OriSquareRatio) .* X, obj.SquareRadius(2) .* X(end:-1:1)], ...
+                                                [(obj.SquareRadius(2) - diff(obj.SquareRadius) * obj.OriSquareRatio) .* Y, obj.SquareRadius(2) .* Y(end:-1:1)], ...
                                              obj.CData(i, :), 'EdgeColor', 'none');
 
                 % Label position and rotation (标签位置与旋转)
@@ -263,17 +322,17 @@ classdef biChordChart < handle
                 rotation = theta3 / pi * 180;
 
                 if rotation > 0 && rotation < 180
-                    obj.nameHdl(i) = text(obj.ax, cos(theta3) * obj.LRadius, sin(theta3) * obj.LRadius, obj.Label{i}, ...
+                    obj.nameHdl(i) = text(obj.ax, cos(theta3) * obj.LabelRadius, sin(theta3) * obj.LabelRadius, obj.Label{i}, ...
                         'FontSize', 14, 'FontName', 'Arial', 'HorizontalAlignment', 'center', ...
                         'Rotation', -(0.5 * pi - theta3) / pi * 180, 'Tag', 'BiChordLabel');
                     obj.rotationSet(i) = -(0.5 * pi - theta3) / pi * 180;
                 else
-                    obj.nameHdl(i) = text(obj.ax, cos(theta3) * obj.LRadius, sin(theta3) * obj.LRadius, obj.Label{i}, ...
+                    obj.nameHdl(i) = text(obj.ax, cos(theta3) * obj.LabelRadius, sin(theta3) * obj.LabelRadius, obj.Label{i}, ...
                         'FontSize', 14, 'FontName', 'Arial', 'HorizontalAlignment', 'center', ...
                         'Rotation', -(1.5 * pi - theta3) / pi * 180, 'Tag', 'BiChordLabel');
                     obj.rotationSet(i) = -(1.5 * pi - theta3) / pi * 180;
                 end
-                obj.RTickHdl(i) = plot(obj.ax, cos(theta) .* 1.17, sin(theta) .* 1.17, ...
+                obj.RTickHdl(i) = plot(obj.ax, cos(theta) .* obj.TickRadius, sin(theta) .* obj.TickRadius, ...
                     'Color', [0, 0, 0], 'LineWidth', 0.8, 'Visible', 'off');
             end
 
@@ -316,8 +375,8 @@ classdef biChordChart < handle
                     tPnt4 = [cos(theta4), sin(theta4)];
 
                     % Store angles for tick marks (存储角度用于刻度)
-                    obj.thetaFullSet{i}(j)       = theta1;
-                    obj.thetaFullSet{i}(j + 1)   = theta2;
+                    obj.thetaFullSet{i}(j)            = theta1;
+                    obj.thetaFullSet{i}(j + 1)        = theta2;
                     obj.thetaFullSet{j}(i + numC)     = theta3;
                     obj.thetaFullSet{j}(i + numC + 1) = theta4;
                     obj.iMidThetaSet(i, j) = (theta1 + theta2) / 2;
@@ -340,9 +399,9 @@ classdef biChordChart < handle
 
                     % Chord fill (弦填充)
                     obj.chordMatHdl(i, j) = fill(obj.ax, [tLine1(:, 1); tline4(:, 1); tLine2(end:-1:1, 1); tline3(:, 1)], ...
-                                                       [tLine1(:, 2); tline4(:, 2); tLine2(end:-1:1, 2); tline3(:, 2)], ...
-                                                       obj.CData(i, :), 'FaceAlpha', 0.3, 'EdgeColor', 'none', ...
-                                                       'UserData', [i, j], 'ButtonDownFcn', @obj.onChordClick);
+                                                         [tLine1(:, 2); tline4(:, 2); tLine2(end:-1:1, 2); tline3(:, 2)], ...
+                                                          obj.CData(i, :), 'FaceAlpha', 0.3, 'EdgeColor', 'none', ...
+                                                          'UserData', [i, j], 'ButtonDownFcn', @obj.onChordClick);
 
                     % Split blocks at chord ends (弦末端拆分方块)
                     XF = cos(linspace(theta1, theta2, 100));
@@ -350,16 +409,17 @@ classdef biChordChart < handle
                     XT = cos(linspace(theta3, theta4, 100));
                     YT = sin(linspace(theta3, theta4, 100));
 
-                    obj.squareFMatHdl(i, j) = fill(obj.ax, [1.05 .* XF, (1.05 + obj.SSqRatio * 0.1) .* XF(end:-1:1)], ...
-                                                         [1.05 .* YF, (1.05 + obj.SSqRatio * 0.1) .* YF(end:-1:1)], ...
-                                                         obj.CData(j, :), 'EdgeColor', 'none');
-                    obj.squareTMatHdl(i, j) = fill(obj.ax, [1.05 .* XT, (1.05 + obj.SSqRatio * 0.1) .* XT(end:-1:1)], ...
-                                                         [1.05 .* YT, (1.05 + obj.SSqRatio * 0.1) .* YT(end:-1:1)], ...
-                                                         obj.CData(i, :), 'EdgeColor', 'none');
+                    obj.squareFMatHdl(i, j) = fill(obj.ax, [obj.SquareRadius(1) .* XF, (obj.SquareRadius(1) + obj.SubSquareRatio * diff(obj.SquareRadius)) .* XF(end:-1:1)], ...
+                                                           [obj.SquareRadius(1) .* YF, (obj.SquareRadius(1) + obj.SubSquareRatio * diff(obj.SquareRadius)) .* YF(end:-1:1)], ...
+                                                            obj.CData(j, :), 'EdgeColor', 'none');
+                    obj.squareTMatHdl(i, j) = fill(obj.ax, [obj.SquareRadius(1) .* XT, (obj.SquareRadius(1) + obj.SubSquareRatio * diff(obj.SquareRadius)) .* XT(end:-1:1)], ...
+                                                           [obj.SquareRadius(1) .* YT, (obj.SquareRadius(1) + obj.SubSquareRatio * diff(obj.SquareRadius)) .* YT(end:-1:1)], ...
+                                                            obj.CData(i, :), 'EdgeColor', 'none');
                 end
             end
 
             % Remove NaN entries from thetaFullSet (移除 NaN 条目)
+            isNANListF{numC} = [];
             for i = 1:numC
                 tTFS = obj.thetaFullSet{i};
                 isNANListF{i} = isnan(tTFS);
@@ -369,15 +429,18 @@ classdef biChordChart < handle
             % =============================================================
             % Draw tick marks (绘制刻度线)
             % =============================================================
+            uniListF{numC} = [];
             for i = 1:numC
                 [obj.thetaFullSet{i}, uniListF{i}] = unique(obj.thetaFullSet{i}, 'stable');
             end
 
             switch lower(obj.TickMode)
                 case 'value'
-                    tickX = [cos([obj.thetaFullSet{:}]) .* 1.17; cos([obj.thetaFullSet{:}]) .* 1.19; nan .* [obj.thetaFullSet{:}]];
-                    tickY = [sin([obj.thetaFullSet{:}]) .* 1.17; sin([obj.thetaFullSet{:}]) .* 1.19; nan .* [obj.thetaFullSet{:}]];
+                    tickX = [cos([obj.thetaFullSet{:}]) .* obj.TickRadius; cos([obj.thetaFullSet{:}]) .* (obj.TickRadius + .02); nan .* [obj.thetaFullSet{:}]];
+                    tickY = [sin([obj.thetaFullSet{:}]) .* obj.TickRadius; sin([obj.thetaFullSet{:}]) .* (obj.TickRadius + .02); nan .* [obj.thetaFullSet{:}]];
                 case 'auto'
+                    tTFS0{numC} = [];
+                    tTFS1{numC} = [];
                     for i = 1:numC
                         tTFS0{i} = obj.thetaFullSet{i};
                         for k = 1:3
@@ -395,13 +458,14 @@ classdef biChordChart < handle
                         end
                     end
 
-                    tickX = [cos([tTFS0{:}]) .* 1.17; cos([tTFS0{:}]) .* (1.17 + 1/3*0.02); ...
-                             cos([obj.thetaFullSet{:}]) .* (1.17 + 2/3*0.02); cos([obj.thetaFullSet{:}]) .* 1.19; ...
+                    tickX = [cos([tTFS0{:}]) .* obj.TickRadius; cos([tTFS0{:}]) .* (obj.TickRadius + 1/3*0.02); ...
+                             cos([obj.thetaFullSet{:}]) .* (obj.TickRadius + 2/3*0.02); cos([obj.thetaFullSet{:}]) .* (obj.TickRadius + .02); ...
                              nan .* [obj.thetaFullSet{:}]];
-                    tickY = [sin([tTFS0{:}]) .* 1.17; sin([tTFS0{:}]) .* (1.17 + 1/3*0.02); ...
-                             sin([obj.thetaFullSet{:}]) .* (1.17 + 2/3*0.02); sin([obj.thetaFullSet{:}]) .* 1.19; ...
+                    tickY = [sin([tTFS0{:}]) .* obj.TickRadius; sin([tTFS0{:}]) .* (obj.TickRadius + 1/3*0.02); ...
+                             sin([obj.thetaFullSet{:}]) .* (obj.TickRadius + 2/3*0.02); sin([obj.thetaFullSet{:}]) .* (obj.TickRadius + .02); ...
                              nan .* [obj.thetaFullSet{:}]];
                 case 'linear'
+                    tMTFS{numC} = [];
                     for i = 1:numC
                         tTFS = obj.thetaFullSet{i};
                         if ~isempty(tTFS)
@@ -414,15 +478,15 @@ classdef biChordChart < handle
                     end
 
                     if strcmp(obj.linearMinorTick, 'on')
-                        tickX = [cos([tMTFS{:}]) .* 1.17, cos([obj.thetaFullSet{:}]) .* 1.17;
-                                 cos([tMTFS{:}]) .* 1.18, cos([obj.thetaFullSet{:}]) .* 1.19;
+                        tickX = [cos([tMTFS{:}]) .* obj.TickRadius, cos([obj.thetaFullSet{:}]) .* obj.TickRadius;
+                                 cos([tMTFS{:}]) .* (obj.TickRadius + .01), cos([obj.thetaFullSet{:}]) .* (obj.TickRadius + .02);
                                  nan .* [[obj.thetaFullSet{:}], [tMTFS{:}]]];
-                        tickY = [sin([tMTFS{:}]) .* 1.17, sin([obj.thetaFullSet{:}]) .* 1.17;
-                                 sin([tMTFS{:}]) .* 1.18, sin([obj.thetaFullSet{:}]) .* 1.19;
+                        tickY = [sin([tMTFS{:}]) .* obj.TickRadius, sin([obj.thetaFullSet{:}]) .* obj.TickRadius;
+                                 sin([tMTFS{:}]) .* (obj.TickRadius + .01), sin([obj.thetaFullSet{:}]) .* (obj.TickRadius + .02);
                                  nan .* [[obj.thetaFullSet{:}], [tMTFS{:}]]];
                     else
-                        tickX = [cos([obj.thetaFullSet{:}]) .* 1.17; cos([obj.thetaFullSet{:}]) .* 1.19; nan .* [obj.thetaFullSet{:}]];
-                        tickY = [sin([obj.thetaFullSet{:}]) .* 1.17; sin([obj.thetaFullSet{:}]) .* 1.19; nan .* [obj.thetaFullSet{:}]];
+                        tickX = [cos([obj.thetaFullSet{:}]) .* obj.TickRadius; cos([obj.thetaFullSet{:}]) .* (obj.TickRadius + .02); nan .* [obj.thetaFullSet{:}]];
+                        tickY = [sin([obj.thetaFullSet{:}]) .* obj.TickRadius; sin([obj.thetaFullSet{:}]) .* (obj.TickRadius + .02); nan .* [obj.thetaFullSet{:}]];
                     end
             end
             obj.thetaTickHdl = plot(obj.ax, tickX(:), tickY(:), 'Color', [0, 0, 0], 'LineWidth', 0.8, 'Visible', 'off');
@@ -444,19 +508,26 @@ classdef biChordChart < handle
                     if ~isnan(obj.thetaFullSet{i}(j))
                         if rotation > 90 && rotation < 270
                             rotation = rotation + 180;
-                            obj.thetaTickLabelHdl(i, j) = text(obj.ax, cos(obj.thetaFullSet{i}(j)) .* 1.2, ...
-                                sin(obj.thetaFullSet{i}(j)) .* 1.2, num2str(cumsumV(j)), ...
+                            obj.thetaTickLabelHdl(i, j) = text(obj.ax, ...
+                                cos(obj.thetaFullSet{i}(j)) .* (obj.TickRadius + .03), ...
+                                sin(obj.thetaFullSet{i}(j)) .* (obj.TickRadius + .03), num2str(cumsumV(j)), ...
                                 'Rotation', rotation, 'HorizontalAlignment', 'right', 'FontSize', 9, ...
                                 'FontName', 'Arial', 'Visible', 'off', 'UserData', cumsumV(j));
                         else
-                            obj.thetaTickLabelHdl(i, j) = text(obj.ax, cos(obj.thetaFullSet{i}(j)) .* 1.2, ...
-                                sin(obj.thetaFullSet{i}(j)) .* 1.2, num2str(cumsumV(j)), ...
+                            obj.thetaTickLabelHdl(i, j) = text(obj.ax, ...
+                                cos(obj.thetaFullSet{i}(j)) .* (obj.TickRadius + .03), ...
+                                sin(obj.thetaFullSet{i}(j)) .* (obj.TickRadius + .03), num2str(cumsumV(j)), ...
                                 'Rotation', rotation, 'FontSize', 9, 'FontName', 'Arial', ...
                                 'Visible', 'off', 'UserData', cumsumV(j));
                         end
                     end
                 end
             end
+
+            % for i = 1:numC
+            %     uistack(obj.RTickHdl(i), 'top')
+            %     uistack(obj.nameHdl(i), 'top')
+            % end
 
             % =============================================================
             % Helper functions (辅助函数)
@@ -487,7 +558,7 @@ classdef biChordChart < handle
             end
 
             % Apply label rotation (应用标签旋转)
-            obj.labelRotate(obj.LRotate)
+            obj.labelRotate(obj.LabelRotate)
         end
 
 
@@ -497,6 +568,13 @@ classdef biChordChart < handle
         function setSquareN(obj, n, varargin)
             % Set properties for a specific block (设置特定方块的属性)
             set(obj.squareHdl(n), varargin{:});
+        end
+
+        function setSquareProp(obj, varargin)
+            % Batch block property setting (批量设置方块的属性)
+            for i = 1:size(obj.dataMat, 1)
+                set(obj.squareHdl(i), varargin{:});
+            end
         end
 
         function setEachSquareT_Prop(obj, m, n, varargin)
@@ -515,6 +593,14 @@ classdef biChordChart < handle
         function setChordN(obj, n, varargin)
             % Set properties for all chords from node n (设置从节点 n 出发的所有弦的属性)
             for i = n
+                for j = 1:size(obj.dataMat, 2)
+                    set(obj.chordMatHdl(i, j), varargin{:});
+                end
+            end
+        end
+        function setChordProp(obj, varargin)
+            % Batch chord property setting (批量设置弦的属性)
+            for i = 1:size(obj.dataMat, 1)
                 for j = 1:size(obj.dataMat, 2)
                     set(obj.chordMatHdl(i, j), varargin{:});
                 end
@@ -543,20 +629,20 @@ classdef biChordChart < handle
         % version 1.1.0 update (版本 1.1.0 更新部分)
         % Set label radius (设置标签半径)
         function obj = setLabelRadius(obj, Radius)
-            obj.LRadius = Radius;
+            obj.LabelRadius = Radius;
             for i = 1:size(obj.dataMat, 1)
-                set(obj.nameHdl(i), 'Position', [cos(obj.meanThetaSet(i)), sin(obj.meanThetaSet(i))] .* obj.LRadius);
+                set(obj.nameHdl(i), 'Position', [cos(obj.meanThetaSet(i)), sin(obj.meanThetaSet(i))] .* obj.LabelRadius);
             end
         end
 
         % version 1.1.0 update (版本 1.1.0 更新部分)
         % Label rotation adjustment (标签旋转状态设置)
         function labelRotate(obj, Rotate)
-            obj.LRotate = Rotate;
+            obj.LabelRotate = Rotate;
             for i = 1:size(obj.dataMat, 1)
                 set(obj.nameHdl(i), 'HorizontalAlignment', 'center', 'Rotation', obj.rotationSet(i))
             end
-            if isequal(obj.LRotate, 'on')
+            if isequal(obj.LabelRotate, 'on')
                 textHdl = findobj(obj.ax, 'Tag', 'BiChordLabel');
                 for i = 1:length(textHdl)
                     if textHdl(i).Rotation < -90
@@ -575,6 +661,13 @@ classdef biChordChart < handle
                         case textHdl(i).Rotation >= 0 && textHdl(i).Position(2) <= 0
                             textHdl(i).Rotation = textHdl(i).Rotation - 90;
                             textHdl(i).HorizontalAlignment = 'left';
+                    end
+                    if abs(textHdl(i).Rotation) < eps
+                        if textHdl(i).Position(1) > 0
+                            textHdl(i).HorizontalAlignment = 'left';
+                        else
+                            textHdl(i).HorizontalAlignment = 'right';
+                        end
                     end
                 end
             end

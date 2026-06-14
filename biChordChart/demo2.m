@@ -1,9 +1,4 @@
-% demo 2
-% @author : slandarer
-% 公众号  : slandarer随笔
-% 知乎    : slandarer
-
-% Chord chart with label
+%% Chord chart with label
 
 dataMat=randi([0,8],[6,6]);
 

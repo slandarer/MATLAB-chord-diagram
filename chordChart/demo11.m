@@ -1,9 +1,4 @@
-% demo 11
-% @author : slandarer
-% 公众号  : slandarer随笔
-% 知乎    : slandarer
-
-% The automatic adjustment of scale density
+%% The automatic adjustment of scale density
 
 rng(1)
 dataMat = randi([0,5], [14,3]);

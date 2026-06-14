@@ -1,5 +1,4 @@
-% demo13 
-% Add highlight arrow
+%% Add highlight arrow
 
 dataMat = [2 0 1 2 5 1 2;
            3 5 1 4 2 0 1;

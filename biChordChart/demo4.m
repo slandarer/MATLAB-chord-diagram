@@ -1,9 +1,4 @@
-% demo4
-% @author : slandarer
-% 公众号  : slandarer随笔
-% 知乎    : slandarer
-
-% Displays scales and numeric values
+%% Displays scales and numeric values
 
 dataMat=[5 1 0 2;
          0 7 6 3;

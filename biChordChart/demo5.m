@@ -1,9 +1,4 @@
-% demo5
-% @author : slandarer
-% 公众号  : slandarer随笔
-% 知乎    : slandarer
-
-% Adjust numeric string format
+%% Adjust numeric string format for tick label
 
 dataMat=[5.213 1.231 0.000 2.835;
          0.000 7.674 6.565 3.085;
