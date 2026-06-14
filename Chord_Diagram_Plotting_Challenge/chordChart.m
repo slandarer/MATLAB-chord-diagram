@@ -844,7 +844,6 @@ classdef chordChart < handle
             
             if isequal(obj.LabelRotate, 'on')
                 textHdl = findobj(obj.ax, 'Tag', 'ChordLabel');
-                
                 for i = 1:length(textHdl)
                     if textHdl(i).Rotation < -90
                         textHdl(i).Rotation = textHdl(i).Rotation + 180;
@@ -853,19 +852,23 @@ classdef chordChart < handle
                     switch true
                         case textHdl(i).Rotation < 0 && textHdl(i).Position(2) > 0
                             textHdl(i).Rotation = textHdl(i).Rotation + 90;
-                            textHdl(i).HorizontalAlignment = 'left';
-                            
+                            textHdl(i).HorizontalAlignment = 'left'; 
                         case textHdl(i).Rotation >= 0 && textHdl(i).Position(2) > 0
                             textHdl(i).Rotation = textHdl(i).Rotation - 90;
-                            textHdl(i).HorizontalAlignment = 'right';
-                            
+                            textHdl(i).HorizontalAlignment = 'right';                         
                         case textHdl(i).Rotation < 0 && textHdl(i).Position(2) <= 0
                             textHdl(i).Rotation = textHdl(i).Rotation + 90;
                             textHdl(i).HorizontalAlignment = 'right';
-                            
                         case textHdl(i).Rotation >= 0 && textHdl(i).Position(2) <= 0
                             textHdl(i).Rotation = textHdl(i).Rotation - 90;
                             textHdl(i).HorizontalAlignment = 'left';
+                    end
+                    if abs(textHdl(i).Rotation) < eps
+                        if textHdl(i).Position(1) > 0
+                            textHdl(i).HorizontalAlignment = 'left';
+                        else
+                            textHdl(i).HorizontalAlignment = 'right';
+                        end
                     end
                 end
             end
