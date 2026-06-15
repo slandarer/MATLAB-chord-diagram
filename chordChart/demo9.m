@@ -7,9 +7,9 @@ rowName = {'Acidobacteriota', 'Actinobacteriota', 'Proteobacteria', ...
            'Chloroflexi', 'Bacteroidota', 'Firmicutes', 'Gemmatimonadota', ...
            'Verrucomicrobiota', 'Patescibacteria', 'Planctomyetota', 'Others'};
 
-
 figure('Units','normalized', 'Position',[.02,.05,.8,.85])
-CC = chordChart(dataMat, 'colName',colName, 'Sep',1/80, 'SSqRatio',-30/100, 'OSqRatio',80/100);
+CC = chordChart(dataMat, 'ColName',colName, 'Sep',1/80, 'SSqRatio',-30/100, 'OSqRatio',80/100);
+CC.RowName = repmat({' '}, [1, length(rowName)]);
 CC = CC.draw();
 
 % 修改上方方块颜色(Modify the color of the blocks above)
@@ -27,6 +27,7 @@ CC.setChordColorBySquareF()
 CC.tickState('on')
 % 修改字体，字号及颜色
 CC.setFont('FontName','Cambria', 'FontSize',17)
+
 
 % 绘制图例(Draw legend)
 lgdHdl = legend(CC.squareFHdl, rowName, 'Location','eastoutside', ...

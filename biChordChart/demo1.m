@@ -7,6 +7,7 @@ BCC=biChordChart(dataMat,'Arrow','on', 'Rotation',pi/3);
 
 % 开始绘图(Start drawing)
 BCC=BCC.draw();
+BCC.chordMatHdl
 
 % 添加刻度(Show ticks and tick labels)
 BCC.tickState('on')

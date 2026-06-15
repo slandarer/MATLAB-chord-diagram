@@ -13,7 +13,7 @@ colName =  compose('C%d', 1:3);
 rowName = [compose('A%d', 1:7), compose('B%d', 7:-1:1)];
 
 figure('Units','normalized', 'Position',[.02,.05,.6,.85])
-CC = chordChart(dataMat, 'rowName',rowName, 'colName',colName, 'Sep',1/80);
+CC = chordChart(dataMat, 'RowName',rowName, 'ColName',colName, 'Sep',1/80);
 CC = CC.draw();
 
 % 修改上方方块颜色(Modify the color of the blocks above)

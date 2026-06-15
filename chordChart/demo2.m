@@ -6,7 +6,7 @@ dataMat=[2 0 1 2 5 1 2;
 colName={'G1','G2','G3','G4','G5','G6','G7'};
 rowName={'S1','S2','S3'};
 
-CC=chordChart(dataMat,'rowName',rowName,'colName',colName);
+CC=chordChart(dataMat,'RowName',rowName,'ColName',colName);
 CC=CC.draw();
 
 % 弦属性设置 ===============================================================

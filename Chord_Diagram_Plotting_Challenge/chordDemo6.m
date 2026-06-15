@@ -14,7 +14,7 @@ colName = compose('T%d', 1:4);
 rowName = compose('SL%d', 1:20);
 
 figure('Units','normalized', 'Position',[.02,.05,.6,.85])
-CC = chordChart(dataMat, 'rowName',rowName, 'colName',colName, 'Sep',1/80, 'LRadius',1.23);
+CC = chordChart(dataMat, 'RowName',rowName, 'ColName',colName, 'Sep',1/80, 'LRadius',1.23);
 CC = CC.draw();
 % 修改上方方块颜色(Modify the color of the blocks above)
 CListT = [0.62,0.49,0.27; 0.28,0.57,0.76

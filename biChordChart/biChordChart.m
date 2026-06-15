@@ -99,7 +99,10 @@ classdef biChordChart < handle
 %     LRotate    % LabelRotate      - Label rotation mode / 标签是否旋转
 %     SSqRatio   % SubSquareRatio   - Subordinate square size ratio / 从属方块大小比例
 %     OSqRatio   % OriSquareRatio   - Origin square size ratio / 起点方块大小比例
-
+% -------------------------------------------------------------------------
+% # version 6.0.0
+%   + Optimized variable and graphics object name display, 
+%     significantly improving plotting speed for large-scale matrix
 
     properties
         % Axes and configuration (坐标区与配置)
@@ -142,12 +145,6 @@ classdef biChordChart < handle
         linearTickCompactDegree = 3.5                          % Linear tick compact degree (线性刻度紧密程度)
         linearMinorTick = 'off'                                % Minor tick mode (次刻度线模式)
 
-
-        % Angular positions (角度位置) % read only
-        thetaSet = []                                          % Angular positions for blocks/squares (方块角度位置)
-        meanThetaSet; iMidThetaSet; jMidThetaSet               % Midpoint angles (中点角度)
-        rotationSet; thetaFullSet                              % Rotation angles and full theta set (旋转角度与完整角度集)
-
         % Graphics handles (图形句柄)
         squareHdl                                              % Blocks/squares (节点方块)
         squareFMatHdl                                          % From-side split blocks/squares (源端拆分方块)
@@ -157,6 +154,13 @@ classdef biChordChart < handle
         thetaTickHdl                                           % Theta tick lines (角度刻度线)
         RTickHdl                                               % Radius tick lines (半径刻度线)
         thetaTickLabelHdl                                      % Theta tick labels (角度刻度标签)
+    end
+
+    properties (Hidden)
+        % Angular positions (角度位置) % read only
+        thetaSet = []                                          % Angular positions for blocks/squares (方块角度位置)
+        meanThetaSet; iMidThetaSet; jMidThetaSet               % Midpoint angles (中点角度)
+        rotationSet; thetaFullSet                              % Rotation angles and full theta set (旋转角度与完整角度集)
     end
 
     % Shorthands / alias
@@ -296,6 +300,9 @@ classdef biChordChart < handle
             % =============================================================
             % Draw blocks and labels (绘制方块和标签)
             % =============================================================
+            obj.squareHdl = gobjects(1, numC);
+            obj.nameHdl   = gobjects(1, numC);
+            obj.RTickHdl  = gobjects(1, numC);
             diffTheta = zeros(1, numC);
             for i = 1:numC
                 theta1 = sum(ratioC(1:i)) * baseLen + (i - 1 + 0.5) * sepLen + obj.Rotation(i) + (tGroup(i) - 1 + 0.5) * gsepLen;
@@ -339,6 +346,9 @@ classdef biChordChart < handle
             % =============================================================
             % Draw chords (绘制弦)
             % =============================================================
+            obj.chordMatHdl   = gobjects(numC, numC);
+            obj.squareFMatHdl = gobjects(numC, numC);
+            obj.squareTMatHdl = gobjects(numC, numC);
             for i = 1:numC
                 for j = 1:numC
                     % Theta calculations for source and target (源与目标的角度计算)
@@ -382,6 +392,7 @@ classdef biChordChart < handle
                     obj.iMidThetaSet(i, j) = (theta1 + theta2) / 2;
                     obj.jMidThetaSet(i, j) = (theta3 + theta4) / 2;
 
+                    if abs(obj.dataMat(i, j)) > 0
                     % Bezier curves and rendering (贝塞尔曲线与渲染)
                     if strcmp(obj.Arrow, 'off')
                         tLine1 = bezierCurve([tPnt1; 0, 0; tPnt4], 200);
@@ -402,6 +413,7 @@ classdef biChordChart < handle
                                                          [tLine1(:, 2); tline4(:, 2); tLine2(end:-1:1, 2); tline3(:, 2)], ...
                                                           obj.CData(i, :), 'FaceAlpha', 0.3, 'EdgeColor', 'none', ...
                                                           'UserData', [i, j], 'ButtonDownFcn', @obj.onChordClick);
+                    
 
                     % Split blocks at chord ends (弦末端拆分方块)
                     XF = cos(linspace(theta1, theta2, 100));
@@ -415,6 +427,7 @@ classdef biChordChart < handle
                     obj.squareTMatHdl(i, j) = fill(obj.ax, [obj.SquareRadius(1) .* XT, (obj.SquareRadius(1) + obj.SubSquareRatio * diff(obj.SquareRadius)) .* XT(end:-1:1)], ...
                                                            [obj.SquareRadius(1) .* YT, (obj.SquareRadius(1) + obj.SubSquareRatio * diff(obj.SquareRadius)) .* YT(end:-1:1)], ...
                                                             obj.CData(i, :), 'EdgeColor', 'none');
+                    end
                 end
             end
 
@@ -494,6 +507,7 @@ classdef biChordChart < handle
             % =============================================================
             % Draw tick labels (绘制刻度标签)
             % =============================================================
+            obj.thetaTickLabelHdl = gobjects(numC, max(cellfun(@length, obj.thetaFullSet)));
             for i = 1:numC
                 if strcmpi(obj.TickMode, 'linear')
                     cumsumV = 0:obj.linearTickSep:(sum(obj.dataMat(i, :)) + sum(obj.dataMat(:, i)));
@@ -579,12 +593,16 @@ classdef biChordChart < handle
 
         function setEachSquareT_Prop(obj, m, n, varargin)
             % Set properties for a specific target-side block (设置特定目标端方块的属性)
-            set(obj.squareTMatHdl(m, n), 'Visible', 'on', varargin{:})
+            if isa(obj.squareTMatHdl(m, n), 'matlab.graphics.primitive.Patch')
+                set(obj.squareTMatHdl(m, n), 'Visible', 'on', varargin{:})
+            end
         end
 
         function setEachSquareF_Prop(obj, m, n, varargin)
             % Set properties for a specific source-side block (设置特定源端方块的属性)
-            set(obj.squareFMatHdl(m, n), 'Visible', 'on', varargin{:})
+            if isa(obj.squareFMatHdl(m, n), 'matlab.graphics.primitive.Patch')
+                set(obj.squareFMatHdl(m, n), 'Visible', 'on', varargin{:})
+            end
         end
 
 % =========================================================================
@@ -594,7 +612,9 @@ classdef biChordChart < handle
             % Set properties for all chords from node n (设置从节点 n 出发的所有弦的属性)
             for i = n
                 for j = 1:size(obj.dataMat, 2)
-                    set(obj.chordMatHdl(i, j), varargin{:});
+                    if isa(obj.chordMatHdl(i, j), 'matlab.graphics.primitive.Patch')
+                        set(obj.chordMatHdl(i, j), varargin{:});
+                    end
                 end
             end
         end
@@ -602,13 +622,17 @@ classdef biChordChart < handle
             % Batch chord property setting (批量设置弦的属性)
             for i = 1:size(obj.dataMat, 1)
                 for j = 1:size(obj.dataMat, 2)
-                    set(obj.chordMatHdl(i, j), varargin{:});
+                    if isa(obj.chordMatHdl(i, j), 'matlab.graphics.primitive.Patch')
+                        set(obj.chordMatHdl(i, j), varargin{:});
+                    end
                 end
             end
         end
         function setChordMN(obj, m, n, varargin)
             % Set properties for a specific chord (设置特定弦的属性)
-            set(obj.chordMatHdl(m, n), varargin{:});
+            if isa(obj.chordMatHdl(m, n), 'matlab.graphics.primitive.Patch')
+                set(obj.chordMatHdl(m, n), varargin{:});
+            end
         end
 
 % =========================================================================
@@ -689,10 +713,8 @@ classdef biChordChart < handle
             % Show/hide tick labels (显示/隐藏刻度标签)
             for m = 1:length(obj.thetaFullSet)
                 for n = 1:length(obj.thetaFullSet{m})
-                    if obj.thetaTickLabelHdl(m, n)
-                        if ~(n < length(obj.thetaFullSet{m}) && abs(obj.thetaFullSet{m}(n) - obj.thetaFullSet{m}(n+1)) < eps)
-                            set(obj.thetaTickLabelHdl(m, n), 'Visible', state)
-                        end
+                    if ~(n < length(obj.thetaFullSet{m}) && abs(obj.thetaFullSet{m}(n) - obj.thetaFullSet{m}(n+1)) < eps)
+                        set(obj.thetaTickLabelHdl(m, n), 'Visible', state)
                     end
                 end
             end
@@ -702,9 +724,7 @@ classdef biChordChart < handle
             % Set font properties for all tick labels (设置所有刻度标签的字体属性)
             for m = 1:length(obj.thetaFullSet)
                 for n = 1:length(obj.thetaFullSet{m})
-                    if obj.thetaTickLabelHdl(m, n)
-                        set(obj.thetaTickLabelHdl(m, n), varargin{:})
-                    end
+                    set(obj.thetaTickLabelHdl(m, n), varargin{:})
                 end
             end
         end
@@ -713,10 +733,8 @@ classdef biChordChart < handle
             % Set custom format for tick labels (设置刻度标签的自定义格式)
             for m = 1:length(obj.thetaFullSet)
                 for n = 1:length(obj.thetaFullSet{m})
-                    if obj.thetaTickLabelHdl(m, n)
-                        tStr = func(get(obj.thetaTickLabelHdl(m, n), 'UserData'));
-                        set(obj.thetaTickLabelHdl(m, n), 'String', tStr)
-                    end
+                    tStr = func(get(obj.thetaTickLabelHdl(m, n), 'UserData'));
+                    set(obj.thetaTickLabelHdl(m, n), 'String', tStr)
                 end
             end
         end

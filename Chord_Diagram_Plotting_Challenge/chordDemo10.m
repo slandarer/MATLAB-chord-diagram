@@ -13,7 +13,7 @@ rowName = {'THY1', 'FGF2', 'MAP2K1', 'CDH2', 'HBEGF', 'CXCR4', 'ECSCR',...
            'ACVRL1', 'RECK', 'PNPLA6', 'CDH5', 'AMOT', 'EFNB2', 'CAV1'};
 
 figure('Units','normalized', 'Position',[.02,.05,.9,.85])
-CC = chordChart(dataMat, 'colName',colName, 'rowName',rowName, 'Sep',1/80, 'LRadius',1.2);
+CC = chordChart(dataMat, 'ColName',colName, 'RowName',rowName, 'Sep',1/80, 'LRadius',1.2);
 CC = CC.draw();
 
 

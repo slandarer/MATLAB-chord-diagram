@@ -10,7 +10,7 @@ rowName = {'Lung', 'Spleen', 'Liver', 'Heart',...
            'Renal cortex', 'Renal medulla', 'Thyroid'};
 
 figure('Units','normalized', 'Position',[.02, .05, .6, .85])
-CC = chordChart(dataMat, 'rowName',rowName, 'colName',colName, 'Sep',1/80, 'LRadius',1.21, 'SSqRatio',1);
+CC = chordChart(dataMat, 'RowName',rowName, 'ColName',colName, 'Sep',1/80, 'LRadius',1.21, 'SSqRatio',1);
 CC = CC.draw();
 CC.labelRotate('on')
 

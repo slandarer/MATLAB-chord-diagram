@@ -13,7 +13,7 @@ colName = compose('MATLAB%d', 1:4);
 rowName = compose('SL%d', 1:7);
 
 figure('Units','normalized', 'Position',[.02,.05,.7,.85])
-CC = chordChart(dataMat, 'rowName',rowName, 'colName',colName, 'Sep',1/80, 'LRadius',1.32, 'TickMode','auto');
+CC = chordChart(dataMat, 'RowName',rowName, 'ColName',colName, 'Sep',1/80, 'LRadius',1.32, 'TickMode','auto');
 CC = CC.draw();
 % 修改上方方块颜色(Modify the color of the blocks above)
 CListT = [0.49,0.64,0.53

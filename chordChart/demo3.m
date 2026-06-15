@@ -8,7 +8,6 @@ CC=chordChart(dataMat,'Sep',1/120);
 CC=CC.draw();
 
 
-
 CC.tickState('on')
 
 % version 1.7.0更新

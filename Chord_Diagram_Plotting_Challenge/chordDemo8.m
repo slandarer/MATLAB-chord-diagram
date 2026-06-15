@@ -13,7 +13,7 @@ rowName = {'Acidobacteriota', 'Actinobacteriota', 'Proteobacteria', ...
            'Verrucomicrobiota', 'Patescibacteria', 'Planctomyetota', 'Others'};
 
 figure('Units','normalized', 'Position',[.02,.05,.8,.85])
-CC = chordChart(dataMat, 'colName',colName, 'Sep',1/80, 'SSqRatio',30/100);% -30/100
+CC = chordChart(dataMat, 'ColName',colName, 'Sep',1/80, 'SSqRatio',30/100);% -30/100
 CC = CC.draw();
 
 % 修改上方方块颜色(Modify the color of the blocks above)

@@ -13,7 +13,7 @@ CC = chordChart(dataMat, 'RowName',rowName, 'ColName',colName, 'TickMode','linea
 % the setting of tick should before draw()
 % 刻度的紧密程度，数值越高刻度线数量越多
 % The compact degree of ticks, The higher the value, the more scales there are
-CC.linearTickCompactDegree = 1;
+CC.linearTickCompactDegree = 2.5;
 % 是否开启次刻度线
 % Minor ticks 'on'/'off'
 CC.linearMinorTick = 'on';

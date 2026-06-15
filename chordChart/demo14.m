@@ -36,8 +36,6 @@ CC.setChordColorBySquareT()
 CC.tickState('on')
 CC.tickLabelState('on')
 
-
-
 set(gca,'XLim',[-1.8,1.8], 'YLim',[-1.8,1.8])
 
 %{

@@ -21,7 +21,7 @@ rowName = {'Bartomella', 'Bradyrhizobium', 'Dysgomonas', 'Enterococcus',...
            'Vibrionimonas', 'Wolbachia'};
 
 figure('Units','normalized', 'Position',[.02,.05,.6,.85])
-CC = chordChart(dataMat, 'rowName',rowName, 'colName',colName, 'Sep',1/80, 'TickMode','auto');
+CC = chordChart(dataMat, 'RowName',rowName, 'ColName',colName, 'Sep',1/80, 'TickMode','auto');
 CC = CC.draw();
 % 修改上方方块颜色(Modify the color of the blocks above)
 CListT = [0.7765 0.8118 0.5216; 0.4431 0.4706 0.3843; 0.5804 0.2275 0.4549;

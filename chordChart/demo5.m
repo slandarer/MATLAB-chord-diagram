@@ -7,7 +7,7 @@ colName={'G1','G2','G3','G4','G5','G6','G7'};
 rowName={'S1','S2','S3'};
 
 figure('Units','normalized','Position',[.02,.05,.6,.85])
-CC=chordChart(dataMat,'rowName',rowName,'colName',colName);
+CC=chordChart(dataMat,'RowName',rowName,'ColName',colName);
 CC=CC.draw();
 CC.setFont('FontSize',17,'FontName','Cambria')
 

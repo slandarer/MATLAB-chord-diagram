@@ -7,7 +7,7 @@ colName={'B1','G2','G3','G4','G5','G6','G7'};
 rowName={'S1','S2','S3'};
 
 % 创建弦图对象(Create chord diagram object)
-CC=chordChart(dataMat,'rowName',rowName,'colName',colName);
+CC=chordChart(dataMat,'RowName',rowName,'ColName',colName);
 % CC=chordChart(dataMat,'rowName',rowName,'colName',colName,'Rotation',pi/3,'Sep',1/200);
 
 % 开始绘图(Start drawing)

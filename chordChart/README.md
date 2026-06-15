@@ -37,18 +37,18 @@ dataMat=[2 0 1 2 5 1 2;
 colName={'G1','G2','G3','G4','G5','G6','G7'};
 rowName={'S1','S2','S3'};
 
-CC=chordChart(dataMat,'rowName',rowName,'colName',colName);
+CC=chordChart(dataMat,'RowName',rowName,'ColName',colName);
 CC=CC.draw();
 ```
 
 ![输入图片说明](gallery/1.png)
 
-`rowName`要和矩阵的行相同大小\
-`colName`要和矩阵的列相同大小\
+`RowName`要和矩阵的行相同大小\
+`ColName`要和矩阵的列相同大小\
 对于本列子来说第2行第3列数值是1，就说明有一份能量从`S1`流向`G3`，也就在这俩之间需要画单位宽度的弦。
 
-`rowName` must be of the same size as the rows of the matrix.\
-`colName` must be of the same size as the columns of the matrix.\
+`RowName` must be of the same size as the rows of the matrix.\
+`ColName` must be of the same size as the columns of the matrix.\
 In this specific example, the value at the second row and third column is 1; 
 this indicates that a unit of energy flows from `S1` to `G3`, 
 implying that a chord of unit width must be drawn between these two entities.
@@ -185,7 +185,7 @@ dataMat=[2 0 1 2 5 1 2;
 colName={'G1','G2','G3','G4','G5','G6','G7'};
 rowName={'S1','S2','S3'};
 
-CC=chordChart(dataMat,'rowName',rowName,'colName',colName);
+CC=chordChart(dataMat,'RowName',rowName,'ColName',colName);
 CC=CC.draw();
 CC.setFont('FontSize',17,'FontName','Cambria')
 
@@ -208,7 +208,7 @@ CC.setLabelRadius(1.3);
 % dataMat=dataMat+rand(3,7);
 % dataMat(dataMat<1)=0;
 % 
-% CC=chordChart(dataMat,'rowName',rowName,'colName',colName);
+% CC=chordChart(dataMat,'RowName',rowName,'ColName',colName);
 % CC=CC.draw();
 % CC.setFont('FontSize',17,'FontName','Cambria')
 % 
@@ -260,10 +260,6 @@ CC.setTickLabelFormat(@(x)sprintf('%0.1e',x))
 ___
 ## 9 弦末端弧形块单独上色(The blocks at the ends of the chords painted separately.)
 ```matlab
-% demo8
-% @author : slandarer
-% 公众号  : slandarer随笔
-% 知乎    : slandarer
 rng(3)
 dataMat = randi([1, 15], [7, 22]);
 dataMat(dataMat < 11) = 0;
@@ -275,7 +271,7 @@ rowName = {'Lung', 'Spleen', 'Liver', 'Heart',...
            'Renal cortex', 'Renal medulla', 'Thyroid'};
 
 figure('Units','normalized', 'Position',[.02, .05, .6, .85])
-CC = chordChart(dataMat, 'rowName',rowName, 'colName',colName, 'Sep',1/80, 'LRadius',1.21);
+CC = chordChart(dataMat, 'RowName',rowName, 'ColName',colName, 'Sep',1/80, 'LRadius',1.21, 'SSqRatio',1);
 CC = CC.draw();
 CC.labelRotate('on')
 

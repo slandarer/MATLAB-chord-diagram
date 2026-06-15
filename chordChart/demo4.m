@@ -6,7 +6,7 @@ dataMat=[2 0 1 2 5 1 2;
 colName={'G1','G2','G3','G4','G5','G6','G7'};
 rowName={'S1','S2','S3'};
 
-CC=chordChart(dataMat,'rowName',rowName,'colName',colName, 'LRadius',1.28);
+CC=chordChart(dataMat,'RowName',rowName,'ColName',colName, 'LRadius',1.28);
 CC=CC.draw();
 
 % version 1.7.0更新
@@ -14,6 +14,5 @@ CC=CC.draw();
 % Colors can be adjusted directly using the function colormap(demo4)
 
 colormap(flipud(pink))
-
 
 
