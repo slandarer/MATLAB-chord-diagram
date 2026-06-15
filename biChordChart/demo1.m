@@ -3,11 +3,10 @@
 dataMat=randi([0,8],[5,5]);
 
 % 创建弦图对象(Create bichord diagram object)
-BCC=biChordChart(dataMat,'Arrow','on', 'Rotation',pi/3);
+BCC=biChordChart(dataMat,'Arrow','on');
 
 % 开始绘图(Start drawing)
 BCC=BCC.draw();
-BCC.chordMatHdl
 
 % 添加刻度(Show ticks and tick labels)
 BCC.tickState('on')
