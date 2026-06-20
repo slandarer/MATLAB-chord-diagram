@@ -792,6 +792,10 @@ classdef biChordChart < handle
             end
         end
     end
+end
+
+
+% =========================================================================
 % @author : slandarer
 % 公众号  : slandarer随笔
 % 知乎    : slandarer
@@ -799,4 +803,4 @@ classdef biChordChart < handle
 % Zhaoxu Liu / slandarer (2026). biChordChart (bidirectional chord diagram | 有向弦图) 
 % (https://www.mathworks.com/matlabcentral/fileexchange/121043-bichordchart-bidirectional-chord-diagram), 
 % MATLAB Central File Exchange. Retrieved April 14, 2026.
-end
+% =========================================================================

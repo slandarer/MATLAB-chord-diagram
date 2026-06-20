@@ -19,7 +19,6 @@ BCC=biChordChart(dataMat, 'Label',nameList, 'Rotation',pi/1.62,...
     'CData',CList, 'SSqRatio', -30/100, 'OSqRatio', 80/100, 'LRadius',1.21);
 BCC=BCC.draw();
 
-
 % 旋转标签(Rotate labels)
 textHdl = findobj(gca, 'Tag','BiChordLabel');
 for i = 1:length(textHdl)

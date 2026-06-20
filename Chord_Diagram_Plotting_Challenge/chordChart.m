@@ -3,7 +3,7 @@ classdef chordChart < handle
 %   CC = chordChart(dataMat); creates a chord diagram from a numerical matrix.
 %   从数值矩阵创建弦图。
 %
-%   CC = chordChart(dataMat, 'rowName', rowName, 'colName', colName); specifies
+%   CC = chordChart(dataMat, 'RowName', rowName, 'ColName', colName); specifies
 %   row and column names for the diagram.
 %   指定图表的行名和列名。
 %
@@ -34,7 +34,7 @@ classdef chordChart < handle
 %              4 0 5 5 2 4 3];
 %   colName = {'G1','G2','G3','G4','G5','G6','G7'};
 %   rowName = {'S1','S2','S3'};
-%   CC = chordChart(dataMat, 'rowName', rowName, 'colName', colName);
+%   CC = chordChart(dataMat, 'RowName', rowName, 'ColName', colName);
 %   CC = CC.draw();
 
 

@@ -11,14 +11,14 @@ figure('Units','normalized','Position',[.02,.05,.6,.85])
 % TickMode 'value'(default)/'linear'/auto
 BCC=biChordChart(dataMat,'Arrow','on','CData',CList,'TickMode','Linear');
 
-% % 刻度的设置要在draw()之前
-% % the setting of tick should before draw()
-% % 刻度的紧密程度，数值越高刻度线数量越多
-% % The compact degree of ticks, The higher the value, the more scales there are
-% BCC.linearTickCompactDegree = 2;
-% % 是否开启次刻度线
-% % Minor ticks 'on'/'off'
-% BCC.linearMinorTick = 'on';
+% 刻度的设置要在draw()之前
+% the setting of tick should before draw()
+% 刻度的紧密程度，数值越高刻度线数量越多
+% The compact degree of ticks, The higher the value, the more scales there are
+BCC.linearTickCompactDegree = 2;
+% 是否开启次刻度线
+% Minor ticks 'on'/'off'
+BCC.linearMinorTick = 'on';
 
 
 BCC=BCC.draw();
