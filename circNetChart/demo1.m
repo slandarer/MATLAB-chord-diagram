@@ -1,3 +1,5 @@
+%% demo1 : Basic usage and rendering method
+
 Data = [25,  0,  0, 22, 24, 25,  8,  0, 0;
          0, 14,  0,  0,  0,  0,  6,  4, 1;
          0,  0, 11,  0,  0,  0,  0,  0, 7;

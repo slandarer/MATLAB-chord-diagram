@@ -1,38 +1,60 @@
 classdef circNetChart < handle
-% circNetChart: Circular network chart visualization
-%   Creates a circular layout network with customizable nodes and edges.
-%   Supports multiple rendering methods, group layout, and curvature control.
-% =========================================================================
-% Basic usage
-% -------------------------------------------------------------------------
-% Data = triu(randi([1, 5], [6, 6]));
-% CN = circNetChart(Data);
-% CN = CN.draw();
+% circNetChart - Create and customize circular network charts (圆形网络图)
+%   CN = circNetChart(dataMat); creates a circular network chart from a square 
+%   adjacency matrix.
+%   从方阵邻接矩阵创建圆形网络图。
+%
+%   CN = circNetChart(dataMat, 'NodeName', nodeName); specifies the node names.
+%   指定节点名称。
+%
+%   CN = circNetChart(ax, ___); creates the chart in the specified axes.
+%   在指定坐标区创建图表。
+%
+%   CN = circNetChart(___, propName, propVal); specifies property name-value
+%   pairs when creating the object.
+%   创建对象时指定属性名-属性值对。
+%
+%   CN.propName = propVal; sets properties after creation, before rendering.
+%   创建对象后、绘图前设置属性。
+%
+%   CN = CN.draw(); renders the circular network chart.
+%   渲染圆形网络图。
+%
+% Note:
+%   The element dataMat(i, j) represents the connection weight from node i 
+%   to node j. The diagonal element dataMat(i, i) represents the weight of node i itself.
+%   dataMat(i, j) 的值代表从节点 i 到节点 j 的连接权重。对角元素 dataMat(i, i) 代表节点 i 自身的权重。
+%
+% Basic usage:
+%   Data = triu(randi([1, 5], [6, 6]));
+%   CN = circNetChart(Data);
+%   CN = CN.draw();
+
+
 % =========================================================================
 % Zhaoxu Liu / slandarer (2026). circular network chart 
 % (https://www.mathworks.com/matlabcentral/fileexchange/118655-circular-network-chart), 
 % MATLAB Central File Exchange. Retrieved April 25, 2026.
-
+% =========================================================================
     properties
         ax
         arginList = {'RenderingMethod', 'NodeSizeLim', 'EdgeWidthLim', ...
                      'NodeColor', 'EdgeColor', 'Group', 'GroupSep', 'LabelRotate',...
                      'NodeName', 'Curvature', 'GroupName'} 
 
-        
-        Curvature = 0.5;            % Edge curvature: 0 = straight line, 1 = full Bezier curve
         dataMat                     % Input adjacency matrix
-
-        % Rendering method: 'simple' (uniform), 'interp' (gradient), 'map' (value-based)
-        RenderingMethod = 'simple'
-
         NodeName = {}               % Node labels
-        LabelRotate = 'off'         % Weather to rotate labels
-
+        
         Group = []                  % Group assignment for each node
         GroupName = {};             % Group labels
         GroupSep = 1/32             % Total gap fraction between groups (0-0.5)
         GroupLabelRadius = 1.3;     % Radius for group labels
+
+
+        % Rendering method: 'simple' (uniform), 'interp' (gradient), 'map' (value-based)
+        RenderingMethod = 'simple'
+        Curvature = 0.5;            % Edge curvature: 0 = straight line, 1 = full Bezier curve
+        LabelRotate = 'off'         % Weather to rotate labels
 
         % Node and edge size limits [min, max] mapped from data values
         NodeSizeLim  = [0.05, 0.1]
@@ -43,11 +65,15 @@ classdef circNetChart < handle
         NodeAlpha = 1                 % Node alpha
         EdgeAlpha = 0.3               % Edge alpha
         
-        nodeThetaSet                  
+                        
         edgeMatHdl                    % Handles for edges
         nodeHdl                       % Handles for nodes
         labelHdl                      % Handles for node labels
         groupLabelHdl                 % Handles for group labels
+    end
+
+    properties (Hidden)
+        nodeThetaSet  
     end
 
     methods
@@ -130,6 +156,12 @@ classdef circNetChart < handle
             if isempty(minN), minN = 0; end
             if isempty(maxN), maxN = 0; end
 
+            % obj.edgeMatHdl = gobjects(nodeNum, nodeNum);
+            MC = ones(100, 30, 3); meshT = repmat(linspace(0, 1, 30), [100, 1]);
+            nzInd = find((obj.dataMat ~= 0) & ~eye(nodeNum));
+            nzInd = nzInd(:).';
+            obj.edgeMatHdl = gobjects(1, length(nzInd));
+
             % Draw edges (upper triangular only)
             for i = 1:nodeNum
                 for j = (i + 1):nodeNum
@@ -147,13 +179,28 @@ classdef circNetChart < handle
                     % Node angular positions
                     nodeTi = 2*pi * ((tGroup(i) - 1) * gSep + (i - 1) * nSep);
                     nodeTj = 2*pi * ((tGroup(j) - 1) * gSep + (j - 1) * nSep);
+
+                    nodePiC = nodeNum * [cos(nodeTi), sin(nodeTi)];
+                    nodePjC = nodeNum * [cos(nodeTj), sin(nodeTj)];
+                    midPijC = (nodePiC + nodePjC) ./ 2 .* (1 - obj.Curvature);
+
+                    PiC2 = ((1/101) - 1)^2.*nodePiC - 2*(1/101)*((1/101) - 1).*midPijC + (1/101)^2.*nodePjC;
+                    PjC2 = ((100/101) - 1)^2.*nodePiC - 2*(100/101)*((100/101) - 1).*midPijC + (100/101)^2.*nodePjC;
+
+                    Ri = rotmatUV([0, 0] - nodePiC, PiC2 - nodePiC);
+                    Rj = rotmatUV([0, 0] - nodePjC, PjC2 - nodePjC);
+
                     thetaC = 2 * asin(edgeR / 2);
-                    
                     % Edge boundary points
                     nodePiA = nodeNum * [cos(nodeTi + thetaC), sin(nodeTi + thetaC)];
                     nodePiB = nodeNum * [cos(nodeTi - thetaC), sin(nodeTi - thetaC)];
                     nodePjA = nodeNum * [cos(nodeTj - thetaC), sin(nodeTj - thetaC)];
                     nodePjB = nodeNum * [cos(nodeTj + thetaC), sin(nodeTj + thetaC)];
+
+                    nodePiA = (nodePiA - nodePiC)*(Ri') + nodePiC;
+                    nodePiB = (nodePiB - nodePiC)*(Ri') + nodePiC;
+                    nodePjA = (nodePjA - nodePjC)*(Rj') + nodePjC;
+                    nodePjB = (nodePjB - nodePjC)*(Rj') + nodePjC;
                     
                     % Control points for Bezier curves (inward offset based on Curvature)
                     midPijA = (nodePiA + nodePjA) ./ 2 .* (1 - obj.Curvature);
@@ -163,47 +210,35 @@ classdef circNetChart < handle
                     lineA = bezierCurve([nodePiA; midPijA; nodePjA], 100);
                     lineB = bezierCurve([nodePjB; midPijB; nodePiB], 100);
                     
-                    % Arc sections at node ends
-                    lineI = [cos(linspace(nodeTi - thetaC, nodeTi + thetaC, 30));
-                             sin(linspace(nodeTi - thetaC, nodeTi + thetaC, 30))]' .* nodeNum;
-                    lineJ = [cos(linspace(nodeTj - thetaC, nodeTj + thetaC, 30));
-                             sin(linspace(nodeTj - thetaC, nodeTj + thetaC, 30))]' .* nodeNum;
-                    
-                    % Mesh for interpolated rendering
-                    meshT = repmat(linspace(0, 1, 30), [100, 1]);
-                    meshX = [lineI(end:-1:1, 1)'; 
-                             (repmat(lineB(end:-1:1, 1), [1, 30]) - repmat(lineA(:, 1), [1, 30])) .* meshT + repmat(lineA(:, 1), [1, 30]); 
-                             lineJ(:, 1)'];
-                    meshY = [lineI(end:-1:1, 2)'; 
-                             (repmat(lineB(end:-1:1, 2), [1, 30]) - repmat(lineA(:, 2), [1, 30])) .* meshT + repmat(lineA(:, 2), [1, 30]); 
-                             lineJ(:, 2)'];
-
-                    % Color interpolation for edges (from node i to node j)
-                    MC = ones(102, 30, 3);
-                    tCi = tmpColor(mod(i - 1, size(tmpColor, 1)) + 1, :);
-                    tCj = tmpColor(mod(j - 1, size(tmpColor, 1)) + 1, :);
-                    MC(:, :, 1) = repmat(linspace(tCi(1), tCj(1), 102)', [1, 30]);
-                    MC(:, :, 2) = repmat(linspace(tCi(2), tCj(2), 102)', [1, 30]);
-                    MC(:, :, 3) = repmat(linspace(tCi(3), tCj(3), 102)', [1, 30]);
-
+                    tind = i + (j - 1)*nodeNum == nzInd;
                     % Render edge based on RenderingMethod
                     switch lower(obj.RenderingMethod)
                         case 'simple'
                             % Uniform color edge patch
-                            obj.edgeMatHdl(i, j) = fill(obj.ax, ...
-                                [lineA(:, 1); lineJ(:, 1); lineB(:, 1); lineI(:, 1)]', ...
-                                [lineA(:, 2); lineJ(:, 2); lineB(:, 2); lineI(:, 2)]', ...
+                            obj.edgeMatHdl(tind) = fill(obj.ax, ...
+                                [lineA(:, 1); lineB(:, 1)]', ...
+                                [lineA(:, 2); lineB(:, 2)]', ...
                                 tmpColor(1, :), 'FaceAlpha', obj.EdgeAlpha, 'EdgeColor', 'none');
                         case 'map'
                             % Value-based color mapping
-                            obj.edgeMatHdl(i, j) = fill(obj.ax, ...
-                                [lineA(:, 1); lineJ(:, 1); lineB(:, 1); lineI(:, 1)]', ...
-                                [lineA(:, 2); lineJ(:, 2); lineB(:, 2); lineI(:, 2)]', ...
+                            obj.edgeMatHdl(tind) = fill(obj.ax, ...
+                                [lineA(:, 1); lineB(:, 1)]', ...
+                                [lineA(:, 2); lineB(:, 2)]', ...
                                 [0, 0, 0], 'FaceAlpha', obj.EdgeAlpha, 'EdgeColor', 'none', ...
                                 'FaceColor', 'flat', 'CData', obj.dataMat(i, j));
                         case 'interp'
+                            meshX = (repmat(lineB(end:-1:1, 1), [1, 30]) - repmat(lineA(:, 1), [1, 30])) .* meshT + repmat(lineA(:, 1), [1, 30]);
+                            meshY = (repmat(lineB(end:-1:1, 2), [1, 30]) - repmat(lineA(:, 2), [1, 30])) .* meshT + repmat(lineA(:, 2), [1, 30]);
+
+                            % Color interpolation for edges (from node i to node j)
+                            tCi = tmpColor(mod(i - 1, size(tmpColor, 1)) + 1, :);
+                            tCj = tmpColor(mod(j - 1, size(tmpColor, 1)) + 1, :);
+                            MC(:, :, 1) = repmat(linspace(tCi(1), tCj(1), 100)', [1, 30]);
+                            MC(:, :, 2) = repmat(linspace(tCi(2), tCj(2), 100)', [1, 30]);
+                            MC(:, :, 3) = repmat(linspace(tCi(3), tCj(3), 100)', [1, 30]);
+
                             % Smooth gradient interpolated edge
-                            obj.edgeMatHdl(i, j) = surf(obj.ax, ...
+                            obj.edgeMatHdl(tind) = surf(obj.ax, ...
                                 meshX, meshY, meshX .* 0, 'CData', MC, ...
                                 'EdgeColor', 'none', 'FaceAlpha', obj.EdgeAlpha);
                     end
@@ -211,6 +246,8 @@ classdef circNetChart < handle
                 end
             end
 
+            obj.nodeHdl = gobjects(1, nodeNum);
+            obj.labelHdl = gobjects(1, nodeNum);
             % Draw nodes
             for i = 1:nodeNum
                 nodeTheta = 2*pi * ((tGroup(i) - 1) * gSep + (i - 1) * nSep);
@@ -250,8 +287,10 @@ classdef circNetChart < handle
                 end
             end
 
+
             % Draw group labels if provided
             if ~isempty(obj.GroupName)
+                obj.groupLabelHdl = gobjects(1, groupNum);
                 for i = 1:groupNum
                     % Circular mean of node angles within group
                     nodeTheta = circMeanTheta(obj.nodeThetaSet(i == tGroup));
@@ -281,6 +320,17 @@ classdef circNetChart < handle
                 coe1 = factorial(p) ./ factorial(0:p) ./ factorial(p:-1:0);
                 coe2 = ((t) .^ ((0:p)')) .* ((1 - t) .^ ((p:-1:0)'));
                 pnts = (pnts' * (coe1' .* coe2))';
+            end
+
+            function R = rotmatUV(u, v)
+                u = u(:); v = v(:);
+                u = u / norm(u);
+                v = v / norm(v);
+                angle_u = atan2(u(2), u(1));
+                angle_v = atan2(v(2), v(1));
+                theta = angle_v - angle_u;
+                R = [cos(theta), -sin(theta);
+                    sin(theta),  cos(theta)];
             end
             
             function group_id = groupConsecutive(arr)
@@ -365,3 +415,10 @@ classdef circNetChart < handle
         end
     end
 end
+
+
+% =========================================================================
+% Zhaoxu Liu / slandarer (2026). circular network chart 
+% (https://www.mathworks.com/matlabcentral/fileexchange/118655-circular-network-chart), 
+% MATLAB Central File Exchange. Retrieved April 25, 2026.
+% =========================================================================

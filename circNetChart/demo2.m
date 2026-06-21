@@ -1,3 +1,5 @@
+%% demo2 : Edge and node layout properties
+
 Data = triu(randi([1, 20], [18, 18]));
 
 %% Node-Size-Lim and Edge-Width-Lim

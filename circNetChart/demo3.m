@@ -1,3 +1,5 @@
+%% demo3 : Group
+
 Data = triu(randi([1, 20], [40, 40]));
 Data((rand(40) + eye(40)) < .9) = 0;
 
