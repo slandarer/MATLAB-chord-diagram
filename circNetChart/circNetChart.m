@@ -1,5 +1,5 @@
 classdef circNetChart < handle
-% circNetChart - Create and customize circular network charts (圆形网络图)
+% circNetChart Create and customize circular network charts (圆形网络图)
 %   CN = circNetChart(dataMat); creates a circular network chart from a square 
 %   adjacency matrix.
 %   从方阵邻接矩阵创建圆形网络图。
