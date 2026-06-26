@@ -52,6 +52,7 @@ CNPI.GroupName          = groupName;
 CNPI.GroupLabelRadius   = 1.05;
 
 % RenderingMethod : interp
+% CNPI.EdgeAlpha = .1;
 CNPI.NodeColor         = colorList(Group, :);  
 CNPI.RenderingMethod   = 'interp';            
 
