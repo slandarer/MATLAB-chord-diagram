@@ -164,7 +164,7 @@ classdef circNetChart < handle
             end
         end
 
-        function obj = draw(obj)
+        function varargout = draw(obj)
             % Get consecutive group IDs (handles repeated group numbers)
             tGroup = groupConsecutive(obj.Group);
             groupNum = max(tGroup) - (obj.Group(end) == obj.Group(1));
@@ -603,6 +603,9 @@ classdef circNetChart < handle
                 Y_inner = C(2) + R_inner * cos(theta) * u(2) + R_inner .* s.* sin(theta) * v(2);
                 X_ring = [X_outer, fliplr(X_inner)];
                 Y_ring = [Y_outer, fliplr(Y_inner)];
+            end
+            if nargout == 1
+                varargout{1} = obj;
             end
         end
         

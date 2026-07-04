@@ -33,15 +33,11 @@ BCC.tickState('on')
 
 % 修改弦颜色(Modify chord color)
 for i = 1:size(dataMat, 1)
-    for j = 1:size(dataMat, 2)
-        if dataMat(i,j) > 0
-            BCC.setChordMN(i,j, 'FaceAlpha',.7, 'EdgeColor',CList(i,:)./1.1)
-        end
-    end
+    BCC.setChordN(i, 'FaceAlpha',.7, 'EdgeColor',CList(i,:)./1.1)
 end
 % 修改方块颜色(Modify the color of the blocks)
 for i = 1:size(dataMat, 1)
-    BCC.setSquareN(i, 'EdgeColor',CList(i,:)./1.7)
+    BCC.setSquare(i, 'EdgeColor',CList(i,:)./1.7)
 end
 
 % 修改字体，字号及颜色

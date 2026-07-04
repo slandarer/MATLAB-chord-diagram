@@ -120,6 +120,30 @@ classdef chordChart < handle
 % # version 6.0.0
 %   + Optimized variable and graphics object name display, 
 %     significantly improving plotting speed for large-scale matrix
+% -------------------------------------------------------------------------
+% # version 7.0.0
+%   + Replace 'F' with 'S' (Source replaces From-side).
+%     squareFHdl         -> squareSHdl
+%     squareFMatHdl      -> squareSMatHdl
+%     nameFHdl           -> nameSHdl
+%     thetaTickFHdl      -> thetaTickSHdl
+%     RTickFHdl          -> RTickSHdl
+%     thetaTickLabelFHdl -> thetaTickLabelSHdl
+%     (Variable names previously associated with 'F' remain available.)
+%   + The setChord method replaces setChordProp and setChordMN.
+%     setChord(___)          | Set properties for all chord
+%     setChord(M, N, ___)    | Set the properties for the chord which
+%                              connect M-th square bellow
+%                              and N-th square above
+%   + The setSquareS method replaces setSquareF_Prop and setSquareF_N.
+%   + The setSquareT method replaces setSquareT_Prop and setSquareT_N.
+%     setSquareS(___)        | Set properties for all blocks bellow (source)
+%     setSquareS(N, ___)     | Set properties for N-th block bellow (source)
+%     setSquareT(___)        | Set properties for all blocks above (target)
+%     setSquareT(N, ___)     | Set properties for N-th block above (target)
+%   + The setSubSquareS method replaces setEachSquareF_Prop.
+%   + The setSubSquareT method replaces setEachSquareT_Prop.
+
 
     properties
         % Axes and configuration (坐标区与配置)
@@ -152,26 +176,26 @@ classdef chordChart < handle
         OriSquareRatio = 1                                    % Original arc block/square ratio (原始弧形块比例)
         Rotation = 0                                          % Global rotation angle (全局旋转角度)
         TickMode = 'value'                                    % 'value'/'auto'/'linear'
-        linearTickSep                                         % Linear tick spacing (线性刻度间隔)
-        linearTickCompactDegree = 2.5                         % Linear tick Compact degree (紧密程度)
-        linearMinorTick         = 'off'                       % Minor tick mode (次刻度线模式)
+        LinearTickSep                                         % Linear tick spacing (线性刻度间隔)
+        LinearTickCompactDegree = 2.5                         % Linear tick Compact degree (紧密程度)
+        LinearMinorTick         = 'off'                       % Minor tick mode (次刻度线模式)
 
         % Data tip configuration (数据提示框配置)
         % {color, srcLabel, tgtLabel, valLabel, format} (颜色、源标签、目标标签、数值标签、格式)
         dataTipFormat = {'k', 'Source:', 'Target:', 'Value:', 'auto'}        
         % Graphics handles (图形句柄)
-        squareFHdl                                             % Bottom blocks/squares (下方方块)
-        squareTHdl                                             % Top blocks/squares (上方方块)
-        squareFMatHdl                                          % Bottom split blocks/squares for chord ends (弦末端下方拆分方块)
+        squareSHdl                                             % Source/Bottom blocks/squares (下方方块)
+        squareTHdl                                             % Target/Top blocks/squares (上方方块)
+        squareSMatHdl                                          % Bottom split blocks/squares for chord ends (弦末端下方拆分方块)
         squareTMatHdl                                          % Top split blocks/squares for chord ends (弦末端上方拆分方块)
-        nameFHdl                                               % Bottom labels (下方标签)
-        nameTHdl                                               % Top labels (上方标签)
+        nameSHdl                                               % Source/Bottom labels (下方标签)
+        nameTHdl                                               % Target/Top labels (上方标签)
         chordMatHdl                                            % Chord ribbons (弦)
-        thetaTickFHdl                                          % Theta tick lines for bottom (下方角度刻度线)
+        thetaTickSHdl                                          % Theta tick lines for bottom (下方角度刻度线)
         thetaTickTHdl                                          % Theta tick lines for top (上方角度刻度线)
-        RTickFHdl                                              % Radius tick lines for bottom (下方半径刻度线)
+        RTickSHdl                                              % Radius tick lines for bottom (下方半径刻度线)
         RTickTHdl                                              % Radius tick lines for top (上方半径刻度线)
-        thetaTickLabelFHdl                                     % Theta tick labels for bottom (下方角度刻度标签)
+        thetaTickLabelSHdl                                     % Theta tick labels for bottom (下方角度刻度标签)
         thetaTickLabelTHdl                                     % Theta tick labels for top (上方角度刻度标签)
     end
     properties (Hidden)
@@ -195,6 +219,17 @@ classdef chordChart < handle
         LRotate    % LabelRotate
         SSqRatio   % SubSquareRatio
         OSqRatio   % OriSquareRatio
+
+        linearTickSep
+        linearTickCompactDegree
+        linearMinorTick
+
+        squareFHdl
+        squareFMatHdl
+        nameFHdl
+        thetaTickFHdl
+        RTickFHdl
+        thetaTickLabelFHdl
     end
 
     methods 
@@ -204,6 +239,17 @@ classdef chordChart < handle
         function val = get.LRotate(obj),  val = obj.LabelRotate;    end
         function val = get.SSqRatio(obj), val = obj.SubSquareRatio; end
         function val = get.OSqRatio(obj), val = obj.OriSquareRatio; end
+
+        function val = get.linearTickSep(obj), val = obj.LinearTickSep; end
+        function val = get.linearTickCompactDegree(obj), val = obj.LinearTickCompactDegree; end
+        function val = get.linearMinorTick(obj), val = obj.LinearMinorTick; end
+
+        function val = get.squareFHdl(obj), val = obj.squareSHdl; end
+        function val = get.squareFMatHdl(obj), val = obj.squareSMatHdl; end
+        function val = get.nameFHdl(obj), val = obj.nameSHdl; end
+        function val = get.thetaTickFHdl(obj), val = obj.thetaTickSHdl; end
+        function val = get.RTickFHdl(obj), val = obj.RTickSHdl; end
+        function val = get.thetaTickLabelFHdl(obj), val = obj.thetaTickLabelSHdl; end
         
         function set.TRadius(obj, val),  obj.TickRadius = val;      end
         function set.SRadius(obj, val),  obj.SquareRadius = val;    end
@@ -211,6 +257,17 @@ classdef chordChart < handle
         function set.LRotate(obj, val),  obj.LabelRotate = val;     end
         function set.SSqRatio(obj, val), obj.SubSquareRatio = val;  end
         function set.OSqRatio(obj, val), obj.OriSquareRatio = val;  end
+
+        function set.linearTickSep(obj, val), obj.LinearTickSep = val;  end
+        function set.linearTickCompactDegree(obj, val), obj.LinearTickCompactDegree = val;  end
+        function set.linearMinorTick(obj, val), obj.LinearMinorTick = val;  end
+
+        function set.squareFHdl(obj, val), obj.squareSHdl = val;  end
+        function set.squareFMatHdl(obj, val), obj.squareSMatHdl = val;  end
+        function set.nameFHdl(obj, val), obj.nameSHdl = val;  end
+        function set.thetaTickFHdl(obj, val), obj.thetaTickSHdl = val;  end
+        function set.RTickFHdl(obj, val), obj.RTickSHdl = val;  end
+        function set.thetaTickLabelFHdl(obj, val), obj.thetaTickLabelSHdl = val;  end
 
 % =========================================================================
 % Constructor: Create chordChart object (构造函数)
@@ -271,7 +328,7 @@ classdef chordChart < handle
 % =========================================================================
 % Draw: Render the chord diagram (渲染弦图)
 % =========================================================================
-        function obj = draw(obj)
+        function varargout = draw(obj)
             % Prepare data for rendering (准备渲染数据)
             % tDMat   = obj.chordTable.Variables;
             % tDFrom  = obj.chordTable.Properties.RowNames;
@@ -318,7 +375,7 @@ classdef chordChart < handle
             obj.ax.YColor = 'none';
             obj.ax.PlotBoxAspectRatio = [1, 1, 1];
             
-            obj.linearTickSep = obj.getTick(sum(sum(tDMat)) ./ (size(tDMat, 1) + size(tDMat, 2)) .* 2, obj.linearTickCompactDegree);
+            obj.LinearTickSep = obj.getTick(sum(sum(tDMat)) ./ (size(tDMat, 1) + size(tDMat, 2)) .* 2, obj.LinearTickCompactDegree);
 
             % Normalize data for coloring (归一化数据用于着色)
             tDMatUni = tDMat - min(min(tDMat));
@@ -339,9 +396,9 @@ classdef chordChart < handle
             % =============================================================
             % Draw bottom blocks (绘制下方方块)
             % =============================================================
-            obj.squareFHdl = gobjects(1, numF);
-            obj.nameFHdl   = gobjects(1, numF);
-            obj.RTickFHdl  = gobjects(1, numF);
+            obj.squareSHdl = gobjects(1, numF);
+            obj.nameSHdl   = gobjects(1, numF);
+            obj.RTickSHdl  = gobjects(1, numF);
             for i = 1:numF
                 theta1 = 2*pi - pi*sep1/2 - sum(ratioF(1:i))   * baseLenF - (i-.5)*sepLen + obj.Rotation;
                 theta2 = 2*pi - pi*sep1/2 - sum(ratioF(1:i+1)) * baseLenF - (i-.5)*sepLen + obj.Rotation;
@@ -349,7 +406,7 @@ classdef chordChart < handle
                 X = cos(theta);
                 Y = sin(theta);
                 
-                obj.squareFHdl(i) = fill(obj.ax, [(obj.SquareRadius(2) - diff(obj.SquareRadius)*obj.OriSquareRatio).*X, obj.SquareRadius(2).*X(end:-1:1)], ...
+                obj.squareSHdl(i) = fill(obj.ax, [(obj.SquareRadius(2) - diff(obj.SquareRadius)*obj.OriSquareRatio).*X, obj.SquareRadius(2).*X(end:-1:1)], ...
                                                  [(obj.SquareRadius(2) - diff(obj.SquareRadius)*obj.OriSquareRatio).*Y, obj.SquareRadius(2).*Y(end:-1:1)], ...
                                           obj.CData(1, :), 'EdgeColor', 'none');
                 
@@ -358,14 +415,14 @@ classdef chordChart < handle
                 rotation = mod(theta3 / pi * 180, 360);
                 
                 if rotation > 0 && rotation < 180
-                    obj.nameFHdl(i) = text(obj.ax, cos(theta3).*obj.LabelRadius, sin(theta3).*obj.LabelRadius, tDFrom{i}, ...
+                    obj.nameSHdl(i) = text(obj.ax, cos(theta3).*obj.LabelRadius, sin(theta3).*obj.LabelRadius, tDFrom{i}, ...
                                            'FontSize', 12, 'FontName', 'Arial', ...
                                            'HorizontalAlignment', 'center', ...
                                            'Rotation', -(.5*pi - theta3) ./ pi .* 180, ...
                                            'Tag', 'ChordLabel');
                     obj.rotationF(i) = -(.5*pi - theta3) ./ pi .* 180;
                 else
-                    obj.nameFHdl(i) = text(obj.ax, cos(theta3).*obj.LabelRadius, sin(theta3).*obj.LabelRadius, tDFrom{i}, ...
+                    obj.nameSHdl(i) = text(obj.ax, cos(theta3).*obj.LabelRadius, sin(theta3).*obj.LabelRadius, tDFrom{i}, ...
                                            'FontSize', 12, 'FontName', 'Arial', ...
                                            'HorizontalAlignment', 'center', ...
                                            'Rotation', -(1.5*pi - theta3) ./ pi .* 180, ...
@@ -373,7 +430,7 @@ classdef chordChart < handle
                     obj.rotationF(i) = -(1.5*pi - theta3) ./ pi .* 180;
                 end
                 
-                obj.RTickFHdl(i) = plot(obj.ax, cos(theta).*obj.TickRadius, sin(theta).*obj.TickRadius, ...
+                obj.RTickSHdl(i) = plot(obj.ax, cos(theta).*obj.TickRadius, sin(theta).*obj.TickRadius, ...
                                         'Color', [0, 0, 0], 'LineWidth', .8, 'Visible', 'off');
             end
 
@@ -426,7 +483,7 @@ classdef chordChart < handle
             % =============================================================
             % Draw chords (ribbons) (绘制弦/连接带)
             % =============================================================
-            obj.squareFMatHdl = gobjects(numF, numT);
+            obj.squareSMatHdl = gobjects(numF, numT);
             obj.squareTMatHdl = gobjects(numF, numT);
             obj.chordMatHdl   = gobjects(numF, numT);
             for i = 1:numF
@@ -454,7 +511,7 @@ classdef chordChart < handle
                     X = cos(theta);
                     Y = sin(theta);
                     
-                    obj.squareFMatHdl(i, j) = fill(obj.ax, [obj.SquareRadius(1).*X, (obj.SquareRadius(1)+obj.SubSquareRatio*diff(obj.SquareRadius)).*X(end:-1:1)], ...
+                    obj.squareSMatHdl(i, j) = fill(obj.ax, [obj.SquareRadius(1).*X, (obj.SquareRadius(1)+obj.SubSquareRatio*diff(obj.SquareRadius)).*X(end:-1:1)], ...
                                                            [obj.SquareRadius(1).*Y, (obj.SquareRadius(1)+obj.SubSquareRatio*diff(obj.SquareRadius)).*Y(end:-1:1)], ...
                                                     obj.CData(2, :), 'EdgeColor', 'none', 'Visible','off');
 
@@ -517,7 +574,7 @@ classdef chordChart < handle
             % =============================================================
             % Draw tick marks based on mode (根据模式绘制刻度)
             % =============================================================
-            obj.thetaTickFHdl = gobjects(1, numF);
+            obj.thetaTickSHdl = gobjects(1, numF);
             uniListF{numF} = [];
             for i = 1:numF
                 switch lower(obj.TickMode)
@@ -555,10 +612,10 @@ classdef chordChart < handle
                     case 'linear'   % Linear evenly-spaced ticks (线性等距刻度)
                         theta1 = 2*pi - pi*sep1/2 - sum(ratioF(1:i))   * baseLenF - (i-.5)*sepLen;
                         theta2 = 2*pi - pi*sep1/2 - sum(ratioF(1:i+1)) * baseLenF - (i-.5)*sepLen;
-                        obj.thetaSetF{i} = (theta2 - theta1) ./ sum(tDMat(i, :)) .* (0:obj.linearTickSep:sum(tDMat(i, :))) + theta1;
+                        obj.thetaSetF{i} = (theta2 - theta1) ./ sum(tDMat(i, :)) .* (0:obj.LinearTickSep:sum(tDMat(i, :))) + theta1;
                         
-                        if strcmp(obj.linearMinorTick, 'on')
-                            tMTSF = (theta2 - theta1) ./ sum(tDMat(i, :)) .* (0:(obj.linearTickSep/5):sum(tDMat(i, :))) + theta1;
+                        if strcmp(obj.LinearMinorTick, 'on')
+                            tMTSF = (theta2 - theta1) ./ sum(tDMat(i, :)) .* (0:(obj.LinearTickSep/5):sum(tDMat(i, :))) + theta1;
                             tX = [cos(tMTSF) .* obj.TickRadius, cos(obj.thetaSetF{i}) .* obj.TickRadius; ...
                                   cos(tMTSF) .* (obj.TickRadius + .01), cos(obj.thetaSetF{i}) .* (obj.TickRadius + .02); ...
                                   nan .* ones(1, length([tMTSF, obj.thetaSetF{i}]))];
@@ -571,7 +628,7 @@ classdef chordChart < handle
                         end
                 end
                 
-                obj.thetaTickFHdl(i) = plot(obj.ax, tX(:), tY(:), 'Color', [0, 0, 0], 'LineWidth', .8, 'Visible', 'off');
+                obj.thetaTickSHdl(i) = plot(obj.ax, tX(:), tY(:), 'Color', [0, 0, 0], 'LineWidth', .8, 'Visible', 'off');
             end
             
             % Tick drawing for top blocks (上方块刻度绘制)
@@ -613,10 +670,10 @@ classdef chordChart < handle
                     case 'linear'
                         theta3 = pi - pi*sep1/2 - sum(ratioT(1:j))   * baseLenT - (j-.5)*sepLen;
                         theta4 = pi - pi*sep1/2 - sum(ratioT(1:j+1)) * baseLenT - (j-.5)*sepLen;
-                        obj.thetaSetT{j} = (theta4 - theta3) ./ sum(tDMat(:, j)) .* (0:obj.linearTickSep:sum(tDMat(:, j))) + theta3;
+                        obj.thetaSetT{j} = (theta4 - theta3) ./ sum(tDMat(:, j)) .* (0:obj.LinearTickSep:sum(tDMat(:, j))) + theta3;
                         
-                        if strcmp(obj.linearMinorTick, 'on')
-                            tMTST = (theta4 - theta3) ./ sum(tDMat(:, j)) .* (0:(obj.linearTickSep/5):sum(tDMat(:, j))) + theta3;
+                        if strcmp(obj.LinearMinorTick, 'on')
+                            tMTST = (theta4 - theta3) ./ sum(tDMat(:, j)) .* (0:(obj.LinearTickSep/5):sum(tDMat(:, j))) + theta3;
                             tX = [cos(tMTST) .* obj.TickRadius, cos(obj.thetaSetT{j}) .* obj.TickRadius; ...
                                   cos(tMTST) .* (obj.TickRadius + .01), cos(obj.thetaSetT{j}) .* (obj.TickRadius + .02); ...
                                   nan .* ones(1, length([tMTST, obj.thetaSetT{j}]))];
@@ -638,10 +695,10 @@ classdef chordChart < handle
             % =============================================================
             % Add tick labels (添加刻度标签)
             % =============================================================
-            obj.thetaTickLabelFHdl = gobjects(length(obj.thetaSetF), max(cellfun(@length, obj.thetaSetF)));
+            obj.thetaTickLabelSHdl = gobjects(length(obj.thetaSetF), max(cellfun(@length, obj.thetaSetF)));
             for m = 1:length(obj.thetaSetF)
                 if strcmpi(obj.TickMode, 'linear')
-                    cumsumV = 0:obj.linearTickSep:sum(tDMat(m, :));
+                    cumsumV = 0:obj.LinearTickSep:sum(tDMat(m, :));
                 else
                     cumsumV = [0, cumsum(obj.dataMat(m, end:-1:1))];
                     cumsumV = cumsumV(uniListF{m});
@@ -652,13 +709,13 @@ classdef chordChart < handle
                     
                     if rotation > 90 && rotation < 270
                         rotation = rotation + 180;
-                        obj.thetaTickLabelFHdl(m, n) = text(obj.ax, ...
+                        obj.thetaTickLabelSHdl(m, n) = text(obj.ax, ...
                             cos(obj.thetaSetF{m}(n)) .* (obj.TickRadius + .03), ...
                             sin(obj.thetaSetF{m}(n)) .* (obj.TickRadius + .03), num2str(cumsumV(n)), ...
                             'Rotation', rotation, 'HorizontalAlignment', 'right', ...
                             'FontSize', 9, 'FontName', 'Arial', 'Visible', 'off', 'UserData', cumsumV(n));
                     else
-                        obj.thetaTickLabelFHdl(m, n) = text(obj.ax, ...
+                        obj.thetaTickLabelSHdl(m, n) = text(obj.ax, ...
                             cos(obj.thetaSetF{m}(n)) .* (obj.TickRadius + .03), ...
                             sin(obj.thetaSetF{m}(n)) .* (obj.TickRadius + .03), num2str(cumsumV(n)), ...
                             'Rotation', rotation, 'FontSize', 9, 'FontName', 'Arial', ...
@@ -670,7 +727,7 @@ classdef chordChart < handle
             obj.thetaTickLabelTHdl = gobjects(length(obj.thetaSetT), max(cellfun(@length, obj.thetaSetT)));
             for m = 1:length(obj.thetaSetT)
                 if strcmpi(obj.TickMode, 'linear')
-                    cumsumV = 0:obj.linearTickSep:sum(tDMat(:, m));
+                    cumsumV = 0:obj.LinearTickSep:sum(tDMat(:, m));
                 else
                     cumsumV = [0, cumsum(obj.dataMat(end:-1:1, m)).'];
                     cumsumV = cumsumV(uniListT{m});
@@ -704,34 +761,42 @@ classdef chordChart < handle
                 coe2 = ((t) .^ ((0:p)')) .* ((1-t) .^ ((p:-1:0)'));
                 pnts = (pnts' * (coe1' .* coe2))';
             end
+            if nargout == 1
+                varargout = {obj};
+            end
         end
 
 % =========================================================================
 % Chord property settings (弦属性设置)
 % =========================================================================
-        function setChordProp(obj, varargin)
-            % Batch chord property setting (批量弦属性设置)
-            for i = 1:size(obj.dataMat, 1)
-                for j = 1:size(obj.dataMat, 2)
-                    if isa(obj.chordMatHdl(i, j), 'matlab.graphics.primitive.Patch')
-                        set(obj.chordMatHdl(i, j), varargin{:});
+        function setChord(obj, varargin)
+            % setChord(___)          | Set properties for all chord
+            % setChord(M, N, ___)    | Set the properties for the chord which
+            %                              connect M-th square bellow 
+            %                              and N-th square above
+            if isnumeric(varargin{1})
+                m = varargin{1}; n = varargin{2};
+                if isa(obj.chordMatHdl(m, n), 'matlab.graphics.primitive.Patch')
+                    set(obj.chordMatHdl(m, n), varargin{3:end});
+                end
+            else
+                for i = 1:size(obj.dataMat, 1)
+                    for j = 1:size(obj.dataMat, 2)
+                        if isa(obj.chordMatHdl(i, j), 'matlab.graphics.primitive.Patch')
+                            set(obj.chordMatHdl(i, j), varargin{:});
+                        end
                     end
                 end
             end
         end
-        % =================================================================
-        function setChordMN(obj, m, n, varargin)
-            % Individual chord property setting (单独弦属性设置)
-            if isa(obj.chordMatHdl(m, n), 'matlab.graphics.primitive.Patch')
-                set(obj.chordMatHdl(m, n), varargin{:});
-            end
-        end
-        function setChordColorByMap(obj, colorList)
+        
+
+        function setChordColorByMap(obj, cmp)
             % Set chord color using colormap (使用颜色映射设置弦颜色)
             tDMatUni = obj.dataMat - min(min(obj.dataMat));
             tDMatUni = tDMatUni ./ max(max(tDMatUni));
 
-            colorFunc = colorFuncFactory(colorList);
+            colorFunc = colorFuncFactory(cmp);
             
             for i = 1:size(obj.dataMat, 1)
                 for j = 1:size(obj.dataMat, 2)
@@ -752,10 +817,10 @@ classdef chordChart < handle
                                   interp1(x, y3, X, 'linear')'];
             end
         end
-        function setChordColorBySquareF(obj)
+        function setChordColorBySquareS(obj)
             for i = 1:size(obj.dataMat, 1)
                 for j = 1:size(obj.dataMat, 2)
-                    tColor = get(obj.squareFHdl(i), 'FaceColor');
+                    tColor = get(obj.squareSHdl(i), 'FaceColor');
                     obj.setChordMN(i,j, 'FaceColor',tColor)
                 end
             end
@@ -772,43 +837,45 @@ classdef chordChart < handle
 % =========================================================================
 % Block property settings (方块属性设置)
 % =========================================================================
-        function setSquareT_Prop(obj, varargin)
-            % Batch top block property setting (批量上方方块属性设置)
-            for j = 1:size(obj.dataMat, 2)
-                set(obj.squareTHdl(j), varargin{:});
+        function setSquareT(obj, varargin)
+            % setSquareT(___)       | Set properties for all squares above (target)
+            % setSquareT(N, ___)    | Set properties for N-th square above (target)
+            if isnumeric(varargin{1})
+                set(obj.squareTHdl(varargin{1}), varargin{2:end});
+            else
+                for j = 1:size(obj.dataMat, 2)
+                    set(obj.squareTHdl(j), varargin{:});
+                end
             end
-        end
-        function setSquareT_N(obj, n, varargin)
-            % Individual top block property setting (单独上方方块属性设置)
-            set(obj.squareTHdl(n), varargin{:});
         end
 
-        function setSquareF_Prop(obj, varargin)
-            % Batch bottom block property setting (批量下方方块属性设置)
-            for i = 1:size(obj.dataMat, 1)
-                set(obj.squareFHdl(i), varargin{:});
+        function setSquareS(obj, varargin)
+            % setSquareS(___)       | Set properties for all squares bellow (source)
+            % setSquareS(N, ___)    | Set properties for N-th square bellow (source)
+            if isnumeric(varargin{1})
+                set(obj.squareSHdl(varargin{1}), varargin{2:end});
+            else
+                for i = 1:size(obj.dataMat, 1)
+                    set(obj.squareSHdl(i), varargin{:});
+                end
             end
-        end
-        function setSquareF_N(obj, n, varargin)
-            % Individual bottom block property setting (单独下方方块属性设置)
-            set(obj.squareFHdl(n), varargin{:});
         end
 
 
         % Individual chord-end block property setting (单独弦末端方块属性设置)
-        function setEachSquareT_Prop(obj, m, n, varargin)
+        function setSubSquareT(obj, m, n, varargin)
             if isa(obj.squareTMatHdl(m, n), 'matlab.graphics.primitive.Patch')
                 set(obj.squareTMatHdl(m, n), 'Visible', 'on', varargin{:})
             end
         end
 
-        function setEachSquareF_Prop(obj, m, n, varargin)
-            if isa(obj.squareFMatHdl(m, n), 'matlab.graphics.primitive.Patch')
-                set(obj.squareFMatHdl(m, n), 'Visible', 'on', varargin{:})
+        function setSubSquareS(obj, m, n, varargin)
+            if isa(obj.squareSMatHdl(m, n), 'matlab.graphics.primitive.Patch')
+                set(obj.squareSMatHdl(m, n), 'Visible', 'on', varargin{:})
             end
         end
 % -------------------------------------------------------------------------
-        function setSquareColorF(obj, CList)
+        function setSquareColorS(obj, CList)
             for i = 1:size(obj.dataMat, 1)
                 obj.setSquareF_N(i, 'FaceColor', CList(i,:))
             end
@@ -835,7 +902,7 @@ classdef chordChart < handle
 % =========================================================================
         function setFont(obj, varargin) 
             for i = 1:size(obj.dataMat, 1)
-                set(obj.nameFHdl(i), varargin{:});
+                set(obj.nameSHdl(i), varargin{:});
             end
             
             for j = 1:size(obj.dataMat, 2)
@@ -848,7 +915,7 @@ classdef chordChart < handle
             obj.LabelRadius = Radius;
             
             for i = 1:length(obj.meanThetaSetF)
-                set(obj.nameFHdl(i), 'Position', [cos(obj.meanThetaSetF(i)), sin(obj.meanThetaSetF(i))] .* obj.LabelRadius);
+                set(obj.nameSHdl(i), 'Position', [cos(obj.meanThetaSetF(i)), sin(obj.meanThetaSetF(i))] .* obj.LabelRadius);
             end
             
             for j = 1:length(obj.meanThetaSetT)
@@ -861,7 +928,7 @@ classdef chordChart < handle
             obj.LabelRotate = Rotate;
             
             for i = 1:length(obj.meanThetaSetF)
-                set(obj.nameFHdl(i), 'Rotation', obj.rotationF(i), 'HorizontalAlignment', 'center');
+                set(obj.nameSHdl(i), 'Rotation', obj.rotationF(i), 'HorizontalAlignment', 'center');
             end
             
             for j = 1:length(obj.meanThetaSetT)
@@ -909,8 +976,8 @@ classdef chordChart < handle
             % tDMat = obj.chordTable.Variables;
             
             for i = 1:size(obj.dataMat, 1)
-                set(obj.thetaTickFHdl(i), 'Visible', state);
-                set(obj.RTickFHdl(i), 'Visible', state);
+                set(obj.thetaTickSHdl(i), 'Visible', state);
+                set(obj.RTickSHdl(i), 'Visible', state);
             end
             
             for j = 1:size(obj.dataMat, 2)
@@ -923,7 +990,7 @@ classdef chordChart < handle
             % Show/hide tick labels (显示/隐藏刻度标签)
             for m = 1:length(obj.thetaSetF)
                 for n = 1:length(obj.thetaSetF{m})
-                    set(obj.thetaTickLabelFHdl(m, n), 'Visible', state)
+                    set(obj.thetaTickLabelSHdl(m, n), 'Visible', state)
                 end
             end
             
@@ -937,7 +1004,7 @@ classdef chordChart < handle
         function setTickFont(obj, varargin)
             for m = 1:length(obj.thetaSetF)
                 for n = 1:length(obj.thetaSetF{m})
-                    set(obj.thetaTickLabelFHdl(m, n), varargin{:})
+                    set(obj.thetaTickLabelSHdl(m, n), varargin{:})
                 end
             end
 
@@ -952,8 +1019,8 @@ classdef chordChart < handle
             % Set custom format for tick labels (设置刻度标签的自定义格式)
             for m = 1:length(obj.thetaSetF)
                 for n = 1:length(obj.thetaSetF{m})
-                    tStr = func(get(obj.thetaTickLabelFHdl(m, n), 'UserData'));
-                    set(obj.thetaTickLabelFHdl(m, n), 'String', tStr)
+                    tStr = func(get(obj.thetaTickLabelSHdl(m, n), 'UserData'));
+                    set(obj.thetaTickLabelSHdl(m, n), 'String', tStr)
                 end
             end
             
@@ -1011,6 +1078,88 @@ classdef chordChart < handle
                 else
                     src.EdgeColor = 'none';
                     src.LineWidth = 0.5;
+                end
+            end
+        end
+    end
+% =========================================================================
+% >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+% =========================================================================
+    methods (Hidden)
+        function setEachSquareT_Prop(obj, m, n, varargin)
+            if isa(obj.squareTMatHdl(m, n), 'matlab.graphics.primitive.Patch')
+                set(obj.squareTMatHdl(m, n), 'Visible', 'on', varargin{:})
+            end
+        end
+
+        function setEachSquareF_Prop(obj, m, n, varargin)
+            if isa(obj.squareSMatHdl(m, n), 'matlab.graphics.primitive.Patch')
+                set(obj.squareSMatHdl(m, n), 'Visible', 'on', varargin{:})
+            end
+        end
+        function setSquareColorF(obj, CList)
+            for i = 1:size(obj.dataMat, 1)
+                obj.setSquareF_N(i, 'FaceColor', CList(i,:))
+            end
+            for i = 1:size(obj.dataMat, 1)
+                for j = 1:size(obj.dataMat, 2)
+                    obj.setEachSquareT_Prop(i, j, 'FaceColor', CList(i,:))
+                end
+            end
+        end
+        function setSquareT_Prop(obj, varargin)
+            % Batch top block property setting (批量上方方块属性设置)
+            for j = 1:size(obj.dataMat, 2)
+                set(obj.squareTHdl(j), varargin{:});
+            end
+        end
+        function setSquareT_N(obj, n, varargin)
+            % Individual top block property setting (单独上方方块属性设置)
+            set(obj.squareTHdl(n), varargin{:});
+        end
+
+        function setSquareF_Prop(obj, varargin)
+            % Batch bottom block property setting (批量下方方块属性设置)
+            for i = 1:size(obj.dataMat, 1)
+                set(obj.squareSHdl(i), varargin{:});
+            end
+        end
+        function setSquareF_N(obj, n, varargin)
+            % Individual bottom block property setting (单独下方方块属性设置)
+            set(obj.squareSHdl(n), varargin{:});
+        end
+        function setChordProp(obj, varargin)
+            % Batch chord property setting (批量弦属性设置)
+            for i = 1:size(obj.dataMat, 1)
+                for j = 1:size(obj.dataMat, 2)
+                    if isa(obj.chordMatHdl(i, j), 'matlab.graphics.primitive.Patch')
+                        set(obj.chordMatHdl(i, j), varargin{:});
+                    end
+                end
+            end
+        end
+        function setChordColorBySquareF(obj)
+            for i = 1:size(obj.dataMat, 1)
+                for j = 1:size(obj.dataMat, 2)
+                    tColor = get(obj.squareSHdl(i), 'FaceColor');
+                    obj.setChordMN(i,j, 'FaceColor',tColor)
+                end
+            end
+        end
+        function setChordMN(obj, m, n, varargin)
+            % Individual chord property setting (单独弦属性设置)
+            if isa(obj.chordMatHdl(m, n), 'matlab.graphics.primitive.Patch')
+                set(obj.chordMatHdl(m, n), varargin{:});
+            end
+        end
+        function setSquareF(obj, varargin)
+            % setSquareF(___)       | Set properties for all squares bellow (source)
+            % setSquareF(N, ___)    | Set properties for N-th square bellow (source)
+            if isnumeric(varargin{1})
+                set(obj.squareSHdl(varargin{1}), varargin{2:end});
+            else
+                for i = 1:size(obj.dataMat, 1)
+                    set(obj.squareSHdl(i), varargin{:});
                 end
             end
         end

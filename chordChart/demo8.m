@@ -13,25 +13,25 @@ CC = chordChart(dataMat, 'RowName',rowName, 'ColName',colName, 'Sep',1/80, 'LRad
 CC = CC.draw();
 CC.labelRotate('on')
 
-% 修改下方方块颜色(Modify the color of the blocks below)
-CListF=[128,108,171; 222,208,161; 180,196,229; 209,150,146; 175,201,166;
-    134,156,118; 175,175,173]./255;
-CC.setSquareColorF(CListF)
-% 修改弦颜色(Modify chord color)
-CC.setChordColorBySquareF()
+% Modify the color of the blocks below (修改下方方块颜色)
+CListS = [128,108,171; 222,208,161; 180,196,229; 209,150,146; 175,201,166;
+          134,156,118; 175,175,173]./255;
+CC.setSquareColorS(CListS)
+% Modify chord color (修改弦颜色)
+CC.setChordColorBySquareS()
 
-% 单独设置每一个弦末端方块(Set individual end blocks for each chord)
-% Use obj.setEachSquareF_Prop | F means from (blocks below)
-% or  obj.setEachSquareT_Prop | T means to   (blocks above)
+% Set individual end blocks for each chord (单独设置每一个弦末端方块)
+% Use obj.setSubSquareS | set Subordinate Square (Source)
+% or  obj.setSubSquareT | set Subordinate Square (Target)
 CListT = [173,70,65; 79,135,136]./255;
 % Upregulated:1 | Downregulated:2
 Regulated = (rand([7, 22]) < .8) + 1;
 for i = 1:size(Regulated, 1)
     for j = 1:size(Regulated, 2)
-        CC.setEachSquareT_Prop(i, j, 'FaceColor', CListT(Regulated(i,j),:))
+        CC.setSubSquareT(i, j, 'FaceColor', CListT(Regulated(i,j),:))
     end
 end
-% 绘制图例(Draw legend)
+% Draw legend (绘制图例)
 H1 = fill([0,1,0]+100, [1,0,1]+100, CListT(1,:), 'EdgeColor','none');
 H2 = fill([0,1,0]+100, [1,0,1]+100, CListT(2,:), 'EdgeColor','none');
 lgdHdl = legend([H1,H2], {'Upregulated','Downregulated'}, 'AutoUpdate','off', ...

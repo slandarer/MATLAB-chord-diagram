@@ -36,3 +36,23 @@ cbarE.Position = [.78, .575, .02, .35];
 set(cbarE.Label, 'String','Edge Value', 'FontSize',17, 'FontName','Times New Roman');
 
 
+
+
+
+
+
+
+
+
+% % Apply node colormap and add colorbar (应用节点配色并添加颜色条)
+% cbarN = CN.setNodeColorByColormap(cmpN);
+% cbarN.Location = 'north';
+% cbarN.Position = [.13, .1, .35, .025];
+% set(cbarN.Label, 'String','Node Value', 'FontSize',17, 'FontName','Times New Roman');
+% 
+% % Apply edge colormap and add colorbar (应用边配色并添加颜色条)
+% colormap(CN.ax, cmpE)
+% cbarE = colorbar(CN.ax);
+% cbarE.Location = 'north';
+% cbarE.Position = [0.5550, .1, .35, .025];
+% set(cbarE.Label, 'String','Edge Value', 'FontSize',17, 'FontName','Times New Roman');

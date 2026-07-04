@@ -3,7 +3,7 @@
 links = {'A','A',1;'A','B',1.2;'A','C',2.5;
          'B','A',.5;'B','B',0;'B','C',1.5;
          'C','A',1.5;'C','B',2;'C','C',1.1};
-% 获取名称
+
 nameList = {'A','B','C'};
 % NameList = unique([links(:,1);links(:,2)],'rows','stable');
 

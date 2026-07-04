@@ -39,6 +39,6 @@ BCC.CData = colors;
 BCC.draw()
 
 BCC.labelRotate('on')
-BCC.setSquareProp('EdgeColor','k', 'LineWidth',1)
-BCC.setChordProp('FaceAlpha', .5)
+BCC.setSquare('EdgeColor','k', 'LineWidth',1)
+BCC.setChord('FaceAlpha', .5)
 

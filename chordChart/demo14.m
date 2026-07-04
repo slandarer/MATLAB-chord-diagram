@@ -20,19 +20,18 @@ CC.LRadius = 1.7;
 % CC.LabelRadius = 1.7;
 CC = CC.draw();
 
-% 修改上方方块颜色(Modify the color of the blocks above)
+% Modify the color of the blocks above (修改上方方块颜色)
 CListT = [0.75,0.73,0.86; 0.56,0.83,0.78; 0.00,0.60,0.20; 1.00,0.49,0.02
           0.78,0.77,0.95; 0.59,0.24,0.36; 0.98,0.51,0.45];
 CC.setSquareColorT(CListT)
-% 修改下方方块颜色(Modify the color of the blocks below)
+% Modify the color of the blocks below (修改下方方块颜色)
 CListF = [0.93,0.60,0.62; 0.55,0.80,0.99; 0.95,0.82,0.18; 1.00,0.81,0.91];
 CC.setSquareColorF(CListF)
 
-% 修改弦颜色(Modify chord color)
+% Modify chord color (修改弦颜色)
 CC.setChordColorBySquareT()
 
-% 显示刻度和数值
-% Displays scales and numeric values
+% Displays scales and numeric values (显示刻度和数值)
 CC.tickState('on')
 CC.tickLabelState('on')
 

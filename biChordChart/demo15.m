@@ -1,9 +1,9 @@
 %% Square, tick, label radius | square ratio
 
 rng(1)
-dataMat=randi([1,5],[3,3]);
+dataMat = randi([1, 5], [3, 3]);
 
-% 创建弦图对象(Create bichord diagram object)
+% Create bichord diagram object (创建双向弦图对象)
 BCC=biChordChart(dataMat,'Arrow','on', 'Sep',1/3.5);
 BCC.CData = lines(3);
 
@@ -22,10 +22,10 @@ BCC.LRadius = 1.7;
 % BCC.LabelRadius = 1.7;
 
 
-% 开始绘图(Start drawing)
+% Start drawing (开始绘图)
 BCC=BCC.draw();
 
-% 添加刻度(Show ticks and tick labels)
+% Show ticks and tick labels (添加刻度)
 BCC.tickState('on')
 BCC.tickLabelState('on')
 

@@ -12,12 +12,10 @@ CC = chordChart(dataMat, 'RowName',rowName, 'ColName',colName, 'TickMode','auto'
 CC = CC.draw();
 CC.setFont('FontSize',17, 'FontName','Cambria')
 
-% 显示刻度和数值
-% Displays scales and numeric values
+% Displays scales and numeric values (显示刻度和数值)
 CC.tickState('on')
 CC.tickLabelState('on')
 CC.setTickFont('FontName','Cambria')
 
-% 调节标签半径
-% Adjustable Label radius
+% Adjust Label radius (调节标签半径)
 CC.setLabelRadius(1.3);
