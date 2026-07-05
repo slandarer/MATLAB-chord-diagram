@@ -844,7 +844,6 @@ classdef chordChart < handle
                 set(obj.squareTHdl(varargin{1}), varargin{2:end});
             else
                 for j = 1:size(obj.dataMat, 2)
-                    obj.squareTHdl
                     set(obj.squareTHdl(j), varargin{:});
                 end
             end

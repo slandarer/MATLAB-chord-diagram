@@ -12,7 +12,7 @@ CC = CC.draw();
 
 % Define colors for from and to blocks (定义来源(行)和目标(列)方块颜色)
 CListS = [.93,.60,.62; .55,.80,.99; .95,.82,.18];
-CListT = [.11,.10,.23; .21,.08,.13; .38,.52,.53; .47,.70,.67; .67,.83,.78; .62,.50,.45; .23,.20,.29];
+CListT = [.75,.73,.86; .56,.83,.78; 0.0,.60,.20; 1.0,.49,.02; .78,.77,.95; .59,.24,.36; .98,.51,.45];
 
 CC.setSquareColorS(CListS)                    % Apply from block colors (应用来源方块颜色)
 CC.setSquareColorT(CListT)                    % Apply to block colors (应用目标方块颜色)
