@@ -20,22 +20,10 @@ BCC = biChordChart(dataMat, 'Label',nameList, 'Rotation',pi/1.62,...
 BCC = BCC.draw();
 
 % 旋转标签(Rotate labels)
-textHdl = findobj(gca, 'Tag','BiChordLabel');
-for i = 1:length(textHdl)
-    set(textHdl(i), 'Rotation',0, 'FontSize',17)
-    if textHdl(i).Position(1) < -.1
-        set(textHdl(i), 'HorizontalAlignment','right')
-    elseif textHdl(i).Position(1) > .1
-        set(textHdl(i), 'HorizontalAlignment','left')
-    end
-end
+BCC.labelRotate('none')
 
 % 调整弦透明度(Adjust the chords opacity)
-for i = 1:size(dataMat, 1)
-    for j = 1:size(dataMat, 2)
-        BCC.setChord(i,j, 'FaceAlpha', .5)
-    end
-end
+BCC.setChord('FaceAlpha', .5)
 
 ax=gca;
 ax.XLabel.String = {'Pairwise connections in neighbourhoods'; '(1,240,569 neighbourhoods)'};

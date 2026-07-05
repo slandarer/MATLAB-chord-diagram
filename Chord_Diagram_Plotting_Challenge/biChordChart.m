@@ -708,7 +708,7 @@ classdef biChordChart < handle
             for i = 1:size(obj.dataMat, 1)
                 set(obj.nameHdl(i), 'HorizontalAlignment', 'center', 'Rotation', obj.rotationSet(i))
             end
-            if isequal(obj.LabelRotate, 'on')
+            if strcmpi(obj.LabelRotate, 'on')
                 textHdl = findobj(obj.ax, 'Tag', 'BiChordLabel');
                 for i = 1:length(textHdl)
                     if textHdl(i).Rotation < -90
@@ -734,6 +734,16 @@ classdef biChordChart < handle
                         else
                             textHdl(i).HorizontalAlignment = 'right';
                         end
+                    end
+                end
+            elseif strcmpi(obj.LabelRotate, 'none')
+                textHdl = findobj(gca, 'Tag','BiChordLabel');
+                for i = 1:length(textHdl)
+                    set(textHdl(i), 'Rotation',0)
+                    if textHdl(i).Position(1) < -.1
+                        set(textHdl(i), 'HorizontalAlignment','right')
+                    elseif textHdl(i).Position(1) > .1
+                        set(textHdl(i), 'HorizontalAlignment','left')
                     end
                 end
             end

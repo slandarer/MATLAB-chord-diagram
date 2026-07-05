@@ -35,5 +35,5 @@ CC.setChordColorBySquareT()
 
 
 CC.tickState('on')
-CC.labelRotate('on')
+CC.labelRotate('none')
 CC.setFont('FontSize',17,'FontName','Cambria')

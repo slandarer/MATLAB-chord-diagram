@@ -37,6 +37,18 @@ CC.tickLabelState('on')
 
 set(gca,'XLim',[-1.8,1.8], 'YLim',[-1.8,1.8])
 
+
+
+
+
+
+
+
+
+
+
+
+
 %{
 t1 = pi*.92; t2 = [pi*.92, pi*.94]; t3 = pi*.94;
 plot(cos(t1).*[1.1, 1.7], sin(t1).*[1.1, 1.7], 'Color','k', 'LineWidth',1)
