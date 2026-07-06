@@ -36,6 +36,31 @@ classdef chordChart < handle
 %   rowName = {'S1','S2','S3'};
 %   CC = chordChart(dataMat, 'RowName', rowName, 'ColName', colName);
 %   CC = CC.draw();
+%
+% Methods: (try: help chordChart.setSubSquareS)
+%   draw                   - Render the chordChart object (渲染弦图对象)
+%   labelRotate            - Label rotation control (标签旋转控制)
+%   tickState              - Show/hide tick marks (显示/隐藏刻度线)
+%   tickLabelState         - Show/hide tick labels (显示/隐藏刻度标签)
+%   setLabelRadius         - Set label radius (设置标签半径)
+%   setFont                - Label property settings (标签属性设置)
+%   setTickFont            - Tick label property settings (刻度标签属性设置)
+%   setTickLabelFormat     - Set custom format for tick labels (设置刻度标签的自定义格式)
+%   setSquareS             - Source node square property settings (来源节点弧形块属性设置)
+%   setSquareT             - Target node square property settings (目标节点弧形块属性设置)
+%   setSquareCDataS        - Set the 'CData' property of each source square (设置来源块的 CData 属性)
+%   setSquareCDataT        - Set the 'CData' property of each target square (设置目标块的 CData 属性)
+%   setSquareColorS        - Set color for each source square (来源弧形块颜色设置)
+%   setSquareColorT        - Set color for each target square (目标弧形块颜色设置)
+%   setSubSquareS          - Source sub‑square property settings (来源子方块属性设置)
+%   setSubSquareT          - Target sub-square property settings (目标子方块属性设置)
+%   setChord               - Chord property settings (弦属性设置)
+%   setChordCData          - Set the 'CData' property of each chord patch (设置弦的 CData 属性)
+%   setChordColorByMap     - Set chord color using colormap (使用颜色映射设置弦颜色)
+%   setChordColorBySquareS - Color each chord using its source block color (根据源方块颜色为弦着色)
+%   setChordColorBySquareT - Color each chord using its target block color (根据目标方块颜色为弦着色)
+%   addHighlightArrow      - Add highlight arrow indicator (添加高亮箭头指示器)
+
 
 
 % =========================================================================
