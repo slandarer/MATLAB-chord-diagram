@@ -1,8 +1,8 @@
 classdef biChordChart < handle
 % biChordChart Create and customize bidirectional chord diagrams (有向弦图)
 %   BCC = biChordChart(dataMat); creates a bidirectional chord diagram from
-%   a square numerical matrix where element (i,j) represents flow from i to j.
-%   从方阵数值矩阵创建有向弦图，元素 (i,j) 表示从 i 到 j 的流量。
+%   a square numerical matrix where element (i, j) represents flow from i to j.
+%   从方阵数值矩阵创建有向弦图，元素 (i, j) 表示从 i 到 j 的流量。
 %
 %   BCC = biChordChart(dataMat, 'Label', label); specifies labels for the nodes.
 %   指定节点标签。
@@ -110,11 +110,11 @@ classdef biChordChart < handle
 %     (Variable names previously associated with 'F' remain available.)
 %   + The setChord method replaces setChordProp and setChordMN.
 %     setChord(___)          | Set properties for all chord
-%     setChord(M, N, ___)    | Set the properties for the chord which
-%                              connect M-th and N-th nodes
+%     setChord(m, n, ___)    | Set the properties for the chord which
+%                              connect m-th and n-th nodes
 %   + The setSquare method replaces setSquareProp and setSquareN.
 %     setSquare(___)         | Set properties for all square
-%     setSquare(N, ___)      | Set the properties for the N-th square
+%     setSquare(n, ___)      | Set the properties for the n-th square
 %   + The setSubSquareS method replaces setEachSquareF_Prop.
 %   + The setSubSquareT method replaces setEachSquareT_Prop.
 
@@ -671,6 +671,15 @@ classdef biChordChart < handle
                         if isa(obj.chordMatHdl(i, j), 'matlab.graphics.primitive.Patch')
                             set(obj.chordMatHdl(i, j), varargin{:});
                         end
+                    end
+                end
+            end
+        end
+        function setChordCData(obj, C)
+            for i = 1:size(obj.dataMat, 1)
+                for j = 1:size(obj.dataMat, 2)
+                    if isa(obj.chordMatHdl(i, j), 'matlab.graphics.primitive.Patch')
+                        set(obj.chordMatHdl(i, j), 'CData', C(i, j), 'FaceColor','flat');
                     end
                 end
             end

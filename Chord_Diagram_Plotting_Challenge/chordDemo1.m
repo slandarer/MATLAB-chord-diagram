@@ -40,11 +40,13 @@ CC.setChordColorBySquareT()
 CC.setChord('FaceAlpha',.5)
 
 CC.tickState('on')
-CC.labelRotate('on')
+CC.labelRotate('none')
 CC.setFont('FontSize',17, 'FontName','Cambria')
 CC.tickLabelState('on');
 
 
+
+%{
 CC.labelRotate('off')
 textHdl = findobj(gca,'Tag','ChordLabel');
 for i = 1:length(textHdl)
@@ -62,3 +64,4 @@ for i = 1:length(textHdl)
         end
     end
 end
+%}

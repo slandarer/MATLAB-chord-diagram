@@ -19,6 +19,7 @@ BCC.setFont('FontName','Cambria','FontSize',17,'Color',[.2,.2,.2])
 % 函数labelRotate用来旋转标签
 % The function labelRatato is used to rotate the label
 BCC.labelRotate('on')
+% BCC.labelRotate('none')
 
 % BCC.setLabelRadius(1.3);
 % BCC.tickLabelState('on')

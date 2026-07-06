@@ -10,17 +10,10 @@ dataMat(dataMat > 5) = 0;
 dataMat(1,:) = randi([1,15], [1,8]);
 dataMat(1,8) = 40;
 dataMat(8,8) = 60;
-
 dataMat = dataMat./sum(sum(dataMat));
 
-CList = [0.33,0.53,0.86
-    0.94,0.50,0.42
-    0.92,0.58,0.30
-    0.59,0.47,0.45
-    0.37,0.76,0.82
-    0.82,0.68,0.29
-    0.75,0.62,0.87
-    0.43,0.69,0.57];
+CList = [.33,.53,.86; .94,.50,.42; .92,.58,.30; .59,.47,.45;
+         .37,.76,.82; .82,.68,.29; .75,.62,.87; .43,.69,.57];
 NameList={'CHORD', 'CHART', 'AND', 'BICHORD',...
     'CHART', 'MADE', 'BY', 'SLANDARER'};
 
@@ -44,8 +37,6 @@ end
 BCC.setFont('FontName','Cambria', 'FontSize',17)
 BCC.tickLabelState('on')
 BCC.setTickFont('FontName','Cambria', 'FontSize',9)
-
-
 
 % 调整数值字符串格式
 % Adjust numeric string format

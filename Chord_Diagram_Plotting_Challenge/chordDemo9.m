@@ -19,7 +19,6 @@ BCC = BCC.draw();
 BCC.setChord('FaceAlpha',.5)
 BCC.setSquare('EdgeColor',[0,0,0], 'LineWidth',5)
 
-
 % 添加刻度
 BCC.tickState('on')
 % 修改字体，字号及颜色
