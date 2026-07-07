@@ -18,7 +18,7 @@ BCC = BCC.draw();
 BCC.tickState('on')
 BCC.setFont('FontName','Cambria', 'FontSize',17, 'Color',[0,0,0])
 
-% Modify chord color (修改弦颜色)
+% 修改弦颜色 (Modify chord color)
 BCC.setChord('FaceColor',[ 54, 69, 92]./255 ,'FaceAlpha',.07)
 [~, N] = max(sum(dataMat > 0, 2));
-BCC.setChordN(N, 'FaceColor',CList(N,:), 'FaceAlpha',.6)
+BCC.setChord(N, [], 'FaceColor',CList(N,:), 'FaceAlpha',.6)

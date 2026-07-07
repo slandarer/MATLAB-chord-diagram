@@ -896,10 +896,10 @@ classdef biChordChart < handle
                 for j = 1:size(obj.dataMat, 2)
                     obj.setEachSquareT_Prop(i, j, 'FaceColor', FaceCList(i,:))
                     obj.setEachSquareS_Prop(i, j, 'FaceColor', FaceCList(j,:))
-                    if nargin == 3
-                        obj.setEachSquareT_Prop(i, j, 'EdgeColor', EdgeCList(i,:))
-                        obj.setEachSquareS_Prop(i, j, 'EdgeColor', EdgeCList(j,:))
-                    end
+                    % if nargin == 3
+                    %     obj.setEachSquareT_Prop(i, j, 'EdgeColor', EdgeCList(i,:))
+                    %     obj.setEachSquareS_Prop(i, j, 'EdgeColor', EdgeCList(j,:))
+                    % end
                 end
             end
         end

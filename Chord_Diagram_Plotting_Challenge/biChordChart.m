@@ -1,8 +1,8 @@
 classdef biChordChart < handle
 % biChordChart Create and customize bidirectional chord diagrams (有向弦图)
 %   BCC = biChordChart(dataMat); creates a bidirectional chord diagram from
-%   a square numerical matrix where element (i,j) represents flow from i to j.
-%   从方阵数值矩阵创建有向弦图，元素 (i,j) 表示从 i 到 j 的流量。
+%   a square numerical matrix where element (i, j) represents flow from i to j.
+%   从方阵数值矩阵创建有向弦图，元素 (i, j) 表示从 i 到 j 的流量。
 %
 %   BCC = biChordChart(dataMat, 'Label', label); specifies labels for the nodes.
 %   指定节点标签。
@@ -37,6 +37,26 @@ classdef biChordChart < handle
 %   dataMat = randi([0,8], [6,6]);
 %   BCC = biChordChart(dataMat, 'Arrow', 'on');
 %   BCC = BCC.draw();
+%
+% Methods: (try: help biChordChart.setChord)
+%   draw                   - Render the biChordChart object (渲染双向弦图对象)
+%   labelRotate            - Label rotation control (标签旋转控制)
+%   tickState              - Show/hide tick marks (显示/隐藏刻度线)
+%   tickLabelState         - Show/hide tick labels (显示/隐藏刻度标签)
+%   setLabelRadius         - Set label radius (设置标签半径)
+%   setFont                - Label property settings (标签属性设置)
+%   setTickFont            - Tick label property settings (刻度标签属性设置)
+%   setTickLabelFormat     - Set custom format for tick labels (设置刻度标签的自定义格式)
+%   setSquare              - Node square property settings (节点弧形块属性设置)
+%   setSquareCData         - Set the 'CData' property of each square (设置方块的 CData 属性)
+%   setSquareColor         - Set color for each square (弧形块颜色设置)
+%   setSubSquareS          - Source sub‑square property settings (来源子方块属性设置)
+%   setSubSquareT          - Target sub-square property settings (目标子方块属性设置)
+%   setChord               - Chord property settings (弦属性设置)
+%   setChordCData          - Set the 'CData' property of each chord patch (设置弦的 CData 属性)
+%   setChordColorBySquareS - Color each chord using its source block color (根据来源方块颜色为弦着色)
+%   setChordColorBySquareT - Color each chord using its target block color (根据目标方块颜色为弦着色)
+%   addHighlightArrow      - Add highlight arrow indicator (添加高亮箭头指示器)
 
 
 % =========================================================================
@@ -110,61 +130,56 @@ classdef biChordChart < handle
 %     (Variable names previously associated with 'F' remain available.)
 %   + The setChord method replaces setChordProp and setChordMN.
 %     setChord(___)          | Set properties for all chord
-%     setChord(M, N, ___)    | Set the properties for the chord which
-%                              connect M-th and N-th nodes
+%     setChord(m, n, ___)    | Set the properties for the chord which
+%                              connect m-th and n-th nodes
 %   + The setSquare method replaces setSquareProp and setSquareN.
 %     setSquare(___)         | Set properties for all square
-%     setSquare(N, ___)      | Set the properties for the N-th square
+%     setSquare(n, ___)      | Set the properties for the n-th square
 %   + The setSubSquareS method replaces setEachSquareF_Prop.
 %   + The setSubSquareT method replaces setEachSquareT_Prop.
 
 
     properties
-        % Axes and configuration (坐标区与配置)
         ax                                                     % Axes handle (坐标区句柄)
-        % Name-value pair list (名称-值对参数列表)
+       
         arginList = {'Label','Sep','GroupSep','Arrow','CData','Rotation','TickMode',...
                      'TRadius' , 'TickRadius', ...
                      'SRadius' , 'SquareRadius', ...
                      'LRadius' , 'LabelRadius', ...
                      'LRotate' , 'LabelRotate', ...
                      'SSqRatio', 'SubSquareRatio', ...
-                     'OSqRatio', 'OriSquareRatio'}   
+                     'OSqRatio', 'OriSquareRatio'}  % Name-value pair list (名称-值对参数列表)  
         
-        % Data storage (数据存储)
         dataMat                                                % Numerical matrix (数值矩阵)
         Label = {}                                             % Node labels (节点标签)
 
-        % Data tip configuration (数据提示框配置)
-        % {color, srcLabel, tgtLabel, valLabel, format} (颜色、源标签、目标标签、数值标签、格式)
-        dataTipFormat = {'k', 'Source:', 'Target:', 'Value:', 'auto'}   
-
-        % Appearance parameters (外观参数)
-        Sep      = 1/10                                        % Gap between block/square nodes (弧形块间隙)
-        Arrow    = 'off'                                       % Arrow mode: 'on'/'off' (箭头模式)
+        Sep      = 1/10                                        % Separation between square nodes (弧形块间隙)
         CData    = [127, 91, 93; 187,128,110; 197,173,143;
-                     59, 71,111;104,  95,126;  76,103, 86;
+                     59, 71,111; 104, 95,126;  76,103, 86;
                     112,112,124;  72, 39, 24; 197,119,106;
                     160,126, 88; 238,208,146]./255;            % Color data (颜色数据)
+        Arrow    = 'off'                                       % Arrow mode: 'on'/'off' (箭头模式)
         Group    = []                                          % Group assignment for nodes (节点分组)
-        GroupSep = 1/15                                        % Gap between groups (组间间隙)
+        GroupSep = 1/15                                        % Separation between groups (组间间隙)
         TickRadius = 1.17                                      % Tick radius (刻度半径)
-        SquareRadius = [1.05, 1.15]                            % Inner and outer radius of the arc block/square (弦块的内外半径)
+        SquareRadius = [1.05, 1.15]                            % Inner and outer radius of the arc square (弦块的内外半径)
         LabelRadius  = 1.28                                    % Label radius (标签半径)
-        LabelRotate  = 'off'                                   % Label rotation mode (标签旋转模式)
+        LabelRotate  = 'off'                                   % Label rotation mode: 'on'/'off'/'none' (标签旋转模式)
         SubSquareRatio = 0                                     % Subordinate square ratio: Square ratio at chord ends (弦末端方块比例)
         OriSquareRatio = 1                                     % Original square ratio (原始弧形块比例)
         Rotation = 0                                           % Global rotation angle (全局旋转角度)
         TickMode = 'value'                                     % Tick mode: 'value'/'auto'/'linear' (刻度模式)
         LinearTickSep                                          % Linear tick spacing (线性刻度间隔)
         LinearTickCompactDegree = 3.5                          % Linear tick compact degree (线性刻度紧密程度)
-        LinearMinorTick = 'off'                                % Minor tick mode (次刻度线模式)
+        LinearMinorTick = 'off'                                % Minor tick mode: 'on'/'off' (次刻度线模式)
 
-        % Graphics handles (图形句柄)
-        squareHdl                                              % Blocks/squares (节点方块)
-        squareSMatHdl                                          % Source split blocks/squares (源端拆分方块)
-        squareTMatHdl                                          % Target split blocks/squares (目标端拆分方块)
-        nameHdl                                                % Labels (标签)
+        % {color, srcLabel, tgtLabel, valLabel, format} (颜色、源标签、目标标签、数值标签、格式)
+        dataTipFormat = {'k', 'Source:', 'Target:', 'Value:', 'auto'}   
+
+        squareHdl                                              % squares (节点方块)
+        squareSMatHdl                                          % Source-side sub-squares | Source split squares for chord ends (弦末端下方拆分方块)
+        squareTMatHdl                                          % Target-side sub-squares | Target split squares for chord ends (弦末端上方拆分方块)
+        labelHdl                                               % Labels (标签)
         chordMatHdl                                            % Chord ribbons (弦)
         thetaTickHdl                                           % Theta tick lines (角度刻度线)
         RTickHdl                                               % Radius tick lines (半径刻度线)
@@ -178,6 +193,11 @@ classdef biChordChart < handle
         rotationSet; thetaFullSet                              % Rotation angles and full theta set (旋转角度与完整角度集)
     end
 
+    properties (Dependent, Hidden)
+        linearTickSep; linearTickCompactDegree; linearMinorTick; 
+        squareFMatHdl; nameHdl
+    end
+
     % Shorthands / alias
     properties (Dependent)
         TRadius    % TickRadius
@@ -186,12 +206,6 @@ classdef biChordChart < handle
         LRotate    % LabelRotate
         SSqRatio   % SubSquareRatio
         OSqRatio   % OriSquareRatio
-
-        linearTickSep
-        linearTickCompactDegree
-        linearMinorTick
-
-        squareFMatHdl
     end
 
     methods 
@@ -201,25 +215,23 @@ classdef biChordChart < handle
         function val = get.LRotate(obj),  val = obj.LabelRotate;    end
         function val = get.SSqRatio(obj), val = obj.SubSquareRatio; end
         function val = get.OSqRatio(obj), val = obj.OriSquareRatio; end
-
         function val = get.linearTickSep(obj), val = obj.LinearTickSep; end
         function val = get.linearTickCompactDegree(obj), val = obj.LinearTickCompactDegree; end
         function val = get.linearMinorTick(obj), val = obj.LinearMinorTick; end
-
         function val = get.squareFMatHdl(obj), val = obj.squareSMatHdl; end
-        
+        function val = get.nameHdl(obj), val = obj.labelHdl; end
+       
         function set.TRadius(obj, val),  obj.TickRadius = val;      end
         function set.SRadius(obj, val),  obj.SquareRadius = val;    end
         function set.LRadius(obj, val),  obj.LabelRadius = val;     end
         function set.LRotate(obj, val),  obj.LabelRotate = val;     end
         function set.SSqRatio(obj, val), obj.SubSquareRatio = val;  end
         function set.OSqRatio(obj, val), obj.OriSquareRatio = val;  end
-
         function set.linearTickSep(obj, val), obj.LinearTickSep = val;  end
         function set.linearTickCompactDegree(obj, val), obj.LinearTickCompactDegree = val;  end
         function set.linearMinorTick(obj, val), obj.LinearMinorTick = val;  end
-
         function set.squareFMatHdl(obj, val), obj.squareSMatHdl = val;  end
+        function set.nameHdl(obj, val), obj.labelHdl = val;  end
 
 % =========================================================================
 % Constructor (构造函数)
@@ -262,6 +274,8 @@ classdef biChordChart < handle
 % Main drawing method (主绘图方法)
 % =========================================================================
         function varargout = draw(obj)
+            % varargout = obj.draw() - Render the biChordChart object (渲染双向弦图对象)
+
             % Validate gap parameters (验证间隙参数)
             if obj.Sep > 1/2, obj.Sep = 1/2; end
             if obj.GroupSep > 1/2, obj.GroupSep = 1/2; end
@@ -334,7 +348,7 @@ classdef biChordChart < handle
             % Draw blocks and labels (绘制方块和标签)
             % =============================================================
             obj.squareHdl = gobjects(1, numC);
-            obj.nameHdl   = gobjects(1, numC);
+            obj.labelHdl   = gobjects(1, numC);
             obj.RTickHdl  = gobjects(1, numC);
             diffTheta = zeros(1, numC);
             for i = 1:numC
@@ -362,12 +376,12 @@ classdef biChordChart < handle
                 rotation = theta3 / pi * 180;
 
                 if rotation > 0 && rotation < 180
-                    obj.nameHdl(i) = text(obj.ax, cos(theta3) * obj.LabelRadius, sin(theta3) * obj.LabelRadius, obj.Label{i}, ...
+                    obj.labelHdl(i) = text(obj.ax, cos(theta3) * obj.LabelRadius, sin(theta3) * obj.LabelRadius, obj.Label{i}, ...
                         'FontSize', 14, 'FontName', 'Arial', 'HorizontalAlignment', 'center', ...
                         'Rotation', -(0.5 * pi - theta3) / pi * 180, 'Tag', 'BiChordLabel');
                     obj.rotationSet(i) = -(0.5 * pi - theta3) / pi * 180;
                 else
-                    obj.nameHdl(i) = text(obj.ax, cos(theta3) * obj.LabelRadius, sin(theta3) * obj.LabelRadius, obj.Label{i}, ...
+                    obj.labelHdl(i) = text(obj.ax, cos(theta3) * obj.LabelRadius, sin(theta3) * obj.LabelRadius, obj.Label{i}, ...
                         'FontSize', 14, 'FontName', 'Arial', 'HorizontalAlignment', 'center', ...
                         'Rotation', -(1.5 * pi - theta3) / pi * 180, 'Tag', 'BiChordLabel');
                     obj.rotationSet(i) = -(1.5 * pi - theta3) / pi * 180;
@@ -612,58 +626,60 @@ classdef biChordChart < handle
             end
         end
 
-
-% =========================================================================
-% Block property settings (方块属性设置)
-% =========================================================================
-        function setSquare(obj, varargin)
-            % setSquare(___)       | Set properties for all squares
-            % setSquare(N, ___)    | Set properties for N-th square
-            if isnumeric(varargin{1})
-                set(obj.squareHdl(varargin{1}), varargin{2:end});
-            else
-                for i = 1:size(obj.dataMat, 1)
-                    set(obj.squareHdl(i), varargin{:});
-                end
-            end
-        end
-
-
-        function setSubSquareT(obj, m, n, varargin)
-            % Set properties for a specific target-side block (设置特定目标端方块的属性)
-            if isa(obj.squareTMatHdl(m, n), 'matlab.graphics.primitive.Patch')
-                set(obj.squareTMatHdl(m, n), 'Visible', 'on', varargin{:})
-            end
-        end
-
-        function setSubSquareS(obj, m, n, varargin)
-            % Set properties for a specific source-side block (设置特定源端方块的属性)
-            if isa(obj.squareSMatHdl(m, n), 'matlab.graphics.primitive.Patch')
-                set(obj.squareSMatHdl(m, n), 'Visible', 'on', varargin{:})
-            end
-        end
-
 % =========================================================================
 % Chord property settings (弦属性设置)
 % =========================================================================
-        function setChordN(obj, n, varargin)
-            % Set properties for all chords from node n (设置从节点 n 出发的所有弦的属性)
-            for i = n
-                for j = 1:size(obj.dataMat, 2)
-                    if isa(obj.chordMatHdl(i, j), 'matlab.graphics.primitive.Patch')
-                        set(obj.chordMatHdl(i, j), varargin{:});
+        function setChord(obj, varargin)
+            % obj.setChord(varargin) - Chord property settings (弦属性设置)
+            %
+            %   obj.setChord(___); Set properties for all chord.
+            %
+            %   obj.setChord(m, n, ___); Set the properties for the chord which
+            %   connect m-th square node and n-th square node.
+            %
+            %   obj.setChord([m1, m2, ...], [n1, n2, ...], ___); Set properties for
+            %   multiple chords specified by corresponding pairs of source indices (m) and target indices (n).
+            %
+            %   obj.setChord([m1; m2; ...], [n1, n2, ...], ___);
+            %   obj.setChord([m1, m2, ...], [n1; n2; ...], ___); Set properties for 
+            %   all combinations when the source vector and target vector have different sizes.
+            %
+            %   obj.setChord([m1, m2, ...], [], ___); Set properties for all chords 
+            %   from the specified source indices to every target.
+            %
+            %   obj.setChord([], [n1, n2, ...], ___); Set properties for all chords 
+            %   from every source to the specified target indices.
+            %
+            %   obj.setChord(Bool, ___); Set properties for chords where the logical
+            %   matrix Bool is true. Bool(m, n) = true selects the chord between source m and target n.
+            if islogical(varargin{1})
+                [M, N] = find(varargin{1});
+                for i = 1:length(M)
+                    m = M(i); n = N(i);
+                    if isa(obj.chordMatHdl(m, n), 'matlab.graphics.primitive.Patch')
+                        set(obj.chordMatHdl(m, n), varargin{2:end});
                     end
                 end
-            end
-        end
-        function setChord(obj, varargin)
-            % setChord(___)          | Set properties for all chord
-            % setChord(M, N, ___)    | Set the properties for the chord which
-            %                              connect M-th and N-th nodes
-            if isnumeric(varargin{1})
-                m = varargin{1}; n = varargin{2};
-                if isa(obj.chordMatHdl(m, n), 'matlab.graphics.primitive.Patch')
-                    set(obj.chordMatHdl(m, n), varargin{3:end});
+            elseif isnumeric(varargin{1})
+                M = varargin{1}; N = varargin{2};
+                if all(size(M) == size(N))
+                    for i = 1:length(M)
+                        m = M(i); n = N(i);
+                        if isa(obj.chordMatHdl(m, n), 'matlab.graphics.primitive.Patch')
+                            set(obj.chordMatHdl(m, n), varargin{3:end});
+                        end
+                    end
+                else
+                    if isempty(M); M = 1:size(obj.dataMat, 1); end
+                    if isempty(N); N = 1:size(obj.dataMat, 2); end
+                    for i = 1:length(M)
+                        for j = 1:length(N)
+                            m = M(i); n = N(j);
+                            if isa(obj.chordMatHdl(m, n), 'matlab.graphics.primitive.Patch')
+                                set(obj.chordMatHdl(m, n), varargin{3:end});
+                            end
+                        end
+                    end
                 end
             else
                 for i = 1:size(obj.dataMat, 1)
@@ -675,38 +691,263 @@ classdef biChordChart < handle
                 end
             end
         end
-        
+
+        function setChordCData(obj, CMat)
+            % obj.setChordCData(CMat) - Set the 'CData' property of each chord patch (设置弦的 CData 属性)  
+            % 
+            % Input:
+            %   CMat - Matrix of size [N, N, 1] or [N, N, 3] where, N = number of nodes. 
+            for i = 1:size(obj.dataMat, 1)
+                for j = 1:size(obj.dataMat, 2)
+                    if isa(obj.chordMatHdl(i, j), 'matlab.graphics.primitive.Patch')
+                        set(obj.chordMatHdl(i, j), 'CData', CMat(i, j, :), 'FaceColor','flat');
+                    end
+                end
+            end
+        end
+
+        function setChordColorBySquareS(obj)
+            % obj.setChordColorBySquareS() - Color each chord using its source block color (根据来源方块颜色为弦着色) 
+            for i = 1:size(obj.dataMat, 1)
+                for j = 1:size(obj.dataMat, 2)
+                    fColor = get(obj.squareHdl(i), 'FaceColor');
+                    eColor = get(obj.squareHdl(i), 'EdgeColor');
+                    obj.setChordMN(i,j, 'FaceColor',fColor, 'EdgeColor',eColor)
+                end
+            end
+        end
+        function setChordColorBySquareT(obj)
+            % obj.setChordColorBySquareT() - Color each chord using its target block color (根据目标方块颜色为弦着色)
+            for i = 1:size(obj.dataMat, 1)
+                for j = 1:size(obj.dataMat, 2)
+                    fColor = get(obj.squareHdl(j), 'FaceColor');
+                    eColor = get(obj.squareHdl(j), 'EdgeColor');
+                    obj.setChordMN(i,j, 'FaceColor',fColor, 'EdgeColor',eColor)
+                end
+            end
+        end
+
+% =========================================================================
+% Square property settings (方块属性设置)
+% =========================================================================
+        function setSquare(obj, varargin)
+            % obj.setSquare(varargin) - Node square property settings (节点弧形块属性设置)
+            %
+            %   obj.setSquare(___); Set properties for all squares.
+            %
+            %   obj.setSquare(n, ___); Set properties for n-th square.
+            %
+            %   obj.setSquare([n1, n2, ...], ___); Set properties for 
+            %   multiple specified squares (by their indices).
+            %
+            %   obj.setSquare(Bool, ___); Set properties for squares where the
+            %   logical vector Bool (length = number of nodes) is true.
+            if islogical(varargin{1})
+                N = find(varargin{1});
+                for i = 1:length(N)
+                    set(obj.squareHdl(N(i)), varargin{2:end});
+                end
+            elseif isnumeric(varargin{1})
+                N = varargin{1};
+                for i = 1:length(N)
+                    set(obj.squareHdl(N(i)), varargin{2:end});
+                end
+            else
+                for i = 1:size(obj.dataMat, 1)
+                    set(obj.squareHdl(i), varargin{:});
+                end
+            end
+        end
+
+
+        function setSubSquareT(obj, varargin)
+            % obj.setSubSquareT(varargin) - Target sub-square property settings (目标子方块属性设置)
+            %
+            %   obj.setSubSquareT(___); Set properties for all target sub-squares.
+            %
+            %   obj.setSubSquareT(m, n, ___); Set properties for the m‑th sub‑square inside the n‑th square.
+            %
+            %   obj.setSubSquareT([m1, m2, ...], [n1, n2, ...],___); Set properties for
+            %   multiple specified target-side sub‑square (by their indices).
+            %
+            %   obj.setSubSquareT([m1; m2; ...], [n1, n2, ...], ___);
+            %   obj.setSubSquareT([m1, m2, ...], [n1; n2; ...], ___); Set properties for 
+            %   all combinations when the source vector and target vector have different sizes.
+            %
+            %   obj.setSubSquareT([m1, m2, ...], [], ___); Set properties for all target-side sub-square 
+            %   from the specified source indices to every target.
+            %
+            %   obj.setSubSquareT([], [n1, n2, ...], ___); Set properties for all target-side sub-square 
+            %   from every source to the specified target indices.
+            %
+            %   obj.setSubSquareT(Bool, ___); Set properties for target-side sub‑squares 
+            %   where the logical matrix Bool is true.
+            if islogical(varargin{1})
+                [M, N] = find(varargin{1});
+                for i = 1:length(M)
+                    m = M(i); n = N(i);
+                    if isa(obj.squareTMatHdl(m, n), 'matlab.graphics.primitive.Patch')
+                        set(obj.squareTMatHdl(m, n), 'Visible', 'on', varargin{2:end})
+                    end
+                end
+            elseif isnumeric(varargin{1})
+                M = varargin{1}; N = varargin{2};
+                if all(size(M) == size(N))
+                    for i = 1:length(M)
+                        m = M(i); n = N(i);
+                        if isa(obj.squareTMatHdl(m, n), 'matlab.graphics.primitive.Patch')
+                            set(obj.squareTMatHdl(m, n), 'Visible', 'on', varargin{3:end})
+                        end
+                    end
+                else
+                    if isempty(M); M = 1:size(obj.dataMat, 1); end
+                    if isempty(N); N = 1:size(obj.dataMat, 2); end
+                    for i = 1:length(M)
+                        for j = 1:length(N)
+                            m = M(i); n = N(j);
+                            if isa(obj.squareTMatHdl(m, n), 'matlab.graphics.primitive.Patch')
+                                set(obj.squareTMatHdl(m, n), 'Visible', 'on', varargin{3:end})
+                            end
+                        end
+                    end
+                end
+            else
+                for m = 1:size(obj.dataMat, 1)
+                    for n = 1:size(obj.dataMat, 2)
+                        if isa(obj.squareTMatHdl(m, n), 'matlab.graphics.primitive.Patch')
+                            set(obj.squareTMatHdl(m, n), 'Visible', 'on', varargin{:})
+                        end
+                    end
+                end
+            end
+        end
+
+        function setSubSquareS(obj, varargin)
+            % obj.setSubSquareS(varargin) - Source sub‑square property settings (来源子方块属性设置)
+            %
+            %   obj.setSubSquareS(___); Set properties for all source sub‑squares.
+            %
+            %   obj.setSubSquareS(m, n, ___); Set properties for the n‑th sub‑square inside the m‑th square.
+            %
+            %   obj.setSubSquareS([m1, m2, ...], [n1, n2, ...],___); Set properties for
+            %   multiple specified source-side sub‑square (by their indices).
+            %
+            %   obj.setSubSquareS([m1; m2; ...], [n1, n2, ...], ___);
+            %   obj.setSubSquareS([m1, m2, ...], [n1; n2; ...], ___); Set properties for 
+            %   all combinations when the source vector and target vector have different sizes.
+            %
+            %   obj.setSubSquareS([m1, m2, ...], [], ___); Set properties for all source-side sub-square 
+            %   from the specified source indices to every target.
+            %
+            %   obj.setSubSquareS([], [n1, n2, ...], ___); Set properties for all source-side sub-square 
+            %   from every source to the specified target indices.
+            %
+            %   obj.setSubSquareS(Bool, ___); Set properties for source-side sub‑squares 
+            %   where the logical matrix Bool is true.
+            if islogical(varargin{1})
+                [M, N] = find(varargin{1});
+                for i = 1:length(M)
+                    m = M(i); n = N(i);
+                    if isa(obj.squareSMatHdl(m, n), 'matlab.graphics.primitive.Patch')
+                        set(obj.squareSMatHdl(m, n), 'Visible', 'on', varargin{2:end})
+                    end
+                end
+            elseif isnumeric(varargin{1})
+                M = varargin{1}; N = varargin{2};
+                if all(size(M) == size(N))
+                    for i = 1:length(M)
+                        m = M(i); n = N(i);
+                        if isa(obj.squareSMatHdl(m, n), 'matlab.graphics.primitive.Patch')
+                            set(obj.squareSMatHdl(m, n), 'Visible', 'on', varargin{3:end})
+                        end
+                    end
+                else
+                    if isempty(M); M = 1:size(obj.dataMat, 1); end
+                    if isempty(N); N = 1:size(obj.dataMat, 2); end
+                    for i = 1:length(M)
+                        for j = 1:length(N)
+                            m = M(i); n = N(j);
+                            if isa(obj.squareSMatHdl(m, n), 'matlab.graphics.primitive.Patch')
+                                set(obj.squareSMatHdl(m, n), 'Visible', 'on', varargin{3:end})
+                            end
+                        end
+                    end
+                end
+            else
+                for m = 1:size(obj.dataMat, 1)
+                    for n = 1:size(obj.dataMat, 2)
+                        if isa(obj.squareSMatHdl(m, n), 'matlab.graphics.primitive.Patch')
+                            set(obj.squareSMatHdl(m, n), 'Visible', 'on', varargin{:})
+                        end
+                    end
+                end
+            end
+        end       
+
+        function setSquareColor(obj, FaceCList, EdgeCList)
+            % obj.setSquareColor(FaceCList, EdgeCList) - Set color for each square (弧形块颜色设置)
+            for i = 1:size(obj.dataMat, 1)
+                obj.setSquareN(i, 'FaceColor', FaceCList(i,:))
+                if nargin == 3
+                    obj.setSquareN(i, 'EdgeColor', EdgeCList(i,:))
+                end
+            end
+            for i = 1:size(obj.dataMat, 1)
+                for j = 1:size(obj.dataMat, 2)
+                    obj.setEachSquareT_Prop(i, j, 'FaceColor', FaceCList(i,:))
+                    obj.setEachSquareS_Prop(i, j, 'FaceColor', FaceCList(j,:))
+                    % if nargin == 3
+                    %     obj.setEachSquareT_Prop(i, j, 'EdgeColor', EdgeCList(i,:))
+                    %     obj.setEachSquareS_Prop(i, j, 'EdgeColor', EdgeCList(j,:))
+                    % end
+                end
+            end
+        end
+
+        function setSquareCData(obj, CVal)
+            % obj.setSquareCData(CVal) - Set the 'CData' property of each square (设置方块的 CData 属性)  
+            if isvector(CVal)
+                CVal = CVal(:);
+            end
+            for i = 1:size(obj.dataMat, 1)
+                obj.setSquare(i, 'FaceColor', 'flat', 'CData', CVal(i, :, :))
+            end
+        end
 
 % =========================================================================
 % Set labels (标签设置)
 % =========================================================================
         function setFont(obj, varargin)
-            % Set font properties for all labels (设置所有标签的字体属性)
+            % obj.setFont(varargin) - Label property settings (标签属性设置)
             for i = 1:size(obj.dataMat, 1)
-                set(obj.nameHdl(i), varargin{:});
+                set(obj.labelHdl(i), varargin{:});
             end
         end
 
-        function setFontN(obj, n, varargin)
-            % Set font properties for a specific label (设置特定标签的字体属性)
-            set(obj.nameHdl(n), varargin{:});
-        end
-
-        % version 1.1.0 update (版本 1.1.0 更新部分)
-        % Set label radius (设置标签半径)
         function obj = setLabelRadius(obj, Radius)
+            % obj.setLabelRadius(Radius) - Set label radius (设置标签半径)
             obj.LabelRadius = Radius;
             for i = 1:size(obj.dataMat, 1)
-                set(obj.nameHdl(i), 'Position', [cos(obj.meanThetaSet(i)), sin(obj.meanThetaSet(i))] .* obj.LabelRadius);
+                set(obj.labelHdl(i), 'Position', [cos(obj.meanThetaSet(i)), sin(obj.meanThetaSet(i))] .* obj.LabelRadius);
             end
         end
 
-        % version 1.1.0 update (版本 1.1.0 更新部分)
-        % Label rotation adjustment (标签旋转状态设置)
         function labelRotate(obj, Rotate)
+            % obj.labelRotate(Rotate) - Label rotation control (标签旋转控制)
+            %
+            % Input:
+            %   Rotate - Rotation mode (旋转模式):
+            %       'on'   - Labels parallel to radial direction (标签平行于径向)
+            %       'off'  - Labels perpendicular to radial (tangential) (标签垂直于径向/切线方向)
+            %       'none' - Labels horizontal (no rotation) (标签水平，无旋转)
+            %
+            % Example:
+            %   obj.labelRotate('on');   % 平行于径向
+            %   obj.labelRotate('off');  % 垂直于径向
+            %   obj.labelRotate('none'); % 水平
             obj.LabelRotate = Rotate;
             for i = 1:size(obj.dataMat, 1)
-                set(obj.nameHdl(i), 'HorizontalAlignment', 'center', 'Rotation', obj.rotationSet(i))
+                set(obj.labelHdl(i), 'HorizontalAlignment', 'center', 'Rotation', obj.rotationSet(i))
             end
             if strcmpi(obj.LabelRotate, 'on')
                 textHdl = findobj(obj.ax, 'Tag', 'BiChordLabel');
@@ -753,16 +994,15 @@ classdef biChordChart < handle
 % Set ticks (刻度设置)
 % =========================================================================
         function tickState(obj, state)
-            % Show/hide tick marks (显示/隐藏刻度线)
+            % obj.tickState(state) - Show/hide tick marks (显示/隐藏刻度线)
             for i = 1:size(obj.dataMat, 1)
                 set(obj.RTickHdl(i), 'Visible', state);
             end
             set(obj.thetaTickHdl, 'Visible', state);
         end
 
-        % version 1.1.0 update (版本 1.1.0 更新部分)
         function tickLabelState(obj, state)
-            % Show/hide tick labels (显示/隐藏刻度标签)
+            % obj.tickLabelState(state) - Show/hide tick labels (显示/隐藏刻度标签)
             for m = 1:length(obj.thetaFullSet)
                 for n = 1:length(obj.thetaFullSet{m})
                     if ~(n < length(obj.thetaFullSet{m}) && abs(obj.thetaFullSet{m}(n) - obj.thetaFullSet{m}(n+1)) < eps)
@@ -773,7 +1013,7 @@ classdef biChordChart < handle
         end
 
         function setTickFont(obj, varargin)
-            % Set font properties for all tick labels (设置所有刻度标签的字体属性)
+            % obj.setTickFont(varargin) - Tick label property settings (刻度标签属性设置)
             for m = 1:length(obj.thetaFullSet)
                 for n = 1:length(obj.thetaFullSet{m})
                     set(obj.thetaTickLabelHdl(m, n), varargin{:})
@@ -782,7 +1022,7 @@ classdef biChordChart < handle
         end
 
         function setTickLabelFormat(obj, func)
-            % Set custom format for tick labels (设置刻度标签的自定义格式)
+            % obj.setTickLabelFormat(func) - Set custom format for tick labels (设置刻度标签的自定义格式)
             for m = 1:length(obj.thetaFullSet)
                 for n = 1:length(obj.thetaFullSet{m})
                     tStr = func(get(obj.thetaTickLabelHdl(m, n), 'UserData'));
@@ -801,16 +1041,19 @@ classdef biChordChart < handle
             tXS = round(round(tXS / 10^(tXN-2)) / 5) * 5 * 10^(tXN - 2);
         end
 
-        function tHdl = addHighlightArrow(obj, i, j)
-            % Add an arrow to highlight flow between nodes (添加箭头高亮节点间的流向)
+        function tHdl = addHighlightArrow(obj, i, j, Color)
+            % tHdl = obj.addHighlightArrow(i, j, Color) - Add highlight arrow indicator (添加高亮箭头指示器)
+            if nargin < 4
+                Color = [0,0,0];
+            end
             tPnt1 = [cos(obj.iMidThetaSet(i, j)), sin(obj.iMidThetaSet(i, j))];
             tPnt2 = [cos(obj.jMidThetaSet(i, j)), sin(obj.jMidThetaSet(i, j))];
             tLine = bezierCurve([tPnt1; 0, 0; tPnt2], 200);
-            tHdl.Line = plot(obj.ax, tLine(:, 1), tLine(:, 2), 'LineWidth', 1, 'Color', [0, 0, 0]);
+            tHdl.Line = plot(obj.ax, tLine(:, 1), tLine(:, 2), 'LineWidth', 1, 'Color', Color);
 
             tPnt3 = [cos(obj.jMidThetaSet(i, j) - pi/100) .* 0.95, sin(obj.jMidThetaSet(i, j) - pi/100) .* 0.95];
             tPnt4 = [cos(obj.jMidThetaSet(i, j) + pi/100) .* 0.95, sin(obj.jMidThetaSet(i, j) + pi/100) .* 0.95];
-            tHdl.Arrow = fill(obj.ax, [tPnt2(1), tPnt3(1), tPnt4(1)], [tPnt2(2), tPnt3(2), tPnt4(2)], [0, 0, 0]);
+            tHdl.Arrow = fill(obj.ax, [tPnt2(1), tPnt3(1), tPnt4(1)], [tPnt2(2), tPnt3(2), tPnt4(2)], Color, 'EdgeColor',Color);
 
             function pnts = bezierCurve(pnts, N)
                 t = linspace(0, 1, N);
@@ -845,7 +1088,15 @@ classdef biChordChart < handle
         end
     end
 
+% =========================================================================
+% Hidden methods >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+% =========================================================================
     methods (Hidden)
+        function setFontN(obj, n, varargin)
+            % Set font properties for a specific label (设置特定标签的字体属性)
+            set(obj.labelHdl(n), varargin{:});
+        end
+
         function setChordProp(obj, varargin)
             % Batch chord property setting (批量设置弦的属性)
             for i = 1:size(obj.dataMat, 1)
@@ -856,10 +1107,21 @@ classdef biChordChart < handle
                 end
             end
         end
+
         function setChordMN(obj, m, n, varargin)
             % Set properties for a specific chord (设置特定弦的属性)
             if isa(obj.chordMatHdl(m, n), 'matlab.graphics.primitive.Patch')
                 set(obj.chordMatHdl(m, n), varargin{:});
+            end
+        end
+        function setChordN(obj, n, varargin)
+            % Set properties for all chords from node n (设置从节点 n 出发的所有弦的属性)
+            for i = n
+                for j = 1:size(obj.dataMat, 2)
+                    if isa(obj.chordMatHdl(i, j), 'matlab.graphics.primitive.Patch')
+                        set(obj.chordMatHdl(i, j), varargin{:});
+                    end
+                end
             end
         end
 
@@ -897,6 +1159,10 @@ classdef biChordChart < handle
         end
 
     end
+end
+
+
+% =========================================================================
 % @author : slandarer
 % 公众号  : slandarer随笔
 % 知乎    : slandarer
@@ -904,4 +1170,4 @@ classdef biChordChart < handle
 % Zhaoxu Liu / slandarer (2026). biChordChart (bidirectional chord diagram | 有向弦图) 
 % (https://www.mathworks.com/matlabcentral/fileexchange/121043-bichordchart-bidirectional-chord-diagram), 
 % MATLAB Central File Exchange. Retrieved April 14, 2026.
-end
+% =========================================================================

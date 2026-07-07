@@ -387,9 +387,9 @@ classdef chordChart < handle
             obj.ax.PlotBoxAspectRatio = [1, 1, 1];
             
             obj.LinearTickSep = obj.getTick(sum(sum(tDMat)) ./ (size(tDMat, 1) + size(tDMat, 2)) .* 2, obj.LinearTickCompactDegree);
-            % Normalize data for coloring (归一化数据用于着色)
-            tDMatUni = tDMat - min(min(tDMat));
-            tDMatUni = tDMatUni ./ max(max(tDMatUni));
+            % % Normalize data for coloring (归一化数据用于着色)
+            % tDMatUni = tDMat - min(min(tDMat));
+            % tDMatUni = tDMatUni ./ max(max(tDMatUni));
             sep1 = obj.GroupSep;            % Group separation (上下两组分隔)
             sep2 = obj.Sep;                 % Node separation (节点分隔)
             % Calculate ratio of each row/column (计算每行/列的比例)
@@ -467,7 +467,7 @@ classdef chordChart < handle
 
             % Set colormap (设置颜色映射)
             colormap(obj.ax, flipud(summer(50)))
-            try clim([0, 1]), catch, end; try caxis([0, 1]), catch, end
+            try clim([0, max(max(tDMat))]), catch, end; try caxis([0, max(max(tDMat))]), catch, end
 
             % =============================================================
             % Draw chords (ribbons) (绘制弦/连接带)
@@ -540,7 +540,7 @@ classdef chordChart < handle
                     end
                     obj.chordMatHdl(i, j) = fill(obj.ax, [tLine1(:,1); tline4(:,1); tLine2(end:-1:1,1); tline3(:,1)], ...
                                                    [tLine1(:,2); tline4(:,2); tLine2(end:-1:1,2); tline3(:,2)], ...
-                                                   tDMatUni(i, j), 'FaceAlpha', .3, 'EdgeColor', 'none', ...
+                                                   tDMat(i, j), 'FaceAlpha', .3, 'EdgeColor', 'none', ...
                                                    'ButtonDownFcn', @obj.onChordClick, 'UserData', [i, j]);
                     end
                 end
@@ -1040,9 +1040,9 @@ classdef chordChart < handle
             for i = 1:size(obj.dataMat, 1)
                 for j = 1:size(obj.dataMat, 2)
                     obj.setEachSquareT_Prop(i, j, 'FaceColor', FaceCList(i,:))
-                    if nargin == 3
-                        obj.setEachSquareT_Prop(i, j, 'EdgeColor', EdgeCList(i,:))
-                    end
+                    % if nargin == 3
+                    %     obj.setEachSquareT_Prop(i, j, 'EdgeColor', EdgeCList(i,:))
+                    % end
                 end
             end
         end
@@ -1058,9 +1058,9 @@ classdef chordChart < handle
             for i = 1:size(obj.dataMat, 1)
                 for j = 1:size(obj.dataMat, 2)
                     obj.setEachSquareS_Prop(i,j, 'FaceColor', FaceCList(j,:))
-                    if nargin == 3
-                        obj.setEachSquareS_Prop(i,j, 'EdgeColor', EdgeCList(j,:))
-                    end
+                    % if nargin == 3
+                    %     obj.setEachSquareS_Prop(i,j, 'EdgeColor', EdgeCList(j,:))
+                    % end
                 end
             end
         end
