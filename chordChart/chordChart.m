@@ -1412,7 +1412,7 @@ classdef chordChart < handle
                     interp1(x, y3, X, 'linear')'];
             end
         end
-        
+
         function setSquareF(obj, varargin)
             % setSquareF(___)       | Set properties for all squares bellow (source)
             % setSquareF(N, ___)    | Set properties for N-th square bellow (source)

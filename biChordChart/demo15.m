@@ -8,19 +8,11 @@ BCC=biChordChart(dataMat,'Arrow','on', 'Sep',1/3.5);
 BCC.CData = lines(3);
 
 % See radius&ratio.png for details
-BCC.OSqRatio = .4;        
-BCC.SSqRatio = .4;
-BCC.SRadius = [1.1, 1.4];
-BCC.TRadius = 1.5;
-BCC.LRadius = 1.7;
-
-
-% BCC.OriSquareRatio = .4;        
-% BCC.SubSquareRatio = .4;
-% BCC.SquareRadius = [1.1, 1.4];
-% BCC.TickRadius = 1.5;
-% BCC.LabelRadius = 1.7;
-
+BCC.OSqRatio = .4;         % BCC.OriSquareRatio = .4; 
+BCC.SSqRatio = .4;         % BCC.SubSquareRatio = .4;
+BCC.SRadius = [1.1, 1.4];  % BCC.SquareRadius = [1.1, 1.4];
+BCC.TRadius = 1.5;         % BCC.TickRadius = 1.5;
+BCC.LRadius = 1.7;         % BCC.LabelRadius = 1.7;
 
 % Start drawing (开始绘图)
 BCC=BCC.draw();

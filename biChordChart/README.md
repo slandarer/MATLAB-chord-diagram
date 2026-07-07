@@ -8,8 +8,8 @@
 ___
 # 详细教程(User Guide)
 ## 0 数据准备(Data preparation)
-数据应准备全是非负数值的方形矩阵，矩阵第i行第j列表示由类i流向类j，第j行第i列表示由类j流向类i,也就是说矩阵是非对称的，可以同时统计两个类互相的数据流动,这里构造个随机数矩阵：\
-The data should be prepared as a square matrix consisting entirely of non-negative values. The element at the *i*-th row and *j*-th column of the matrix represents the flow from Class *i* to Class *j*, while the element at the *j*-th row and *i*-th column represents the flow from Class *j* to Class *i*. In other words, the matrix is ​​asymmetric, allowing for the simultaneous tracking of data flows in both directions between any two classes. Here, we construct a random matrix for this purpose:
+数据应准备全是非负数值的方形矩阵，矩阵第 i 行第 j 列表示由节点 i 流向节点 j ，第 j 行第 i 列表示由节点 j 流向节点 i，也就是说矩阵是非对称的，可以同时统计两个节点互相的数据流动,这里构造个随机数矩阵：\
+The data should be prepared as a square matrix consisting entirely of non-negative values. The element at the *i*-th row and *j*-th column of the matrix represents the flow from node i to node j, while the element at the j-th row and i-th column represents the flow from node j to node i. In other words, the matrix is ​​asymmetric, allowing for the simultaneous tracking of data flows in both directions between any two nodes. Here, we construct a random matrix for this purpose:
 ```matlab
 dataMat = randi([0, 8], [6, 6]);
 ```
@@ -87,10 +87,8 @@ BCC.tickState('on')
 % 修改字体，字号及颜色(Set Font for labels)
 BCC.setFont('FontName','Cambria', 'FontSize',17, 'Color',[.2,.2,.2])
 
-% version 1.1.0更新
-% 函数labelRotate用来旋转标签
-% The function labelRatato is used to rotate the label
 BCC.labelRotate('on')
+% BCC.labelRotate('none')
 ```
 ![输入图片说明](gallery/12.png)
 
@@ -127,6 +125,9 @@ BCC = BCC.draw();
 ![输入图片说明](gallery/7.png)
 
 ![输入图片说明](gallery/8.png)
+
+## 8 Colormap
+使用 BCC.setChordCData(dataMat) 函数将弦的颜色与 dataMat 数值关联，之后可以设置 colormap :\
 
 ## 8 弧块及弦属性设置(Set properties for blocks or chords)
 通过 

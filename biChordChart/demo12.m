@@ -1,6 +1,6 @@
 %% Features under testing
 
-dataMat=randi([0,8],[5,5]);
+dataMat = randi([0, 8], [5, 5]);
 
 BCC = biChordChart(dataMat,'Arrow','on');
 BCC = BCC.draw();

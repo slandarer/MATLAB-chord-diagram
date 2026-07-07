@@ -11,7 +11,7 @@ BCC.tickLabelState('on')
 
 BCC.addHighlightArrow(2, 3)
 BCC.addHighlightArrow(2, 1)
-BCC.addHighlightArrow(4, 4)
+BCC.addHighlightArrow(4, 4, [0,0,.8])
 
 
 

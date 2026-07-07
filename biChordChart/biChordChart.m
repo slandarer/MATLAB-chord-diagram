@@ -37,6 +37,26 @@ classdef biChordChart < handle
 %   dataMat = randi([0,8], [6,6]);
 %   BCC = biChordChart(dataMat, 'Arrow', 'on');
 %   BCC = BCC.draw();
+%
+% Methods: (try: help biChordChart.setChord)
+%   draw                   - Render the biChordChart object (渲染双向弦图对象)
+%   labelRotate            - Label rotation control (标签旋转控制)
+%   tickState              - Show/hide tick marks (显示/隐藏刻度线)
+%   tickLabelState         - Show/hide tick labels (显示/隐藏刻度标签)
+%   setLabelRadius         - Set label radius (设置标签半径)
+%   setFont                - Label property settings (标签属性设置)
+%   setTickFont            - Tick label property settings (刻度标签属性设置)
+%   setTickLabelFormat     - Set custom format for tick labels (设置刻度标签的自定义格式)
+%   setSquare              - Node square property settings (节点弧形块属性设置)
+%   setSquareCData         - Set the 'CData' property of each square (设置方块的 CData 属性)
+%   setSquareColor         - Set color for each square (弧形块颜色设置)
+%   setSubSquareS          - Source sub‑square property settings (来源子方块属性设置)
+%   setSubSquareT          - Target sub-square property settings (目标子方块属性设置)
+%   setChord               - Chord property settings (弦属性设置)
+%   setChordCData          - Set the 'CData' property of each chord patch (设置弦的 CData 属性)
+%   setChordColorBySquareS - Color each chord using its source block color (根据来源方块颜色为弦着色)
+%   setChordColorBySquareT - Color each chord using its target block color (根据目标方块颜色为弦着色)
+%   addHighlightArrow      - Add highlight arrow indicator (添加高亮箭头指示器)
 
 
 % =========================================================================
@@ -134,15 +154,15 @@ classdef biChordChart < handle
         Label = {}                                             % Node labels (节点标签)
 
         Sep      = 1/10                                        % Separation between square nodes (弧形块间隙)
-        Arrow    = 'off'                                       % Arrow mode: 'on'/'off' (箭头模式)
         CData    = [127, 91, 93; 187,128,110; 197,173,143;
-                     59, 71,111;104,  95,126;  76,103, 86;
+                     59, 71,111; 104, 95,126;  76,103, 86;
                     112,112,124;  72, 39, 24; 197,119,106;
                     160,126, 88; 238,208,146]./255;            % Color data (颜色数据)
+        Arrow    = 'off'                                       % Arrow mode: 'on'/'off' (箭头模式)
         Group    = []                                          % Group assignment for nodes (节点分组)
         GroupSep = 1/15                                        % Separation between groups (组间间隙)
         TickRadius = 1.17                                      % Tick radius (刻度半径)
-        SquareRadius = [1.05, 1.15]                            % Inner and outer radius of the arc block/square (弦块的内外半径)
+        SquareRadius = [1.05, 1.15]                            % Inner and outer radius of the arc square (弦块的内外半径)
         LabelRadius  = 1.28                                    % Label radius (标签半径)
         LabelRotate  = 'off'                                   % Label rotation mode: 'on'/'off'/'none' (标签旋转模式)
         SubSquareRatio = 0                                     % Subordinate square ratio: Square ratio at chord ends (弦末端方块比例)
@@ -157,8 +177,8 @@ classdef biChordChart < handle
         dataTipFormat = {'k', 'Source:', 'Target:', 'Value:', 'auto'}   
 
         squareHdl                                              % squares (节点方块)
-        squareSMatHdl                                          % Source split squares (来源端拆分方块)
-        squareTMatHdl                                          % Target split squares (目标端拆分方块)
+        squareSMatHdl                                          % Source-side sub-squares | Source split squares for chord ends (弦末端下方拆分方块)
+        squareTMatHdl                                          % Target-side sub-squares | Target split squares for chord ends (弦末端上方拆分方块)
         labelHdl                                               % Labels (标签)
         chordMatHdl                                            % Chord ribbons (弦)
         thetaTickHdl                                           % Theta tick lines (角度刻度线)
@@ -254,6 +274,8 @@ classdef biChordChart < handle
 % Main drawing method (主绘图方法)
 % =========================================================================
         function varargout = draw(obj)
+            % varargout = obj.draw() - Render the biChordChart object (渲染双向弦图对象)
+
             % Validate gap parameters (验证间隙参数)
             if obj.Sep > 1/2, obj.Sep = 1/2; end
             if obj.GroupSep > 1/2, obj.GroupSep = 1/2; end

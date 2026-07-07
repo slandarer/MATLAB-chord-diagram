@@ -1,13 +1,13 @@
 # 封面图 (Cover)
 
-![输入图片说明](gallery/cover6.png)
+![](gallery/cover6.png)
 
-![输入图片说明](gallery/cover5.png)
+![](gallery/cover5.png)
 
 ___
 
-# 使用教程(User Guide)
-## 1 数据格式 (Data Format)
+# 使用教程 (User guide)
+## 1 数据格式 (Data format)
 
 数据要求为全部数值大于等于0的数值矩阵，或者`table`数组，或者数值矩阵+行列名元胞数组，首先举个数值矩阵的例子：
 
@@ -16,7 +16,7 @@ a `table` array, or a numeric matrix with cell arrays for row and column names a
 
 First, let's look at an example using a numeric matrix:
 
-### 数值矩阵 (numeric matrix)
+### 数值矩阵 (Numeric matrix)
 ```matlab
 dataMat = randi([0, 5], [5, 4]); 
 
@@ -24,11 +24,11 @@ CC = chordChart(dataMat);
 CC = CC.draw();
 ```
 
-![输入图片说明](gallery/0.png)
+![](gallery/0.png)
 
-由于没对各个对象命名，因此会自动命名为`Rn`和`Cn`
+由于没对各个对象命名，因此会自动命名为`Rn`和`Cn`\
 Since the individual objects were not explicitly named, they will be automatically named `Rn` and `Cn`.
-### 数值矩阵+行列名元胞数组(numeric matrix with cell arrays for row and column names)
+### 数值矩阵+行列名元胞数组 (Numeric matrix with cell arrays for row and column names)
 这是最推荐的一种格式：
 ```matlab
 dataMat = [2 0 1 2 5 1 2;
@@ -41,7 +41,7 @@ CC = chordChart(dataMat, 'RowName',rowName, 'ColName',colName);
 CC = CC.draw();
 ```
 
-![输入图片说明](gallery/1.png)
+![](gallery/1.png)
 
 `RowName`要和矩阵的行相同大小\
 `ColName`要和矩阵的列相同大小\
@@ -70,33 +70,9 @@ You need to use a table array in the following format:
 ```
 当然，如果各个行没有命名的话依旧会自动命名的。
 ___
-## 2 修饰弦(Set properties for chords)
-### 弦的批量修饰(Batch modification of chords)
-弦的批量修饰可以使用`setChord(___)`函数，一切Patch对象所具有的属性均可以被修饰，举个例子(修饰一下弦的颜色，边缘颜色，边缘线形状等)：\
-Batch modification of chords can be performed using the `setChord(___)` function; any property possessed by a Patch object can be modified. For example (modifying the chord color, edge color, edge line shape, etc.):
-```matlab
-CC.setChord('EdgeColor',[.3,.3,.3], 'LineStyle','--',...
-    'LineWidth',.1, 'FaceColor',[.3,.3,.3])
-```
-![输入图片说明](gallery/2.png)
 
-### 弦的单独修饰(Individual modification of chords)
-弦的单独修饰可以使用`setChord(m, n, __)`函数，其中 m,n 值是和原始数值矩阵的行列完全对应的,举个例子(把`S2`流向`G4`的弦颜色更改为红色)：\
-Individual chords can be styled using the `setChord(m, n, __)` function, where the values ​​of `m` and `n` correspond exactly to the rows and columns of the original numerical matrix. For example (to change the color of the chord flowing from `S2` to `G4` to red):
-```matlab
-CC.setChord(2,4, 'FaceColor',[1,0,0])
-```
-![输入图片说明](gallery/3.png)
-
-### 弦的颜色映射(colormap)
-```matlab
-colormap(copper(100))
-```
-![输入图片说明](gallery/5.png)
-___
-
-## 3 圆弧状方块修饰(Arc-shaped Block Decoration)
-### 圆弧状方块批量修饰(Batch Modification of Rounded Square Blocks)
+## 2 方块修饰 (Square decoration)
+### 方块批量修饰 (Batch modification of squares)
 使用
 + setSquareT(___)
 + setSquareS(___)
@@ -104,51 +80,108 @@ ___
 
 
 分别修饰上方方块和下方方块，一切Patch对象所具有的属性均可以被修饰，举个例子，上方方块批量修饰(改为黑色)：\
-S means source, which is the block belows, and T means target, wich is the blocks above. For example, batch-modifying the blocks above (changing them to black):
+S means source, which is the square belows, and T means target, wich is the squares above. For example, batch-modifying the squares above (changing them to black):
 
 ```matlab
 CC.setSquareT('FaceColor',[0,0,0])
 ```
 
-![输入图片说明](gallery/6.png)
-### 圆弧状方块单独修饰(Individual Modification of Rounded Square Blocks)
+![](gallery/6.png)
+### 方块单独修饰 (Individual modification of squares)
 使用
 + setSquareT(n, ___)
 + setSquareS(n, ___)
 
 分别修饰上方方块和下方方块，举个例子，上方第二个方块单独修饰(改为红色)：\
-Set the n-th block. For example, the second block from the top is modified individually (changed to red):
+Set the n-th square. For example, the second square from the top is modified individually (changed to red):
 
 ```matlab
 CC.setSquareT(2,'FaceColor',[.8,0,0])
 ```
-![输入图片说明](gallery/7.png)
+![](gallery/7.png)
+___
+## 3 修饰弦 (Set properties for chords)
+### 弦的批量修饰 (Batch modification of chords)
+弦的批量修饰可以使用`setChord(___)`函数，一切Patch对象所具有的属性均可以被修饰，举个例子(修饰一下弦的颜色，边缘颜色，边缘线形状等)：\
+Batch modification of chords can be performed using the `setChord(___)` function; any property possessed by a Patch object can be modified. For example (modifying the chord color, edge color, edge line shape, etc.):
+```matlab
+CC.setChord('EdgeColor',[.3,.3,.3], 'LineStyle','--',...
+    'LineWidth',.1, 'FaceColor',[.3,.3,.3])
+```
+![](gallery/2.png)
+
+### 弦的单独修饰 (Individual modification of chords)
+弦的单独修饰可以使用`setChord(m, n, __)`函数，其中 m,n 值是和原始数值矩阵的行列完全对应的,举个例子(把`S2`流向`G4`的弦颜色更改为红色)：\
+Individual chords can be styled using the `setChord(m, n, __)` function, where the values ​​of `m` and `n` correspond exactly to the rows and columns of the original numerical matrix. For example (to change the color of the chord flowing from `S2` to `G4` to red):
+```matlab
+CC.setChord(2,4, 'FaceColor',[1,0,0])
+```
+![](gallery/3.png)
+
+
+
+### 使用布尔矩阵设置弦属性 (Use bool matrix to set chord properties)
+```matlab
+CC.setChord(dataMat >= 5, 'EdgeColor','k', 'LineWidth',2)
+```
+![](gallery/15.png)
+
+### 弦的颜色映射 (colormap)
+```matlab
+colormap(copper(100))
+```
+![](gallery/5.png)
+
+### 带负数的弦的颜色映射 (colormap with negative value)
+```matlab
+dataMat = [ 2  0 -1  2 -5 1 -2;
+           -3 -5  1 -4  2 0  1;
+            4  0  5 -5 -2 4  3];
+colName = {'G1','G2','G3','G4','G5','G6','G7'};
+rowName = {'S1','S2','S3'};
+
+CC = chordChart(dataMat, 'RowName',rowName, 'ColName',colName,  'LRadius',1.28);
+CC = CC.draw();
+
+% Set chord color data to the matrix values (将弦颜色数据设为矩阵值)
+CC.setChordCData(dataMat)
+
+CC.setChord('FaceAlpha',.5)
+
+clim([-5, 5])
+cmp = [.23,.30,.75; .38,.51,.92; .55,.69,1.0;
+       .72,.81,.98; 1.0,1.0,1.0; .96,.77,.68;
+       .96,.60,.48; .87,.38,.30; .71,.02,.15];
+colormap(cmp)
+colorbar()
+```
+![](gallery/16.png)
 ___
 
-## 4 字体调整(Set font)
+## 4 字体调整 (Set font)
 使用`setFont`函数对字体进行调整，所有text对象具有的属性均可以修饰，举个例子(更改文本的字号、字体和颜色)：Use the `setFont` function to adjust the font; any property possessed by a text object can be modified. For example (changing the text size, font, and color):
 ```matlab
 CC.setFont('FontSize',30, 'FontName','Cambria', 'Color',[0,0,.8])
 ```
-![输入图片说明](gallery/8.png)
+![](gallery/8.png)
 ___
-## 5 显示和隐藏刻度(Show and Hide tick marks)
+## 5 显示和隐藏刻度 (Show and Hide tick marks)
 ```matlab
 CC.tickState('on')
 % CC.tickState('off')
 ```
 
-![输入图片说明](gallery/cover1.png)
+![](gallery/cover1.png)
 
 ___
-## 6 间隙(Sep)
+## 6 间隙 (Sep)
 假如矩阵较大则绘图会比例失调：If the matrix is ​​large-scale, the plot will be disproportionate.
 ```matlab
 dataMat = randi([0, 1], [20, 10]); 
 CC = chordChart(dataMat);
 CC = CC.draw();
 ```
-![输入图片说明](gallery/9.png)
+![](gallery/9.png)
 通过`Sep`属性可调整绘图间隙，例如设置为特别小的1/120：
 The plotting gap can be adjusted using the `Sep` attribute—for example, by setting it to a particularly small value of 1/120:
 ```matlab
@@ -158,9 +191,9 @@ dataMat = randi([0, 1], [20, 10]);
 CC = chordChart(dataMat, 'Sep',1/120);
 CC = CC.draw();
 ```
-![输入图片说明](gallery/10.png)
+![](gallery/10.png)
 ___
-## 7 刻度标签(Tick labels)
+## 7 刻度标签 (Tick labels)
 通过：
 
 + setLabelRadius 调整类标签半径
@@ -216,12 +249,12 @@ CC.setLabelRadius(1.3);
 % % Adjustable Label radius
 % CC.setLabelRadius(1.4);
 ```
-![输入图片说明](gallery/12.png)
-![输入图片说明](gallery/cover6.png)
+![](gallery/12.png)
+![](gallery/cover6.png)
 
 ___
-## 8 刻度标签格式自定义(Custom tick label formatting)
-需要一个输入数值输出字符串的匿名函数，通过setTickLabelFormat函数可设置格式，比如科学计数法：
+## 8 刻度标签格式自定义 (Custom tick label formatting)
+需要一个输入数值输出字符串的匿名函数，通过setTickLabelFormat函数可设置格式，比如科学计数法：\
 An anonymous function is required that takes a numerical input and outputs a string; the format—such as scientific notation—can be configured using the `setTickLabelFormat` function.
 
 ```matlab
@@ -250,10 +283,10 @@ CC.setLabelRadius(1.4);
 CC.setTickLabelFormat(@(x)sprintf('%0.1e',x))
 
 ```
-![输入图片说明](gallery/cover7.png)
+![](gallery/cover7.png)
 
 ___
-## 9 弦末端弧形块单独上色(The blocks at the ends of the chords painted separately.)
+## 9 弦末端弧形块单独上色 (Color the sub-squares at the ends of the chords separately.)
 ```matlab
 dataMat = randi([1, 15], [7, 22]); dataMat(dataMat < 11) = 0;
 dataMat(1, sum(dataMat,1) == 0) = 15;
@@ -289,7 +322,7 @@ lgdHdl = legend([H1, H2], {'Upregulated','Downregulated'}, 'AutoUpdate','off', .
     'Location','best', 'Box','off', 'FontSize',13);
 lgdHdl.ItemTokenSize = [12,12];
 ```
-![输入图片说明](gallery/S0092-8674(21)00004-0%20P8.png)
+![](gallery/S0092-8674(21)00004-0%20P8.png)
 
 ___
 # Check out the various demos for more detailed usage instructions.
