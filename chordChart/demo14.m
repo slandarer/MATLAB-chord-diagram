@@ -7,17 +7,11 @@ dataMat = [2 0 1 2 5 1 2;
 CC = chordChart(dataMat, 'GroupSep', 1/5);
 
 % See radius&ratio.png for details
-CC.OSqRatio = .4;        
-CC.SSqRatio = .4;
-CC.SRadius = [1.1, 1.4];
-CC.TRadius = 1.5;
-CC.LRadius = 1.7;
-
-% CC.OriSquareRatio = .4;        
-% CC.SubSquareRatio = .4;
-% CC.SquareRadius = [1.1, 1.4];
-% CC.TickRadius = 1.5;
-% CC.LabelRadius = 1.7;
+CC.OSqRatio = .4;           % CC.OriSquareRatio = .4;
+CC.SSqRatio = .4;           % CC.SubSquareRatio = .4;
+CC.SRadius = [1.1, 1.4];    % CC.SquareRadius = [1.1, 1.4];
+CC.TRadius = 1.5;           % CC.TickRadius = 1.5;
+CC.LRadius = 1.7;           % CC.LabelRadius = 1.7;
 CC = CC.draw();
 
 % Modify the color of the blocks above (修改上方方块颜色)
@@ -27,10 +21,8 @@ CC.setSquareColorT(CListT)
 % Modify the color of the blocks below (修改下方方块颜色)
 CListS = [0.93,0.60,0.62; 0.55,0.80,0.99; 0.95,0.82,0.18; 1.00,0.81,0.91];
 CC.setSquareColorS(CListS)
-
 % Modify chord color (修改弦颜色)
 CC.setChordColorBySquareT()
-
 % Displays scales and numeric values (显示刻度和数值)
 CC.tickState('on')
 CC.tickLabelState('on')

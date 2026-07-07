@@ -8,4 +8,4 @@ CC = chordChart(dataMat);
 CC = CC.draw();
 
 CC.addHighlightArrow(3, 4)
-CC.addHighlightArrow(2, 2)
+CC.addHighlightArrow(2, 2, [0,0,.8])

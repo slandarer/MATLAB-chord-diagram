@@ -3,18 +3,11 @@
 % @author : slandarer
 % 公众号  : slandarer随笔
 % 知乎    : slandarer
-rng(2)
 
-dataMat = randi([0,5], [11,5]);
-dataMat(1:6,1) = 0;
-dataMat([11,7],1) = [45,25];
-dataMat([1,4,5,7],2) = [20,20,30,30];
-dataMat(:,3) = 0;
-dataMat(6,3) = 45;
-dataMat(1:5,4) = 0;
-dataMat([6,7],4) = [25,25];
-dataMat([5,6,9],5) = [25,25,25];
-
+dataMat = [0, 20,  0,  0,  3;  0,  0,  0,  0,  2;  0,  3,  0,  0,  2;
+           0, 20,  0,  0,  4;  0, 30,  0,  0, 25;  0,  5, 45, 25, 25;
+          25, 30,  0, 25,  3;  3,  5,  0,  5,  0;  1,  0,  0,  3, 25;
+           1,  3,  0,  5,  5; 45,  0,  0,  2,  2];
 colName = {'Fly', 'Beetle', 'Leaf', 'Soil', 'Waxberry'};
 rowName = {'Bartomella', 'Bradyrhizobium', 'Dysgomonas', 'Enterococcus',...
            'Lactococcus', 'norank', 'others', 'Pseudomonas', 'uncultured',...

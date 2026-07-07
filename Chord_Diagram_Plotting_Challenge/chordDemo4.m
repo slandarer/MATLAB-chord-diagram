@@ -30,7 +30,7 @@ end
 
 % 修改方块颜色(Modify the color of the blocks)
 for i = 1:size(dataMat, 1)
-    BCC.setSquare(i, 'EdgeColor',CList(i,:)./1.7)
+    BCC.setSquare(i, 'EdgeColor',CList(i,:)./1.1)
 end
 
 % 修改字体，字号及颜色

@@ -33,7 +33,6 @@ CC.setSquareColorS(CListS);
 % Modify chord color (修改弦颜色)
 CC.setChordColorBySquareT()
 
-
 CC.tickState('on')
 CC.labelRotate('none')
 CC.setFont('FontSize',17,'FontName','Cambria')

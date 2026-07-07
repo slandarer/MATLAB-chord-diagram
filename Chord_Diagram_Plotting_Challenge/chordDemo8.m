@@ -41,12 +41,7 @@ CC.tickState('on')
 CC.setFont('FontName','Cambria', 'FontSize',17)
 
 % 隐藏下方标签
-textHdl = findobj(gca, 'Tag','ChordLabel');
-for i = 1:length(textHdl)
-    if textHdl(i).Position(2) < 0
-        set(textHdl(i), 'Visible','off')
-    end
-end
+set(CC.nameSHdl, 'Visible','off')
 
 % 绘制图例(Draw legend)
 lgdHdl = legend(CC.squareSHdl, rowName, 'Location','eastoutside', ...

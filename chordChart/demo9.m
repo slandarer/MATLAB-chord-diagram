@@ -20,8 +20,8 @@ CListS = [.75,.73,.86; .56,.83,.78; .00,.60,.20; 1.0,.49,.02; .78,.77,.95; .59,.
           .98,.51,.45; .96,.55,.75; .47,.71,.84; .65,.35,.16; .40,.00,.64];
 CC.setSquareColorS(CListS)
 % Modify chord color (修改弦颜色)
-CC.setChordColorBySquareS()
-% CC.setChordColorBySquareT()
+% CC.setChordColorBySquareS()
+CC.setChordColorBySquareT()
 
 CC.tickState('on')
 CC.setFont('FontName','Cambria', 'FontSize',17)
