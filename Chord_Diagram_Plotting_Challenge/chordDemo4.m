@@ -13,7 +13,7 @@ dataMat(5,5) = 50;
 
 CList1 = [164,190,158; 216,213,153; 177,192,208; 238,238,227; 249,217,153]./255;
 CList2 = [247,204,138; 128,187,185; 245,135,124; 140,199,197; 252,223,164]./255;
-CList = CList2;
+CList  = CList2;
 NameList={'CHORD','CHART','MADE','BY','SLANDARER'};
 
 figure('Units','normalized', 'Position',[.02,.05,.6,.85])

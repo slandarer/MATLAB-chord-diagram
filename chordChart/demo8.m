@@ -24,8 +24,8 @@ Regulated = (rand([7, 22]) < .8) + 1; % Upregulated:1 | Downregulated:2
 % Set individual end blocks for each chord (单独设置每一个弦末端方块)
 % Use obj.setSubSquareS | set Subordinate Square (Source)
 % or  obj.setSubSquareT | set Subordinate Square (Target)
-CC.setSubSquareT(Regulated == 1, 'FaceColor', [173, 70, 65]./255)
-CC.setSubSquareT(Regulated == 2, 'FaceColor', [ 79,135,136]./255)
+CC.setSubSquareT(Regulated == 1, 'FaceColor',[173, 70, 65]./255)
+CC.setSubSquareT(Regulated == 2, 'FaceColor',[ 79,135,136]./255)
 
 % Draw legend (绘制图例)
 H1 = fill([0,1,0] + 100, [1,0,1] + 100, [173, 70, 65]./255, 'EdgeColor','none');

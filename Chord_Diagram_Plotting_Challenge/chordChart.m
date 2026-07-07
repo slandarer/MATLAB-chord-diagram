@@ -175,7 +175,7 @@ classdef chordChart < handle
 %   + Added setSquareCDataT method to set the 'CData' property of each target square (设置目标方块的 CData 属性) 
 %   + Refine the inline comments for methods.
 % -------------------------------------------------------------------------
-% # version 7.1.0
+% # version 7.2.0
 %   + For methods: Added support for logical matrix inputs.
 
 
