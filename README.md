@@ -1,7 +1,4 @@
-# MATLAB chord diagram
-
-Draw chord diagram (chordChart), self-links chord diagram (biChordChart), and
-non-ribbon chord diagram (circNetChart) using MATLAB.
+# MATLAB chord chart
 
 ## chordChart
 
@@ -9,27 +6,23 @@ non-ribbon chord diagram (circNetChart) using MATLAB.
 
 ```matlab
 dataMat = [2 0 1 2 5 1 2;
-         3 5 1 4 2 0 1;
-         4 0 5 5 2 4 3];
+           3 5 1 4 2 0 1;
+           4 0 5 5 2 4 3];
 dataMat = dataMat + rand(3, 7);
 dataMat(dataMat < 1) = 0;
-
 colName = {'G1', 'G2', 'G3', 'G4', 'G5', 'G6', 'G7'};
 rowName = {'S1', 'S2', 'S3'};
 
-CC = chordChart(dataMat, 'rowName',rowName, 'colName',colName);
+CC = chordChart(dataMat, 'RowName',rowName, 'ColName',colName);
 CC = CC.draw();
-CC.setFont('FontSize',17, 'FontName','Cambria')
 
-% Displays scales and numeric values
+CC.setFont('FontSize',17, 'FontName','Cambria')
 CC.tickState('on')
 CC.tickLabelState('on')
-
-% Adjustable Label radius
 CC.setLabelRadius(1.4);
 ```
 
-#### fileexchange
+#### fileexchange下载链接
 Zhaoxu Liu / slandarer (2026). chordChart (chord diagram | 弦图) (https://www.mathworks.com/matlabcentral/fileexchange/116550-chordchart-chord-diagram), MATLAB Central File Exchange. Retrieved April 14, 2026.
 
 ___
@@ -39,20 +32,18 @@ ___
 
 ```matlab
 dataMat = randi([0, 8], [6, 6]);
+nameList = {'CHORD', 'CHART', 'MADE', 'BY', 'SLANDARER', 'MATLAB'};
 
-NameList = {'CHORD', 'CHART', 'MADE', 'BY', 'SLANDARER', 'MATLAB'};
-BCC = biChordChart(dataMat, 'Label',NameList, 'Arrow','on');
+BCC = biChordChart(dataMat, 'Label',nameList, 'Arrow','on');
 BCC = BCC.draw(); 
 
-BCC.tickState('on')
-
 BCC.setFont('FontName','Cambria', 'FontSize',17, 'Color',[.2,.2,.2])
-
+BCC.tickState('on')
 BCC.setLabelRadius(1.3);
 BCC.tickLabelState('on')
 ```
 
-#### fileexchange
+#### fileexchange下载链接
 Zhaoxu Liu / slandarer (2026). biChordChart (bidirectional chord diagram | 有向弦图) (https://www.mathworks.com/matlabcentral/fileexchange/121043-bichordchart-bidirectional-chord-diagram), MATLAB Central File Exchange. Retrieved April 14, 2026.
 
 ___
@@ -64,31 +55,16 @@ ___
 ```matlab
 Data = triu(randi([1, 20], [18, 18]));
 
-% Create circular network chart object
 CN = circNetChart(Data);
-
 CN.NodeSizeLim = [.05, .05];
 CN.EdgeWidthLim = [.01, .01];
-CN.Curvature = 1;  % Bezier curve: 1
+CN.Curvature = 1;
 CN.NodeColor = turbo(18);
-
 CN = CN.draw();
 ```
 
 
 
-#### fileexchange
+#### fileexchange下载链接
 
 Zhaoxu Liu / slandarer (2026). circular network chart (non-ribbon chord diagram) (https://www.mathworks.com/matlabcentral/fileexchange/118655-circular-network-chart-non-ribbon-chord-diagram), MATLAB Central File Exchange. Retrieved April 25, 2026.
-
-## Chord Diagram Plotting Challenge
-![](Chord_Diagram_Plotting_Challenge/gallery/demo8.png)
-![](Chord_Diagram_Plotting_Challenge/gallery/demo10_3.png)
-![](Chord_Diagram_Plotting_Challenge/gallery/demo1.png)
-![](Chord_Diagram_Plotting_Challenge/gallery/demo2.png)
-![](Chord_Diagram_Plotting_Challenge/gallery/demo9.png)
-![](Chord_Diagram_Plotting_Challenge/gallery/demo11.png)
-![](Chord_Diagram_Plotting_Challenge/gallery/demo12.png)
-![](Chord_Diagram_Plotting_Challenge/gallery/demo13.png)
-![](Chord_Diagram_Plotting_Challenge/gallery/demo15.png)
-![](Chord_Diagram_Plotting_Challenge/gallery/demo16.png)
