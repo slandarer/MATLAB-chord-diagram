@@ -16,8 +16,8 @@ for i = 1:size(links,1)
 end
 
 % 添加标签名称
-BCC=biChordChart(dataMat,'Label',nameList,'Arrow','on', 'Rotation',pi/3);
-BCC=BCC.draw();
+BCC = biChordChart(dataMat,'Label',nameList,'Arrow','on', 'Rotation',pi/3);
+BCC = BCC.draw();
 
 % 添加刻度
 BCC.tickState('on')

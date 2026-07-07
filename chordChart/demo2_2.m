@@ -6,7 +6,7 @@ dataMat = [2 0 1 2 5 1 2;
 colName = {'G1','G2','G3','G4','G5','G6','G7'};
 rowName = {'S1','S2','S3'};
 
-CC = chordChart(dataMat, 'RowName',rowName, 'ColName',colName);
+CC = chordChart(dataMat, 'RowName',rowName, 'ColName',colName, 'Arrow','on');
 CC = CC.draw();
 
 % Set edge properties for chords with flow >= 5 (为流量 >=5 的弦设置边缘属性)

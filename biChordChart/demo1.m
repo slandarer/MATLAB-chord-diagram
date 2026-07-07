@@ -17,4 +17,6 @@ BCC.setFont('FontName','Cambria','FontSize',17)
 BCC.dataTipFormat = {'r', 'Source:', 'Target:', 'Value:', '%.2f'};
 % BCC.dataTipFormat = {'r', '来源:', '目标:', '数值:', '%.2f'};
 
+methods(BCC)
+
 

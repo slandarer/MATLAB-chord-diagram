@@ -255,7 +255,6 @@ CC.setTickLabelFormat(@(x)sprintf('%0.1e',x))
 ___
 ## 9 弦末端弧形块单独上色(The blocks at the ends of the chords painted separately.)
 ```matlab
-rng(3)
 dataMat = randi([1, 15], [7, 22]); dataMat(dataMat < 11) = 0;
 dataMat(1, sum(dataMat,1) == 0) = 15;
 colName = {'A2M', 'FGA', 'FGB', 'FGG', 'F11', 'KLKB1', 'SERPINE1', 'VWF',...
@@ -276,21 +275,17 @@ CC.setSquareColorS(CListS)
 % Modify chord color (修改弦颜色)
 CC.setChordColorBySquareS()
 
+Regulated = (rand([7, 22]) < .8) + 1; % Upregulated:1 | Downregulated:2
 % Set individual end blocks for each chord (单独设置每一个弦末端方块)
 % Use obj.setSubSquareS | set Subordinate Square (Source)
 % or  obj.setSubSquareT | set Subordinate Square (Target)
-CListT = [173,70,65; 79,135,136]./255;
-% Upregulated:1 | Downregulated:2
-Regulated = (rand([7, 22]) < .8) + 1;
-for i = 1:size(Regulated, 1)
-    for j = 1:size(Regulated, 2)
-        CC.setSubSquareT(i, j, 'FaceColor', CListT(Regulated(i,j),:))
-    end
-end
+CC.setSubSquareT(Regulated == 1, 'FaceColor',[173, 70, 65]./255)
+CC.setSubSquareT(Regulated == 2, 'FaceColor',[ 79,135,136]./255)
+
 % Draw legend (绘制图例)
-H1 = fill([0,1,0]+100, [1,0,1]+100, CListT(1,:), 'EdgeColor','none');
-H2 = fill([0,1,0]+100, [1,0,1]+100, CListT(2,:), 'EdgeColor','none');
-lgdHdl = legend([H1,H2], {'Upregulated','Downregulated'}, 'AutoUpdate','off', ...
+H1 = fill([0,1,0] + 100, [1,0,1] + 100, [173, 70, 65]./255, 'EdgeColor','none');
+H2 = fill([0,1,0] + 100, [1,0,1] + 100, [ 79,135,136]./255, 'EdgeColor','none');
+lgdHdl = legend([H1, H2], {'Upregulated','Downregulated'}, 'AutoUpdate','off', ...
     'Location','best', 'Box','off', 'FontSize',13);
 lgdHdl.ItemTokenSize = [12,12];
 ```

@@ -56,11 +56,9 @@ classdef chordChart < handle
 %   setSubSquareT          - Target sub-square property settings (目标子方块属性设置)
 %   setChord               - Chord property settings (弦属性设置)
 %   setChordCData          - Set the 'CData' property of each chord patch (设置弦的 CData 属性)
-%   setChordColorByMap     - Set chord color using colormap (使用颜色映射设置弦颜色)
-%   setChordColorBySquareS - Color each chord using its source block color (根据源方块颜色为弦着色)
+%   setChordColorBySquareS - Color each chord using its source block color (根据来源方块颜色为弦着色)
 %   setChordColorBySquareT - Color each chord using its target block color (根据目标方块颜色为弦着色)
 %   addHighlightArrow      - Add highlight arrow indicator (添加高亮箭头指示器)
-
 
 
 % =========================================================================
@@ -825,34 +823,8 @@ classdef chordChart < handle
             end
         end
 
-        function setChordColorByMap(obj, cmp)
-            % obj.setChordColorByMap(cmp) - Set chord color using colormap (使用颜色映射设置弦颜色)
-            tDMatUni = obj.dataMat - min(min(obj.dataMat));
-            tDMatUni = tDMatUni ./ max(max(tDMatUni));
-
-            colorFunc = colorFuncFactory(cmp);
-            
-            for i = 1:size(obj.dataMat, 1)
-                for j = 1:size(obj.dataMat, 2)
-                    if isa(obj.chordMatHdl(i, j), 'matlab.graphics.primitive.Patch')
-                        set(obj.chordMatHdl(i, j), 'FaceColor', colorFunc(tDMatUni(i, j)));
-                    end
-                end
-            end
-            
-            % Color interpolation function (颜色插值函数)
-            function colorFunc = colorFuncFactory(colorList)
-                x = (0:size(colorList, 1)-1) ./ (size(colorList, 1)-1);
-                y1 = colorList(:, 1);
-                y2 = colorList(:, 2);
-                y3 = colorList(:, 3);
-                colorFunc = @(X) [interp1(x, y1, X, 'linear')', ...
-                                  interp1(x, y2, X, 'linear')', ...
-                                  interp1(x, y3, X, 'linear')'];
-            end
-        end
         function setChordColorBySquareS(obj)
-            % obj.setChordColorBySquareS() - Color each chord using its source block color (根据源方块颜色为弦着色) 
+            % obj.setChordColorBySquareS() - Color each chord using its source block color (根据来源方块颜色为弦着色) 
             for i = 1:size(obj.dataMat, 1)
                 for j = 1:size(obj.dataMat, 2)
                     fColor = get(obj.squareSHdl(i), 'FaceColor');
@@ -1414,6 +1386,33 @@ classdef chordChart < handle
                 set(obj.chordMatHdl(m, n), varargin{:});
             end
         end
+        function setChordColorByMap(obj, cmp)
+            % obj.setChordColorByMap(cmp) - Set chord color using colormap (使用颜色映射设置弦颜色)
+            tDMatUni = obj.dataMat - min(min(obj.dataMat));
+            tDMatUni = tDMatUni ./ max(max(tDMatUni));
+
+            colorFunc = colorFuncFactory(cmp);
+
+            for i = 1:size(obj.dataMat, 1)
+                for j = 1:size(obj.dataMat, 2)
+                    if isa(obj.chordMatHdl(i, j), 'matlab.graphics.primitive.Patch')
+                        set(obj.chordMatHdl(i, j), 'FaceColor', colorFunc(tDMatUni(i, j)));
+                    end
+                end
+            end
+
+            % Color interpolation function (颜色插值函数)
+            function colorFunc = colorFuncFactory(colorList)
+                x = (0:size(colorList, 1)-1) ./ (size(colorList, 1)-1);
+                y1 = colorList(:, 1);
+                y2 = colorList(:, 2);
+                y3 = colorList(:, 3);
+                colorFunc = @(X) [interp1(x, y1, X, 'linear')', ...
+                    interp1(x, y2, X, 'linear')', ...
+                    interp1(x, y3, X, 'linear')'];
+            end
+        end
+        
         function setSquareF(obj, varargin)
             % setSquareF(___)       | Set properties for all squares bellow (source)
             % setSquareF(N, ___)    | Set properties for N-th square bellow (source)
