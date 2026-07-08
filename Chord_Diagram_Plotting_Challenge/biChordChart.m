@@ -137,7 +137,12 @@ classdef biChordChart < handle
 %     setSquare(n, ___)      | Set the properties for the n-th square
 %   + The setSubSquareS method replaces setEachSquareF_Prop.
 %   + The setSubSquareT method replaces setEachSquareT_Prop.
-
+% -------------------------------------------------------------------------
+% # version 7.1.0
+%   + Added setChordCData method to set the 'CData' property of each chord patch (设置弦的 CData 属性) 
+%   + Added setSquareCData method to set the 'CData' property of each square (设置方块的 CData 属性) 
+%   + Added setSquareColor, setChordColorBySquareS, setChordColorBySquareT methods
+%   + For methods: Added support for logical matrix inputs.
 
     properties
         ax                                                     % Axes handle (坐标区句柄)
