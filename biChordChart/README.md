@@ -1,29 +1,33 @@
 # 绘制效果(Cover)
 
-![输入图片说明](gallery/cover6.png)
+![](gallery/cover6.png)
 
-![输入图片说明](gallery/cover1.png)
+![](gallery/demo10.png)
+
+![](gallery/demo16.png)
 
 
 ___
 # 详细教程(User Guide)
-## 0 数据准备(Data preparation)
-数据应准备全是非负数值的方形矩阵，矩阵第 i 行第 j 列表示由节点 i 流向节点 j ，第 j 行第 i 列表示由节点 j 流向节点 i，也就是说矩阵是非对称的，可以同时统计两个节点互相的数据流动,这里构造个随机数矩阵：\
-The data should be prepared as a square matrix consisting entirely of non-negative values. The element at the *i*-th row and *j*-th column of the matrix represents the flow from node i to node j, while the element at the j-th row and i-th column represents the flow from node j to node i. In other words, the matrix is ​​asymmetric, allowing for the simultaneous tracking of data flows in both directions between any two nodes. Here, we construct a random matrix for this purpose:
-```matlab
-dataMat = randi([0, 8], [6, 6]);
-```
-## 1 基础绘图(Basic usage)
+## 1 数据格式 (Data format)
+数据应准备全是非负数值的方形矩阵，矩阵第 i 行第 j 列表示由节点 i 流向节点 j ，第 j 行第 i 列表示由节点 j 流向节点 i，也就是说矩阵是非对称的，可以同时统计两个节点互相的数据流动,这里构造个随机数矩阵：
+
+The data should be prepared as a square matrix consisting entirely of non-negative values. The element at the i-th row and j-th column of the matrix represents the flow from node i to node j, while the element at the j-th row and i-th column represents the flow from node j to node i. In other words, the matrix is ​​asymmetric, allowing for the simultaneous tracking of data flows in both directions between any two nodes. Here, we construct a random matrix for this purpose:
 ```matlab
 dataMat = randi([0, 8], [6, 6]);
 
 BCC = biChordChart(dataMat);
 BCC = BCC.draw(); 
 ```
-![输入图片说明](gallery/1.png)
+![](gallery/1.png)
 
-## 2 方向箭头(Directional arrow)
-两侧都是弧形仅仅靠颜色不容易区分流入还是流出，因此可在创建对象时将`Arrow`属性设置为`'on'`：\
+### 方向箭头(Directional arrow)
+这部分本来应该放在弦修饰部分，但是为了方便信息展示提前到这里:
+
+This section is normally placed under chord decoration, but is moved here for better illustration.
+
+两侧都是弧形仅仅靠颜色不容易区分流入还是流出，因此可在创建对象时将 `Arrow` 属性设置为 `'on'` ：
+
 Since both ends are curved, it is difficult to distinguish between inflow and outflow based solely on color; therefore, you can set the `Arrow` property to `'on'` when creating the object:
 ```matlab
 dataMat = randi([0, 8], [6, 6]);
@@ -31,72 +35,23 @@ dataMat = randi([0, 8], [6, 6]);
 BCC = biChordChart(dataMat, 'Arrow','on');
 BCC = BCC.draw(); 
 ```
-![输入图片说明](gallery/2.png)
+![](gallery/2.png)
 
-## 3 绘图间隙(Sep)
-
-通过`Sep`属性可调整绘图间隙，例如设置为特别小的1/120：\
-The plotting gap can be adjusted using the `Sep` attribute—for example, by setting it to a particularly small value of 1/120:
-```matlab
-dataMat = randi([0, 8],[ 6, 6]);
-
-BCC = biChordChart(dataMat, 'Arrow','on', 'Sep',1/120);
-BCC = BCC.draw(); 
+### 数值矩阵+元胞数组标签 (Numeric matrix with cell arrays for labels)
 ```
-![输入图片说明](gallery/3.png)
+dataMat = randi([0,8], [6,6]);
+nameList = {'AAA','BBB','CCC','DDD','EEE','FFF'};
 
-## 4 添加刻度(Show ticks)
-通过`tickState`函数设置显示或者隐藏刻度：\
-Use the `tickState` function to show or hide ticks:
-```matlab
-dataMat = randi([0, 8], [6, 6]);
-
-BCC = biChordChart(dataMat, 'Arrow','on');
-BCC = BCC.draw(); 
-
-% 添加刻度(Show ticks)
-BCC.tickState('on')
-```
-![输入图片说明](gallery/4.png)
-
-## 5 修改标签(Change name labels)
-标签名字默认为`C1,C2,C3,...`可以通过`Label`属性进行修改例如：\
-The default label names are `C1, C2, C3, ...`; these can be modified using the `Label` property. For example:
-```matlab
-dataMat = randi([0, 8], [6, 6]);
-
-% 添加标签名称(Change name labels)
-NameList = {'CHORD','CHART','MADE','BY','SLANDARER','MATLAB'};
-BCC = biChordChart(dataMat, 'Label',NameList, 'Arrow','on');
+BCC = biChordChart(dataMat, 'Arrow','on', 'Label',nameList);
 BCC = BCC.draw();
 ```
-![输入图片说明](gallery/11.png)
+![](gallery/1_2.png)
+___
+## 2 颜色的设置(Set color)
 
-## 6 旋转标签(Rotate labels)
-```matlab
-dataMat = randi([0, 8], [6, 6]);
+可在 `obj.draw()` 绘图之前设置 `CData` 属性修改颜色，例如：
 
-% 添加标签名称(Change name labels)
-NameList = {'CHORD','CHART','MADE','BY','SLANDARER','MATLAB'};
-BCC = biChordChart(dataMat,'Label',NameList,'Arrow','on');
-BCC = BCC.draw(); 
-
-% 添加刻度(Show ticks)
-BCC.tickState('on')
-
-% 修改字体，字号及颜色(Set Font for labels)
-BCC.setFont('FontName','Cambria', 'FontSize',17, 'Color',[.2,.2,.2])
-
-BCC.labelRotate('on')
-% BCC.labelRotate('none')
-```
-![输入图片说明](gallery/12.png)
-
-
-## 7 颜色的设置(Set color)
-
-可在draw绘图之前设置`CData`属性修改颜色，例如：\
-You can modify the color by setting the `CData` property before calling `draw`, for example:
+You can modify the color by setting the `CData` property before calling `obj.draw()`, for example:
 ```matlab
 dataMat = randi([0, 8], [6, 6]);
 
@@ -104,16 +59,17 @@ ColorList = [127,91,93;153,66,83;95,127,95;9,14,10;78,70,83;0,0,0]./255;
 BCC = biChordChart(dataMat, 'Arrow','on', 'CData',ColorList);
 BCC = BCC.draw();
 ```
-![输入图片说明](gallery/5.png)
+![](gallery/5.png)
 ```matlab
 dataMat = randi([0, 8], [6, 6]);
 
 BCC = biChordChart(dataMat, 'Arrow','on', 'CData',bone(9));
 BCC = BCC.draw();
 ```
-![输入图片说明](gallery/6.png)
+![](gallery/6.png)
 
-值得一提的是如果`CData`设置为空集，则会随机生成颜色：\
+值得一提的是如果 `CData` 设置为空集，则会随机生成颜色：
+
 It is worth noting that if `CData` is set to an empty set, colors will be generated randomly.
 ```matlab
 dataMat = randi([0,8],[6,6]);
@@ -122,82 +78,169 @@ BCC = biChordChart(dataMat, 'Arrow','on', 'CData',[]);
 BCC = BCC.draw();
 ```
 
-![输入图片说明](gallery/7.png)
+![](gallery/7.png)
 
-![输入图片说明](gallery/8.png)
-
-## 8 Colormap
-使用 BCC.setChordCData(dataMat) 函数将弦的颜色与 dataMat 数值关联，之后可以设置 colormap :\
-
-## 8 弧块及弦属性设置(Set properties for blocks or chords)
-通过 
-+ BCC.setSquare(n, ___)
-+ BCC.setChordN(n, ___)
-
-设置第n个弧块或第n类弦的属性，`Patch`对象具有的属性均可被设置，比如如果没提前定义颜色，可以比较麻烦的修改颜色：\
-Sets the attributes for the *n*-th arc patch or the *n*-th category of chords. Any attribute possessed by a `Patch` object can be set; for instance, if a color was not defined beforehand, it can be modified—albeit somewhat laboriously—as follows:
-```matlab
-dataMat = randi([0, 8], [6, 6]);
-
-BCC = biChordChart(dataMat, 'Arrow','on');
-BCC = BCC.draw();
-
-ColorList = lines(6);
-for i = 1:6
-    BCC.setSquare(i, 'FaceColor',ColorList(i,:))
-    BCC.setChordN(i, 'FaceColor',ColorList(i,:))
-end
-```
-![输入图片说明](gallery/9.png)
-
-使用函数：
-+ setChord(m, n, ___)
-
-函数可以单独修饰类 m 到类 n 的属性，例如找到比较大的弦并将边缘标记为红色：\
-You can individually modify the attributes of elements ranging from class m to class n—for example, by identifying larger chords and marking their edges in red:
-```matlab
-dataMat = randi([0, 8], [6, 6]);
-
-BCC = biChordChart(dataMat, 'Arrow','on');
-BCC = BCC.draw();
-
-% 标记最大值弦
-[m, n] = find(dataMat == max(max(dataMat)));
-for i = 1:length(m)
-    BCC.setChord(m(i), n(i), 'EdgeColor',[.8,0,0], 'LineWidth',2)
-end
-```
-![输入图片说明](gallery/10.png)
-
-## 9 字体设置(Set font for labels)
-通过:
-+ setFont
-
-函数进行字体设置：
-```matlab
-dataMat = randi([0, 8], [6, 6]);
-
-BCC = biChordChart(dataMat, 'Arrow','on');
-BCC = BCC.draw();
-
-% 修改字体，字号及颜色
-BCC.setFont('FontName','Cambria', 'FontSize',30, 'Color',[0,0,.8])
-```
-![输入图片说明](gallery/13.png)
+![](gallery/8.png)
 ___
+## 3 方块修饰 (Square decoration)
+### 方块批量修饰 (Batch modification of squares)
+使用 `obj.setSquare(___)` 函数进行修饰，一切 Patch 对象所具有的属性均可以被修饰，举个例子：全部方块添加黑色边缘：
 
-## 10 添加刻度标签,调整类标签距离(Add tick labels and adjust the spacing of class labels.)
+The `obj.setSquare(___)` function can be used to modify the appearance of squares. Any property valid for a Patch object is applicable. For instance, to add a black edge to all squares:
+```matlab
+BCC.setSquare('EdgeColor','k', 'LineWidth',10)
+```
+![](gallery/15.png)
+
+使用`obj.setSquare(n, ___)`函数单独对方块 n 进行修饰：
+
+Use the `obj.setSquare(n, ___)` function to modify square n individually:
+```matlab
+BCC.setSquare(1, 'EdgeColor',[0,0,.8])
+% BCC.setSquare([1, 3], 'EdgeColor',[0,0,.8])
+```
+![](gallery/15_2.png)
+使用`obj.setSquareColor(___)`函数可以仅设置方块颜色而不修改弦颜色：
+
+Use `obj.setSquareColor(___)` to set only the square colors without affecting the chord colors.
+```matlab
+BCC.setSquareColor(lines(6))
+```
+![](gallery/15_3.png)
+使用 `obj.setSquareCData(___)` 函数可以设置方块 CData：
+
+Use `obj.setSquareCData(___)` to set the CData for squares:
+```matlab
+BCC.setSquareCData(dataMat(:, 1))
+colorbar
+```
+![](gallery/15_4.png)
+___
+## 4 修饰弦 (Set properties for chords)
+### 弦的批量修饰 (Batch modification of chords)
+弦的批量修饰可以使用`obj.setChord(___)`函数，一切 Patch 对象所具有的属性均可以被修饰，举个例子(修饰一下弦的颜色，边缘颜色，边缘线形状等)：
+
+Batch modification of chords can be performed using the `obj.setChord(___)` function; any property possessed by a Patch object can be modified. For example (modifying the chord color, edge color, edge line shape, etc.):
+```matlab
+BCC.setChord('EdgeColor','k','LineWidth',1)
+```
+![](gallery/15_5.png)
+
+## 修饰以某一节点为源的弦 (Modify chords from a specific source)
+Use `obj.setChord(m, [], ___)`
+```matlab
+BCC.setChord(2,[], 'EdgeColor','k','LineWidth',2)
+```
+![](gallery/15_9.png)
+### 弦的单独修饰 (Individual modification of chords)
+弦的单独修饰可以使用`obj.setChord(m, n, __)`函数:
+
+Individual chords can be styled using the `obj.setChord(m, n, __)` function.
+```matlab
+BCC.setChord(2,3, 'EdgeColor','k','LineWidth',2)
+```
+![](gallery/15_6.png)
+
+### 使用布尔矩阵设置弦属性 (Use bool matrix to set chord properties)
+```matlab
+BCC.setChord(dataMat == 8, 'EdgeColor',[0,0,.8], 'LineWidth',2)
+```
+![](gallery/15_7.png)
+
+### 弦的颜色映射 (colormap)
+需要使用`obj.setChordCData(dataMat)`函数将弦的颜色与数值关联:
+
+The `obj.setChordCData(dataMat)` function is required to associate the chord colors with the numerical values.
+```matlab
+BCC.setChordCData(dataMat)
+
+colormap(flipud(summer))
+colorbar
+```
+![](gallery/15_8.png)
+
+### 为弦设置颜色的简洁方法 (A concise way to assign colors to chord)
++ obj.setChordColorBySquareT()
++ obj.setChordColorBySquareS()
+```matlab
+dataMat = randi([0,8], [6,6]);
+BCC = biChordChart(dataMat, 'Arrow','on');
+BCC = BCC.draw();
+BCC.setSquareColor(lines(6))
+```
+```matlab
+BCC.setChordColorBySquareS()
+```
+![](gallery/16.png)
+```matlab
+BCC.setChordColorBySquareT()
+```
+![](gallery/16_2.png)
+### 高亮箭头 (Highlight arrow)
+```matlab
+BCC.addHighlightArrow(2, 3)
+BCC.addHighlightArrow(2, 1)
+BCC.addHighlightArrow(4, 4, [0,0,.8])
+```
+![](gallery/17.png)
+___
+## 5 标签 (Labels)
+### 字体调整 (Set font)
+使用`obj.setFont`函数对字体进行调整，所有text对象具有的属性均可以修饰，举个例子(更改文本的字号、字体和颜色)：
+
+Use the `obj.setFont` function to adjust the font; any property possessed by a text object can be modified. For example (changing the text size, font, and color):
+```matlab
+BCC.setFont('FontSize',30, 'FontName','Cambria', 'Color',[0,0,.8])
+```
+![](gallery/18.png)
+### 标签旋转 (Label rotate) 
+使用函数 `obj.labelRotate` 旋转标签：
+
+Use function `obj.labelRotate` to roatate labels:
+```matlab
+dataMat = randi([0,8], [6,6]);
+nameList = {'bidirectional','chord','diagram','made-by','slandarer','MATLAB'};
+BCC = biChordChart(dataMat, 'Arrow','on', 'Label',nameList);
+BCC = BCC.draw();
+```
+```matlab
+BCC.labelRotate('off')
+```
+![](gallery/18_1.png)
+```matlab
+BCC.labelRotate('on')
+```
+![](gallery/18_2.png)
+```matlab
+BCC.labelRotate('none')
+```
+![](gallery/18_3.png)
+
+___
+## 6 刻度及刻度标签 (Tick line and tick labels)
+
+### 显示和隐藏刻度 (Show and Hide tick line)
+通过 `obj.tickState` 函数设置显示或者隐藏刻度：
+
+Use the `tickState` function to show or hide ticks:
+```matlab
+BCC.tickState('on')
+% BCC.tickState('off')
+```
+![](gallery/19.png)
+
+### 刻度标签 (Tick labels)
 通过：
 
-+ setLabelRadius 调整类标签半径
-+ tickLabelState 调整刻度标签开关
-+ setTickFont 调整刻度标签字体
++ obj.setLabelRadius 调整节点标签半径
++ obj.tickLabelState 调整刻度标签开关
++ obj.setTickFont 调整刻度标签字体
 
 By using:
 
-+ `setLabelRadius` to adjust the radius of class labels
-+ `tickLabelState` to toggle tick labels on/off
-+ `setTickFont` to adjust the tick label font
++ `obj.setLabelRadius` to adjust the radius of node labels
++ `obj.tickLabelState` to toggle tick labels 'on'/'off'
++ `obj.setTickFont` to adjust the tick label font
 
 ```matlab
 dataMat = [5 1 0 2;
@@ -242,10 +285,10 @@ BCC.setLabelRadius(1.4);
 BCC.tickState('on')
 BCC.tickLabelState('on')
 ```
-![输入图片说明](gallery/cover4.png)
-![输入图片说明](gallery/cover5.png)
-___
-## 11 刻度标签格式自定义(Custom tick label formatting)
+![](gallery/cover4.png)
+![](gallery/cover5.png)
+
+### 刻度标签格式自定义(Custom tick label formatting)
 需要一个输入数值输出字符串的匿名函数，通过setTickLabelFormat函数可设置格式，比如科学计数法：\
 An anonymous function is required that takes a numerical input and outputs a string; the format can be configured using the `setTickLabelFormat` function—for instance, using scientific notation.
 ```matlab
@@ -273,38 +316,147 @@ BCC.tickLabelState('on')
 % Adjust numeric string format
 BCC.setTickLabelFormat(@(x)sprintf('%0.1e',x))
 ```
-![输入图片说明](gallery/cover7.png)
-
-# Check out the various demos for more detailed usage instructions.
+![](gallery/cover7.png)
 ___
-# 封面绘制(How to draw the cover)
+## 7 布局 (Layout)
+### 间隙 (Sep)
+
+通过`Sep`属性可调整绘图间隙：
+
+The plotting gap can be adjusted using the `Sep` attribute:
+```matlab
+dataMat = randi([0, 8],[ 6, 6]);
+
+BCC = biChordChart(dataMat, 'Arrow','on', 'Sep',0);
+BCC = BCC.draw(); 
+```
+Sep = 0
+![](gallery/3.png)
+
+Sep = 1/2
+
+![](gallery/3_2.png)
+
+### 分组及组间间隙 (Group and GroupSep)
 ```matlab
 dataMat = randi([0, 8], [6, 6]);
 
-% 添加标签名称
-NameList = {'CHORD','CHART','MADE','BY','SLANDARER','MATLAB'};
-BCC = biChordChart(dataMat, 'Label',NameList, 'Arrow','on');
-BCC = BCC.draw(); 
+% Create bichord diagram object (创建双向弦图对象)
+BCC = biChordChart(dataMat, 'Arrow','on', 'Sep',1/20);
 
-% 添加刻度
-BCC.tickState('on')
+% Grouping nodes by number
+BCC.GroupSep = 1/2;
+BCC.Group = [1,1,2,2,3,1];
 
-% 修改字体，字号及颜色
-BCC.setFont('FontName','Cambria', 'FontSize',17, 'Color',[.2,.2,.2])
-
-% version 1.1.0更新
-% 函数labelRotate用来旋转标签
-% The function labelRatato is used to rotate the label
-% BCC.labelRotate('on')
-
-BCC.setLabelRadius(1.3);
-BCC.tickLabelState('on')
+% Start drawing (开始绘图)
+BCC=BCC.draw();
 ```
+GroupSep = 1/10
+![](gallery/11.png)
+GroupSep = 1/2
+![](gallery/11_2.png)
+### 整体旋转 (Global roatation)
+```
+BCC.Rotation = pi/4;
+```
+![](gallery/12.png)
+
+### 方块、刻度、标签半径与方块占比 (Square, tick, label radius | square ratio)
+```matlab
+dataMat = randi([1, 5], [3, 3]);
+
+% Create bichord diagram object (创建双向弦图对象)
+BCC=biChordChart(dataMat,'Arrow','on', 'Sep',1/3.5);
+BCC.CData = lines(3);
+
+% See radius&ratio.png for details
+BCC.OSqRatio = .4;         % BCC.OriSquareRatio = .4; 
+BCC.SSqRatio = .4;         % BCC.SubSquareRatio = .4;
+BCC.SRadius = [1.1, 1.4];  % BCC.SquareRadius = [1.1, 1.4];
+BCC.TRadius = 1.5;         % BCC.TickRadius = 1.5;
+BCC.LRadius = 1.7;         % BCC.LabelRadius = 1.7;
+
+% Start drawing (开始绘图)
+BCC=BCC.draw();
+
+% Show ticks and tick labels (添加刻度)
+BCC.tickState('on')
+BCC.tickLabelState('on')
 
 
+set(gca,'XLim',[-1.8,1.8], 'YLim',[-1.8,1.8])
+```
+![](radius&ratio.png)
+___
+## 8 常用示例 (Common examples)
+### 一个炫酷的例子 (A colorful demo)
+```matlab
+dataMat = rand([9, 9]); dataMat(dataMat > .7) = 0;
+dataMat(eye(9) == 1) = (rand([1,9]) + .2).*3;
 
-![输入图片说明](gallery/cover6.png)
+CList = [.85,.23,.24; .96,.39,.18; .98,.63,.22; .99,.80,.26; .70,.76,.21; 
+    .24,.74,.71; .27,.65,.84; .09,.37,.80; .64,.40,.84];
 
+figure('Units','normalized', 'Position',[.02,.05,.6,.85])
+BCC = biChordChart(dataMat, 'Arrow','on', 'CData',CList, 'TickMode','linear');
+BCC.LinearMinorTick = 'on';
+BCC = BCC.draw();
+
+BCC.tickState('on')
+BCC.tickLabelState('on')
+BCC.setFont('FontName','Cambria', 'FontSize',17)
+BCC.setChord('FaceAlpha',.7)
+```
+![](gallery/demo10.png)
+### 另一个炫酷的例子 (A colorful demo 2)
+```matlab
+rng(2)
+dataMat = rand([12, 12]);
+dataMat(dataMat < .85) = 0;
+dataMat(7,:) = 1.*(rand(1, 12) + .1);
+dataMat(11,:) = .6.*(rand(1, 12) + .1);
+dataMat(12,:) = [2.*(rand(1 ,10) + .1), 0, 0];
+
+CList = [repmat([49,49,49],[10,1]); 235,28,34; 19,146,241]./255;
+
+figure('Units','normalized', 'Position',[.02,.05,.6,.85])
+BCC = biChordChart(dataMat, 'Arrow','off', 'CData',CList);
+BCC = BCC.draw();
+
+BCC.tickState('on')
+BCC.setFont('FontName','Cambria', 'FontSize',17)
+BCC.setChord('FaceAlpha',.78, 'EdgeColor',[0,0,0])
+BCC.setSquare('EdgeColor',[0,0,0], 'LineWidth',2)
+```
+![](gallery/demo10_2.png)
+
+### 弦面配色及边缘配色快速设置 (Efficiently configure the FaceColor and EdgeColor of chords)
+```matlab
+dataMat = randi([10,10000], [10,10]);
+dataMat(6:10,:) = 0;
+dataMat(:,1:5) = 0;
+
+NameList = {'BOC', 'ICBC', 'ABC', 'BOCM', 'CCB', ...
+    'yama', 'nikoto', 'saki', 'koto', 'kawa'};
+CList = [.63,.75,.88; .67,.84,.75; .85,.78,.88; 1.0,.92,.93; .92,.63,.64; 
+    .57,.67,.75; 1.0,.65,.44; .72,.73,.40; .65,.57,.58; .92,.94,.96];
+
+figure('Units','normalized', 'Position',[.02,.05,.6,.85])
+BCC = biChordChart(dataMat, 'Arrow','on', 'CData',CList, 'Label',NameList);
+BCC = BCC.draw();
+
+% Modify squares and chords color (修改方块颜色及弦颜色)
+BCC.setSquare('LineWidth',1)
+BCC.setSquareColor(CList, CList./1.5)
+BCC.setChord('FaceAlpha',.85, 'LineWidth',.8)
+BCC.setChordColorBySquareS()
+
+BCC.tickState('on')
+BCC.setFont('FontName','Cambria', 'FontSize',17)
+```
+![](gallery/demo2_3.png)
+___
+## Check out the various demos for more detailed usage instructions.
 # star me please!
 
 非常短的代码就能绘制出效果不错的图！！

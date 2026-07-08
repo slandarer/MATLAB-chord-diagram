@@ -9,7 +9,7 @@ ___
 # 使用教程 (User guide)
 ## 1 数据格式 (Data format)
 
-数据要求为全部数值大于等于0的数值矩阵，或者`table`数组，或者数值矩阵+行列名元胞数组，首先举个数值矩阵的例子：
+数据要求为全部数值大于等于 0 的数值矩阵，或者 `table` 数组，或者数值矩阵 + 行列名元胞数组，首先举个数值矩阵的例子：
 
 The data input must be a numeric matrix where all values ​​are greater than or equal to 0, 
 a `table` array, or a numeric matrix with cell arrays for row and column names also works. 
@@ -26,10 +26,11 @@ CC = CC.draw();
 
 ![](gallery/0.png)
 
-由于没对各个对象命名，因此会自动命名为`Rn`和`Cn`\
+由于没对各个对象命名，因此会自动命名为 `Rn` 和 `Cn` 
+
 Since the individual objects were not explicitly named, they will be automatically named `Rn` and `Cn`.
 ### 数值矩阵+行列名元胞数组 (Numeric matrix with cell arrays for row and column names)
-这是最推荐的一种格式：
+
 ```matlab
 dataMat = [2 0 1 2 5 1 2;
            3 5 1 4 2 0 1;
@@ -43,9 +44,9 @@ CC = CC.draw();
 
 ![](gallery/1.png)
 
-`RowName`要和矩阵的行相同大小\
-`ColName`要和矩阵的列相同大小\
-对于本列子来说第2行第3列数值是1，就说明有一份能量从`S1`流向`G3`，也就在这俩之间需要画单位宽度的弦。
+`RowName` 要和矩阵的行相同大小\
+`ColName` 要和矩阵的列相同大小\
+对于本列子来说第2行第3列数值是1，就说明有一份能量从 `S1` 流向 `G3` ，也就在这俩之间需要画单位宽度的弦。
 
 `RowName` must be of the same size as the rows of the matrix.\
 `ColName` must be of the same size as the columns of the matrix.\
@@ -54,8 +55,9 @@ this indicates that a unit of energy flows from `S1` to `G3`,
 implying that a chord of unit width must be drawn between these two entities.
 
 ### table 数组
-需要使用如下格式的table数组：\
-You need to use a table array in the following format:
+需要使用如下格式的 `table` 数组：
+
+You need to use a `table` array in the following format:
 ```matlab
 % ans =
 % 
@@ -68,18 +70,19 @@ You need to use a table array in the following format:
 %     S2    3     5     1     4     2     0     1 
 %     S3    4     0     5     5     2     4     3 
 ```
-当然，如果各个行没有命名的话依旧会自动命名的。
+
 ___
 
 ## 2 方块修饰 (Square decoration)
 ### 方块批量修饰 (Batch modification of squares)
 使用
-+ setSquareT(___)
-+ setSquareS(___)
++ obj.setSquareT(___)
++ obj.setSquareS(___)
 
 
 
-分别修饰上方方块和下方方块，一切Patch对象所具有的属性均可以被修饰，举个例子，上方方块批量修饰(改为黑色)：\
+分别修饰上方方块和下方方块，一切 Patch 对象所具有的属性均可以被修饰，举个例子，上方方块批量修饰(改为黑色)：
+
 S means source, which is the square belows, and T means target, wich is the square aboves. For example, batch-modifying the squares above (changing them to black):
 
 ```matlab
@@ -89,8 +92,8 @@ CC.setSquareT('FaceColor',[0,0,0])
 ![](gallery/6.png)
 ### 方块单独修饰 (Individual modification of squares)
 使用:
-+ setSquareT(n, ___)
-+ setSquareS(n, ___)
++ obj.setSquareT(n, ___)
++ obj.setSquareS(n, ___)
 
 分别修饰上方方块和下方方块，举个例子，上方第二个方块单独修饰(改为红色)：\
 Set the n-th square. For example, the second square from the top is modified individually (changed to red):
@@ -100,12 +103,13 @@ CC.setSquareT(2,'FaceColor',[.8,0,0])
 ```
 ![](gallery/7.png)
 ### 为不同方块设置不同颜色的简洁方法 (A concise way to assign different colors to different blocks)
-使用:
-+ setSquareColorT(CListT)
-+ setSquareColorS(CListS)
++ obj.setSquareColorT(CListT)
++ obj.setSquareColorS(CListS)
 
-分别批量为上方下方方块修改颜色：\
+分别批量为上方下方方块修改颜色：
+
 Batch-modify colors for upper and lower squares separately.
+
 ```matlab
 % Modify the color of the blocks above (修改上方方块颜色)
 CListT = [0.75,0.73,0.86; 0.56,0.83,0.78; 0.00,0.60,0.20; 1.00,0.49,0.02
@@ -127,8 +131,10 @@ CC.setSquareCDataT(dataMat(1, :))
 ___
 ## 3 修饰弦 (Set properties for chords)
 ### 弦的批量修饰 (Batch modification of chords)
-弦的批量修饰可以使用`setChord(___)`函数，一切Patch对象所具有的属性均可以被修饰，举个例子(修饰一下弦的颜色，边缘颜色，边缘线形状等)：\
-Batch modification of chords can be performed using the `setChord(___)` function; any property possessed by a Patch object can be modified. For example (modifying the chord color, edge color, edge line shape, etc.):
+弦的批量修饰可以使用 `obj.setChord(___)` 函数，一切Patch对象所具有的属性均可以被修饰，举个例子(修饰一下弦的颜色，边缘颜色，边缘线形状等)：
+
+
+Batch modification of chords can be performed using the `obj.setChord(___)` function; any property possessed by a Patch object can be modified. For example (modifying the chord color, edge color, edge line shape, etc.):
 ```matlab
 CC.setChord('EdgeColor',[.3,.3,.3], 'LineStyle','--',...
     'LineWidth',.1, 'FaceColor',[.3,.3,.3])
@@ -136,8 +142,9 @@ CC.setChord('EdgeColor',[.3,.3,.3], 'LineStyle','--',...
 ![](gallery/2.png)
 
 ### 弦的单独修饰 (Individual modification of chords)
-弦的单独修饰可以使用`setChord(m, n, __)`函数，其中 m,n 值是和原始数值矩阵的行列完全对应的,举个例子(把`S2`流向`G4`的弦颜色更改为红色)：\
-Individual chords can be styled using the `setChord(m, n, __)` function, where the values ​​of `m` and `n` correspond exactly to the rows and columns of the original numerical matrix. For example (to change the color of the chord flowing from `S2` to `G4` to red):
+弦的单独修饰可以使用 `obj.setChord(m, n, __)` 函数，其中 m,n 值是和原始数值矩阵的行列完全对应的,举个例子(把`S2`流向`G4`的弦颜色更改为红色)：
+
+Individual chords can be styled using the `obj.setChord(m, n, __)` function, where the values ​​of `m` and `n` correspond exactly to the rows and columns of the original numerical matrix. For example (to change the color of the chord flowing from `S2` to `G4` to red):
 ```matlab
 CC.setChord(2,4, 'FaceColor',[1,0,0])
 ```
@@ -200,8 +207,8 @@ CC.addHighlightArrow(2, 2, [0,0,.8])
 ![](gallery/18.png)
 
 ### 为弦设置颜色的简洁方法 (A concise way to assign colors to chord)
-+ setChordColorBySquareT()
-+ setChordColorBySquareS()
++ obj.setChordColorBySquareT()
++ obj.setChordColorBySquareS()
 ```matlab
 dataMat = [2 0 1 2 5 1 2;
            3 5 1 4 2 0 1;
@@ -233,14 +240,18 @@ ___
 ## 4 标签 (Labels)
 
 ### 字体调整 (Set font)
-使用`setFont`函数对字体进行调整，所有text对象具有的属性均可以修饰，举个例子(更改文本的字号、字体和颜色)：Use the `setFont` function to adjust the font; any property possessed by a text object can be modified. For example (changing the text size, font, and color):
+使用 `obj.setFont` 函数对字体进行调整，所有 text 对象具有的属性均可以修饰，举个例子(更改文本的字号、字体和颜色)：
+
+Use the `obj.setFont` function to adjust the font; any property possessed by a text object can be modified. For example (changing the text size, font, and color):
 ```matlab
 CC.setFont('FontSize',30, 'FontName','Cambria', 'Color',[0,0,.8])
 ```
 ![](gallery/8.png)
 
 ### 标签旋转 (Label rotate) 
-使用函数`labelRotate`旋转标签：
+使用函数 `obj.labelRotate` 旋转标签：
+
+Use function `obj.labelRotate` to roatate labels:
 ```matlab
 dataMat = [2 0 1 2 5 1 2;
            3 5 1 4 2 0 1;
@@ -278,15 +289,15 @@ CC.tickState('on')
 ### 刻度标签 (Tick labels)
 通过：
 
-+ setLabelRadius 调整节点标签半径
-+ tickLabelState 调整刻度标签开关
-+ setTickFont 调整刻度标签字体
++ obj.setLabelRadius 调整节点标签半径
++ obj.tickLabelState 调整刻度标签开关
++ obj.setTickFont 调整刻度标签字体
 
 By using:
 
-+ `setLabelRadius` to adjust the radius of node labels
-+ `tickLabelState` to toggle tick labels 'on'/'off'
-+ `setTickFont` to adjust the tick label font
++ `obj.setLabelRadius` to adjust the radius of node labels
++ `obj.tickLabelState` to toggle tick labels 'on'/'off'
++ `obj.setTickFont` to adjust the tick label font
 
 ```matlab
 dataMat = [2 0 1 2 5 1 2;
@@ -335,8 +346,9 @@ CC.setLabelRadius(1.3);
 ![](gallery/cover6.png)
 
 ### 刻度标签格式自定义 (Custom tick label formatting)
-需要一个输入数值输出字符串的匿名函数，通过setTickLabelFormat函数可设置格式，比如科学计数法：\
-An anonymous function is required that takes a numerical input and outputs a string; the format—such as scientific notation—can be configured using the `setTickLabelFormat` function.
+需要一个输入数值输出字符串的匿名函数，通过 `obj.setTickLabelFormat(@func)` 函数可设置格式，比如科学计数法：
+
+An anonymous function is required that takes a numerical input and outputs a string; the format—such as scientific notation—can be configured using the `obj.setTickLabelFormat(@func)` function.
 
 ```matlab
 dataMat = [2 0 1 2 5 1 2;
@@ -366,9 +378,10 @@ CC.setTickLabelFormat(@(x)sprintf('%0.1e',x))
 ```
 ![](gallery/cover7.png)
 ___
-## 8 布局 (Layout)
+## 6 布局 (Layout)
 ### 间隙 (Sep)
-假如矩阵较大则绘图会比例失调：\
+假如矩阵较大则绘图会比例失调：
+
 If the matrix is ​​large-scale, the plot will be disproportionate.
 ```matlab
 dataMat = randi([0, 1], [20, 10]); 
@@ -376,7 +389,8 @@ CC = chordChart(dataMat);
 CC = CC.draw();
 ```
 ![](gallery/9.png)
-通过`Sep`属性可调整绘图间隙，例如设置为特别小的1/120：\
+通过`Sep`属性可调整绘图间隙，例如设置为特别小的1/120：
+
 The plotting gap can be adjusted using the `Sep` attribute—for example, by setting it to a particularly small value of 1/120:
 ```matlab
 dataMat = randi([0, 1], [20, 10]); 
@@ -447,7 +461,7 @@ set(gca,'XLim',[-1.8,1.8], 'YLim',[-1.8,1.8])
 ```
 ![](radius&ratio.png)
 ___
-## 9 常用示例 (Common examples)
+## 7 常用示例 (Common examples)
 ### 设置原方形占比及子方形占比 (Set ori-square ratio and sub-square ratio)
 ```matlab
 dataMat = round(10.*rand([11,4]).*((11:-1:1).'+1))./10;
@@ -551,8 +565,6 @@ lgdHdl = legend([H1, H2], {'Upregulated','Downregulated'}, 'AutoUpdate','off', .
 lgdHdl.ItemTokenSize = [12,12];
 ```
 ![](gallery/S0092-8674(21)00004-0%20P8.png)
-
-
 
 ___
 ## Check out the various demos for more detailed usage instructions.
