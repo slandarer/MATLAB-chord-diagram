@@ -5,23 +5,21 @@
 % 知乎    : slandarer
 
 dataMat = randi([0,10], [5,5]);
-
+NameList = {'CHORD','CHART','MADE','BY','SLANDARER'};
 CList1 = [0.70,0.59,0.67; 0.62,0.70,0.62; 0.81,0.75,0.62; 0.80,0.62,0.56; 0.62,0.65,0.65];
 CList2 = [0.02,0.02,0.02; 0.59,0.26,0.33; 0.38,0.49,0.38; 0.03,0.05,0.03; 0.29,0.28,0.32];
-CList = CList1;
-
-NameList={'CHORD','CHART','MADE','BY','SLANDARER'};
+CList = CList2;
 
 figure('Units','normalized', 'Position',[.02,.05,.6,.85])
 BCC = biChordChart(dataMat, 'Arrow','on', 'CData',CList, 'Sep',1/30, 'Label',NameList, 'LRadius',1.33, 'TickMode','auto');
 BCC = BCC.draw();
 
+% Modify squares and chords (调整方块及弦)
 BCC.setChord('FaceAlpha',.5)
 BCC.setSquare('EdgeColor',[0,0,0], 'LineWidth',5)
-
-% 添加刻度
+% Enable tick marks (启用刻度)
 BCC.tickState('on')
-% 修改字体，字号及颜色
+% Modify the font, font size, and color (修改字体，字号及颜色)
 BCC.setFont('FontSize',17, 'FontWeight','bold')
 BCC.tickLabelState('on')
 BCC.setTickFont('FontSize',9)

@@ -14,7 +14,7 @@ rowName = {'Lung', 'Spleen', 'Liver', 'Heart',...
            'Renal cortex', 'Renal medulla', 'Thyroid'};
 
 figure('Units','normalized', 'Position',[.02, .05, .6, .85])
-CC = chordChart(dataMat, 'RowName',rowName, 'ColName',colName, 'Sep',1/80, 'LRadius',1.21, 'SSqRatio',1);
+CC = chordChart(dataMat, 'RowName',rowName, 'ColName',colName, 'Sep',1/80, 'LRadius',1.18, 'SSqRatio',1);
 CC = CC.draw();
 CC.labelRotate('on')
 
@@ -24,6 +24,7 @@ CListS = [128,108,171; 222,208,161; 180,196,229; 209,150,146; 175,201,166;
 CC.setSquareColorS(CListS)
 % Modify chord color (修改弦颜色)
 CC.setChordColorBySquareS()
+CC.setChord('FaceAlpha',.5)
 
 Regulated = (rand([7, 22]) < .8) + 1; % Upregulated:1 | Downregulated:2
 % Set individual end blocks for each chord (单独设置每一个弦末端方块)

@@ -13,28 +13,26 @@ rowName = {'Acidobacteriota', 'Actinobacteriota', 'Proteobacteria', ...
            'Verrucomicrobiota', 'Patescibacteria', 'Planctomyetota', 'Others'};
 
 figure('Units','normalized', 'Position',[.02,.05,.8,.85])
-CC = chordChart(dataMat, 'ColName',colName, 'Sep',1/80, 'SSqRatio',30/100);% -30/100
+CC = chordChart(dataMat, 'ColName',colName, 'Sep',1/80, 'SSqRatio',30/100);
 CC = CC.draw();
-
-% 修改上方方块颜色(Modify the color of the blocks above)
-CListT = [0.93,0.60,0.62; 0.55,0.80,0.99; 0.95,0.82,0.18; 1.00,0.81,0.91];
-CC.setSquareColorT(CListT)
-% 修改下方方块颜色(Modify the color of the blocks below)
-CListS = [0.75,0.73,0.86; 0.56,0.83,0.78; 0.00,0.60,0.20; 1.00,0.49,0.02;
-    0.78,0.77,0.95; 0.59,0.24,0.36; 0.98,0.51,0.45; 0.96,0.55,0.75;
-    0.47,0.71,0.84; 0.65,0.35,0.16; 0.40,0.00,0.64];
-CC.setSquareColorS(CListS)
-% 修改弦颜色(Modify chord color)
-CListC = [0.55,0.83,0.76; 0.75,0.73,0.86; 0.00,0.60,0.19; 1.00,0.51,0.04];
-for j = 1:size(dataMat, 2)
-    CC.setChord([], j, 'FaceColor',CListC(j,:), 'FaceAlpha',.4)
-end
-
 CC.tickState('on')
 CC.setFont('FontName','Cambria', 'FontSize',17)
 set(CC.nameSHdl, 'Visible','off')
 
-% 绘制图例(Draw legend)
+% Modify the color of the blocks above (修改上方方块颜色)
+CListT = [0.93,0.60,0.62; 0.55,0.80,0.99; 0.95,0.82,0.18; 1.00,0.81,0.91];
+CC.setSquareColorT(CListT)
+% Modify the color of the blocks below (修改下方方块颜色)
+CListS = [0.75,0.73,0.86; 0.56,0.83,0.78; 0.00,0.60,0.20; 1.00,0.49,0.02;
+    0.78,0.77,0.95; 0.59,0.24,0.36; 0.98,0.51,0.45; 0.96,0.55,0.75;
+    0.47,0.71,0.84; 0.65,0.35,0.16; 0.40,0.00,0.64];
+CC.setSquareColorS(CListS)
+% Modify chord color (修改弦颜色)
+CListC = [0.55,0.83,0.76; 0.75,0.73,0.86; 0.00,0.60,0.19; 1.00,0.51,0.04];
+for j = 1:size(dataMat, 2)
+    CC.setChord([], j, 'FaceColor',CListC(j,:), 'FaceAlpha',.4)
+end
+% Draw legend (绘制图例)
 lgdHdl = legend(CC.squareSHdl, rowName, 'Location','eastoutside', ...
     'FontSize',16, 'FontName','Cambria', 'Box','off');
 lgdHdl.ItemTokenSize = [16, 16];

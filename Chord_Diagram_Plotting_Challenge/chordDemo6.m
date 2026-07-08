@@ -16,11 +16,11 @@ rowName = compose('SL%d', 1:20);
 figure('Units','normalized', 'Position',[.02,.05,.6,.85])
 CC = chordChart(dataMat, 'RowName',rowName, 'ColName',colName, 'Sep',1/80, 'LRadius',1.23);
 CC = CC.draw();
-% 修改上方方块颜色(Modify the color of the blocks above)
+% Modify the color of the blocks above (修改上方方块颜色)
 CListT = [0.62,0.49,0.27; 0.28,0.57,0.76
           0.25,0.53,0.30; 0.86,0.48,0.34];
 CC.setSquareColorT(CListT)
-% 修改下方方块颜色(Modify the color of the blocks below)
+% Modify the color of the blocks below (修改下方方块颜色)
 CListS = [0.94,0.84,0.60; 0.16,0.50,0.67; 0.92,0.62,0.49;
     0.48,0.44,0.60; 0.48,0.44,0.60; 0.71,0.79,0.73;
     0.96,0.98,0.98; 0.51,0.82,0.95; 0.98,0.70,0.82;
@@ -30,7 +30,7 @@ CListS = [0.94,0.84,0.60; 0.16,0.50,0.67; 0.92,0.62,0.49;
     0.75,0.75,0.75; 1.00,1.00,1.00];
 CC.setSquareColorS(CListS)
 CC.setSquareS(size(dataMat, 1), 'EdgeColor','k', 'LineWidth',1)
-% 修改弦颜色(Modify chord color)
+% Modify chord color (修改弦颜色)
 CC.setChordColorBySquareT()
 
 CC.tickState('on')

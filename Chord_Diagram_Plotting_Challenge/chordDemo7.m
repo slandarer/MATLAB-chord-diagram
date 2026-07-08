@@ -17,7 +17,7 @@ figure('Units','normalized', 'Position',[.02,.05,.6,.85])
 BCC = biChordChart(dataMat, 'Arrow','on', 'CData',CList, 'Label',NameList);
 BCC = BCC.draw();
 
-% 修改方块颜色及弦颜色 (Modify squares and chords color)
+% Modify squares and chords color (修改方块颜色及弦颜色)
 BCC.setSquare('LineWidth',1)
 BCC.setSquareColor(CList, CList./1.5)
 BCC.setChord('FaceAlpha',.85, 'LineWidth',.8)

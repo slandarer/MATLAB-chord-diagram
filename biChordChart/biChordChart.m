@@ -252,7 +252,7 @@ classdef biChordChart < handle
             obj.ax.NextPlot = 'add';
 
             % Parse data matrix (解析数据矩阵)
-            obj.dataMat = varargin{1};
+            obj.dataMat = abs(varargin{1});
             varargin(1) = [];
             % obj.Group = ones(1, size(obj.dataMat, 2));
 
@@ -269,10 +269,10 @@ classdef biChordChart < handle
                 obj.Label = compose('C%d', 1:size(obj.dataMat, 1));
             end
 
-            % Ensure diagonal elements are non-negative (确保对角线元素非负)
-            for i = 1:size(obj.dataMat, 1)
-                obj.dataMat(i, i) = abs(obj.dataMat(i, i));
-            end
+            % % Ensure diagonal elements are non-negative (确保对角线元素非负)
+            % for i = 1:size(obj.dataMat, 1)
+            %     obj.dataMat(i, i) = abs(obj.dataMat(i, i));
+            % end
         end
 
 % =========================================================================

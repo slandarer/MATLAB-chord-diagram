@@ -49,8 +49,7 @@ text(-1.2,1.2, 'c', 'FontName','Times New Roman', 'FontSize',35)
 ax4 = axes('Parent',gcf, 'Position',[1/2,0,1/2,1/2]);
 ax4.XColor = 'none'; ax4.YColor = 'none';
 ax4.XLim = [-1,1]; ax4.YLim = [-1,1];
-hold on
-
+ax4.NextPlot = 'add';
 NameList = {'Food supply', 'Biodiversity', 'Water quality regulation', ...
             'Air quality regulation', 'Erosion control', 'Carbon storage', ...
             'Water retention', 'Recreation', 'Soil quality regulation'};

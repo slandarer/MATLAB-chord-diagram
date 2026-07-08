@@ -14,7 +14,6 @@ figure('Units','normalized', 'Position',[.02,.05,.6,.85])
 BCC = biChordChart(dataMat, 'Arrow','on', 'CData',CList, 'TickMode','linear');
 BCC.LinearMinorTick = 'on';
 BCC = BCC.draw();
-
 BCC.tickState('on')
 BCC.tickLabelState('on')
 
