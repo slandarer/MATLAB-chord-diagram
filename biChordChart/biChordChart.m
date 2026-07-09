@@ -45,6 +45,8 @@ classdef biChordChart < handle
 %   tickLabelState         - Show/hide tick labels (显示/隐藏刻度标签)
 %   setLabelRadius         - Set label radius (设置标签半径)
 %   setFont                - Label property settings (标签属性设置)
+%   setFontColor           - Node label color settings (节点标签颜色设置)
+%   setTick                - Tick line property settings (刻度线属性设置)
 %   setTickFont            - Tick label property settings (刻度标签属性设置)
 %   setTickLabelFormat     - Set custom format for tick labels (设置刻度标签的自定义格式)
 %   setSquare              - Node square property settings (节点弧形块属性设置)
@@ -929,6 +931,13 @@ classdef biChordChart < handle
             end
         end
 
+        function setFontColor(obj, CList)
+            % setFontColor(CList) - Node label color settings (节点标签颜色设置)
+            for i = 1:size(obj.dataMat, 1)
+                set(obj.labelHdl(i), 'Color',CList(i, :));
+            end
+        end
+
         function obj = setLabelRadius(obj, Radius)
             % obj.setLabelRadius(Radius) - Set label radius (设置标签半径)
             obj.LabelRadius = Radius;
@@ -1015,6 +1024,14 @@ classdef biChordChart < handle
                     end
                 end
             end
+        end
+
+        function setTick(obj, varargin)
+            % obj.setTick(varargin) - Tick line property settings (刻度线属性设置)
+            for i = 1:size(obj.dataMat, 1)
+                set(obj.RTickHdl(i), varargin{:});
+            end
+            set(obj.thetaTickHdl, varargin{:});
         end
 
         function setTickFont(obj, varargin)

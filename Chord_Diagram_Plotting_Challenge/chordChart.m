@@ -44,6 +44,9 @@ classdef chordChart < handle
 %   tickLabelState         - Show/hide tick labels (显示/隐藏刻度标签)
 %   setLabelRadius         - Set label radius (设置标签半径)
 %   setFont                - Label property settings (标签属性设置)
+%   setFontColorS          - Source node label color settings (来源节点标签颜色设置)
+%   setFontColorT          - Target node label color settings (目标节点标签颜色设置)
+%   setTick                - Tick line property settings (刻度线属性设置)
 %   setTickFont            - Tick label property settings (刻度标签属性设置)
 %   setTickLabelFormat     - Set custom format for tick labels (设置刻度标签的自定义格式)
 %   setSquareS             - Source node square property settings (来源节点弧形块属性设置)
@@ -1099,6 +1102,19 @@ classdef chordChart < handle
             end
         end
 
+        function setFontColorS(obj, CList)
+            % obj.setFontColorS(CList) - Source node label color settings (来源节点标签颜色设置)
+            for i = 1:size(obj.dataMat, 1)
+                set(obj.labelSHdl(i), 'Color',CList(i, :));
+            end
+        end
+        function setFontColorT(obj, CList)
+            % obj.setFontColorT(CList) - Target node label color settings (来源节点标签颜色设置)
+            for j = 1:size(obj.dataMat, 2)
+                set(obj.labelTHdl(j), 'Color',CList(j, :));
+            end
+        end
+
         function obj = setLabelRadius(obj, Radius)
             % obj.setLabelRadius(Radius) - Set label radius (设置标签半径)
             obj.LabelRadius = Radius;
@@ -1193,6 +1209,8 @@ classdef chordChart < handle
                 set(obj.RTickTHdl(j), 'Visible', state);
             end
         end
+
+        
         
         function tickLabelState(obj, state)
             % obj.tickLabelState(state) - Show/hide tick labels (显示/隐藏刻度标签)
@@ -1206,6 +1224,18 @@ classdef chordChart < handle
                 for n = 1:length(obj.thetaSetT{m})
                     set(obj.thetaTickLabelTHdl(m, n), 'Visible', state)
                 end
+            end
+        end
+        function setTick(obj, varargin)
+            % obj.setTick(varargin) - Tick line property settings (刻度线属性设置)
+            for i = 1:size(obj.dataMat, 1)
+                set(obj.thetaTickSHdl(i), varargin{:});
+                set(obj.RTickSHdl(i), varargin{:});
+            end
+
+            for j = 1:size(obj.dataMat, 2)
+                set(obj.thetaTickTHdl(j), varargin{:});
+                set(obj.RTickTHdl(j), varargin{:});
             end
         end
 

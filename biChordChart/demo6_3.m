@@ -1,8 +1,4 @@
-% chordDemo19
-
-% @author : slandarer
-% 公众号  : slandarer随笔
-% 知乎    : slandarer
+%% Using chord diagram in place of heatmap
 
 rng(6)
 % Made up some data casually (随便捏造了点数据)
@@ -30,5 +26,4 @@ BCC.setChord('FaceAlpha',.5)
 % Colormap and colorbar
 clim([-.7, .7]); colormap(CMap)
 cbHdl = colorbar('Position',[.88, .3, .02, .4], 'LineWidth',1, ...
-    'FontName','Cambria', 'TickDirection','out');
-
+    'FontName','Cambria', 'TickDirection','out'); 

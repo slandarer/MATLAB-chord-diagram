@@ -8,10 +8,10 @@
 CList = [0.81,0.72,0.83; 0.69,0.82,0.89; 0.17,0.44,0.64; 0.70,0.85,0.55;
 0.03,0.57,0.13; 0.97,0.67,0.64; 0.84,0.09,0.12; 1.00,0.80,0.46; 0.98,0.52,0.01];
 
-figure('Units','normalized', 'Position',[.02,.05,.53,.85], 'Color',[1,1,1])
+fig = figure('Units','normalized', 'Position',[.02,.05,.53,.85], 'Color',[1,1,1]);
 
 % =========================================================================
-ax1 = axes('Parent',gcf, 'Position',[0,1/2,1/2,1/2]);
+ax1 = axes('Parent',fig, 'Position',[0,1/2,1/2,1/2]);
 dataMat = rand([9,9]);
 dataMat(dataMat > .4) = 0;
 BCC = biChordChart(dataMat, 'Arrow','on', 'CData',CList);
@@ -22,7 +22,7 @@ BCC.setChord('FaceAlpha',.6)
 text(-1.2,1.2, 'a', 'FontName','Times New Roman', 'FontSize',35)
 
 % =========================================================================
-ax2 = axes('Parent',gcf, 'Position',[1/2,1/2,1/2,1/2]);
+ax2 = axes('Parent',fig, 'Position',[1/2,1/2,1/2,1/2]);
 dataMat = rand([9,9]);
 dataMat(dataMat > .4) = 0;
 dataMat = dataMat.*(1:9);
@@ -34,7 +34,7 @@ BCC.setChord('FaceAlpha',.6)
 text(-1.2,1.2, 'b', 'FontName','Times New Roman', 'FontSize',35)
 
 % =========================================================================
-ax3 = axes('Parent',gcf, 'Position',[0,0,1/2,1/2]);
+ax3 = axes('Parent',fig, 'Position',[0,0,1/2,1/2]);
 dataMat = rand([9,9]);
 dataMat(dataMat > .4) = 0;
 dataMat = dataMat.*(1:9).';
@@ -46,7 +46,7 @@ BCC.setChord('FaceAlpha',.6)
 text(-1.2,1.2, 'c', 'FontName','Times New Roman', 'FontSize',35)
 
 % =========================================================================
-ax4 = axes('Parent',gcf, 'Position',[1/2,0,1/2,1/2]);
+ax4 = axes('Parent',fig, 'Position',[1/2,0,1/2,1/2]);
 ax4.XColor = 'none'; ax4.YColor = 'none';
 ax4.XLim = [-1,1]; ax4.YLim = [-1,1];
 ax4.NextPlot = 'add';
