@@ -83,3 +83,30 @@
 
 ## demo28
 [![](./gallery/demo28.png)](./chordDemo28.m)
+
+## demo29
+[![](./gallery/demo29.png)](./chordDemo29.m)
+
+## demo30
+[![](./gallery/demo30.png)](./chordDemo30.m)
+
+## demo31
+[![](./gallery/demo31.png)](./chordDemo31.m)
+
+## demo32
+[![](./gallery/demo32.png)](./chordDemo32.m)
+
+## demo33
+[![](./gallery/demo33.png)](./chordDemo33.m)
+
+## demo34
+[![](./gallery/demo34.png)](./chordDemo34.m)
+
+## demo35
+[![](./gallery/demo35.png)](./chordDemo35.m)
+
+## demo36
+[![](./gallery/demo36.png)](./chordDemo36.m)
+
+## demo37
+[![](./gallery/demo37.png)](./chordDemo37.m)

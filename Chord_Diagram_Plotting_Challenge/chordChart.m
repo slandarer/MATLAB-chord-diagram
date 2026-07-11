@@ -356,9 +356,9 @@ classdef chordChart < handle
             tDFrom = obj.RowName;
             tDTo   = obj.ColName;
 
-            numF = size(tDMat, 1);       % Number of source nodes (源节点数)
+            numS = size(tDMat, 1);       % Number of source nodes (源节点数)
             numT = size(tDMat, 2);       % Number of target nodes (目标节点数)
-            numM = max(numF, numT);
+            numM = max(numS, numT);
 
             % Validate parameter ranges (验证参数范围)
             if obj.Sep*(numM - 1) > 1; obj.Sep = 1/(2*(numM - 1)); end
@@ -396,22 +396,22 @@ classdef chordChart < handle
             sep1 = obj.GroupSep;            % Group separation (上下两组分隔)
             sep2 = obj.Sep;                 % Node separation (节点分隔)
             % Calculate ratio of each row/column (计算每行/列的比例)
-            ratioF = [0; sum(tDMat, 2) ./ sum(sum(tDMat))];
+            ratioS = [0; sum(tDMat, 2) ./ sum(sum(tDMat))];
             ratioT = [0, sum(tDMat, 1) ./ sum(sum(tDMat))];
             % Calculate arc lengths (计算弧长)
             sepLen   = pi * (1 - sep1) * sep2;
-            baseLenF = (pi * (1 - sep1) - numF * sepLen);
+            baseLenF = (pi * (1 - sep1) - numS * sepLen);
             baseLenT = (pi * (1 - sep1) - numT * sepLen);
 
             % =============================================================
             % Draw bottom blocks (绘制下方方块)
             % =============================================================
-            obj.squareSHdl = gobjects(1, numF);
-            obj.labelSHdl   = gobjects(1, numF);
-            obj.RTickSHdl  = gobjects(1, numF);
-            for i = 1:numF
-                theta1 = 2*pi - pi*sep1/2 - sum(ratioF(1:i))   * baseLenF - (i-.5)*sepLen + obj.Rotation;
-                theta2 = 2*pi - pi*sep1/2 - sum(ratioF(1:i+1)) * baseLenF - (i-.5)*sepLen + obj.Rotation;
+            obj.squareSHdl = gobjects(1, numS);
+            obj.labelSHdl   = gobjects(1, numS);
+            obj.RTickSHdl  = gobjects(1, numS);
+            for i = 1:numS
+                theta1 = 2*pi - pi*sep1/2 - sum(ratioS(1:i))   * baseLenF - (i-.5)*sepLen + obj.Rotation;
+                theta2 = 2*pi - pi*sep1/2 - sum(ratioS(1:i+1)) * baseLenF - (i-.5)*sepLen + obj.Rotation;
                 theta  = linspace(theta1, theta2, 100);
                 X = cos(theta); Y = sin(theta);
                 obj.squareSHdl(i) = fill(obj.ax, [(obj.SquareRadius(2) - diff(obj.SquareRadius)*obj.OriSquareRatio).*X, obj.SquareRadius(2).*X(end:-1:1)], ...
@@ -439,7 +439,7 @@ classdef chordChart < handle
             % Draw top blocks (绘制上方方块)
             % =============================================================
             obj.squareTHdl = gobjects(1, numT);
-            obj.labelTHdl   = gobjects(1, numT);
+            obj.labelTHdl  = gobjects(1, numT);
             obj.RTickTHdl  = gobjects(1, numT);
             for j = 1:numT
                 theta1 = pi - pi*sep1/2 - sum(ratioT(1:j))   * baseLenT - (j-.5)*sepLen + obj.Rotation;
@@ -475,13 +475,13 @@ classdef chordChart < handle
             % =============================================================
             % Draw chords (ribbons) (绘制弦/连接带)
             % =============================================================
-            obj.squareSMatHdl = gobjects(numF, numT);
-            obj.squareTMatHdl = gobjects(numF, numT);
-            obj.chordMatHdl   = gobjects(numF, numT);
-            for i = 1:numF
+            obj.squareSMatHdl = gobjects(numS, numT);
+            obj.squareTMatHdl = gobjects(numS, numT);
+            obj.chordMatHdl   = gobjects(numS, numT);
+            for i = 1:numS
                 for j = numT:-1:1
-                    theta1 = 2*pi - pi*sep1/2 - sum(ratioF(1:i))   * baseLenF - (i-.5)*sepLen + obj.Rotation;
-                    theta2 = 2*pi - pi*sep1/2 - sum(ratioF(1:i+1)) * baseLenF - (i-.5)*sepLen + obj.Rotation;
+                    theta1 = 2*pi - pi*sep1/2 - sum(ratioS(1:i))   * baseLenF - (i-.5)*sepLen + obj.Rotation;
+                    theta2 = 2*pi - pi*sep1/2 - sum(ratioS(1:i+1)) * baseLenF - (i-.5)*sepLen + obj.Rotation;
                     theta3 = pi - pi*sep1/2 - sum(ratioT(1:j))   * baseLenT - (j-.5)*sepLen + obj.Rotation;
                     theta4 = pi - pi*sep1/2 - sum(ratioT(1:j+1)) * baseLenT - (j-.5)*sepLen + obj.Rotation;
                     % Calculate sub-block ratios (计算子块比例)
@@ -549,23 +549,36 @@ classdef chordChart < handle
                 end
             end
 
+            if ~strcmpi(obj.TickMode, 'linear')
+                for i = 1:numS
+                    if any(isnan(obj.thetaSetS{i}))
+                        obj.thetaSetS{i} = [];
+                    end
+                end
+                for j = 1:numT
+                    if any(isnan(obj.thetaSetT{j}))
+                        obj.thetaSetT{j} = [];
+                    end
+                end
+            end
+
             % =============================================================
             % Draw tick marks based on mode (根据模式绘制刻度)
             % =============================================================
-            obj.thetaTickSHdl = gobjects(1, numF);
-            uniListF{numF} = [];
-            for i = 1:numF
+            obj.thetaTickSHdl = gobjects(1, numS);
+            uniListS{numS} = [];
+            for i = 1:numS
                 switch lower(obj.TickMode)
                     case 'value'    % Value-based ticks (基于值的刻度)
                         obj.thetaSetS{i}(2:end) = obj.thetaSetS{i}(end:-1:2);
-                        [obj.thetaSetS{i}, uniListF{i}] = unique(obj.thetaSetS{i}, 'stable');
+                        [obj.thetaSetS{i}, uniListS{i}] = unique(obj.thetaSetS{i}, 'stable');
                         
                         tX = [cos(obj.thetaSetS{i}) .* obj.TickRadius; cos(obj.thetaSetS{i}) .* (obj.TickRadius + .02); nan .* ones(1, length(obj.thetaSetS{i}))];
                         tY = [sin(obj.thetaSetS{i}) .* obj.TickRadius; sin(obj.thetaSetS{i}) .* (obj.TickRadius + .02); nan .* ones(1, length(obj.thetaSetS{i}))];
                         
                     case 'auto'     % Auto-adjust overlapping ticks (自动调整重叠刻度)
                         obj.thetaSetS{i}(2:end) = obj.thetaSetS{i}(end:-1:2);
-                        [obj.thetaSetS{i}, uniListF{i}] = unique(obj.thetaSetS{i}, 'stable');
+                        [obj.thetaSetS{i}, uniListS{i}] = unique(obj.thetaSetS{i}, 'stable');
                         tTSF0 = obj.thetaSetS{i};
                         
                         for k = 1:3
@@ -588,10 +601,14 @@ classdef chordChart < handle
                               nan .* ones(1, length(obj.thetaSetS{i}))];
                         
                     case 'linear'   % Linear evenly-spaced ticks (线性等距刻度)
-                        theta1 = 2*pi - pi*sep1/2 - sum(ratioF(1:i))   * baseLenF - (i-.5)*sepLen;
-                        theta2 = 2*pi - pi*sep1/2 - sum(ratioF(1:i+1)) * baseLenF - (i-.5)*sepLen;
+                        theta1 = 2*pi - pi*sep1/2 - sum(ratioS(1:i))   * baseLenF - (i-.5)*sepLen;
+                        theta2 = 2*pi - pi*sep1/2 - sum(ratioS(1:i+1)) * baseLenF - (i-.5)*sepLen;
                         obj.thetaSetS{i} = (theta2 - theta1) ./ sum(tDMat(i, :)) .* (0:obj.LinearTickSep:sum(tDMat(i, :))) + theta1;
                         
+                        if any(isnan(obj.thetaSetS{i}))
+                            obj.thetaSetS{i} = [];
+                        end
+
                         if strcmp(obj.LinearMinorTick, 'on')
                             tMTSF = (theta2 - theta1) ./ sum(tDMat(i, :)) .* (0:(obj.LinearTickSep/5):sum(tDMat(i, :))) + theta1;
                             tX = [cos(tMTSF) .* obj.TickRadius, cos(obj.thetaSetS{i}) .* obj.TickRadius; ...
@@ -605,7 +622,9 @@ classdef chordChart < handle
                             tY = [sin(obj.thetaSetS{i}) .* obj.TickRadius; sin(obj.thetaSetS{i}) .* (obj.TickRadius + .02); nan .* ones(1, length(obj.thetaSetS{i}))];
                         end
                 end
-                
+                if isempty(tX)
+                    tX = nan(3, 1); tY = nan(3, 1);
+                end
                 obj.thetaTickSHdl(i) = plot(obj.ax, tX(:), tY(:), 'Color', [0, 0, 0], 'LineWidth', .8, 'Visible', 'off');
             end
             
@@ -650,6 +669,10 @@ classdef chordChart < handle
                         theta4 = pi - pi*sep1/2 - sum(ratioT(1:j+1)) * baseLenT - (j-.5)*sepLen;
                         obj.thetaSetT{j} = (theta4 - theta3) ./ sum(tDMat(:, j)) .* (0:obj.LinearTickSep:sum(tDMat(:, j))) + theta3;
                         
+                        if any(isnan(obj.thetaSetT{j}))
+                            obj.thetaSetT{j} = [];
+                        end
+
                         if strcmp(obj.LinearMinorTick, 'on')
                             tMTST = (theta4 - theta3) ./ sum(tDMat(:, j)) .* (0:(obj.LinearTickSep/5):sum(tDMat(:, j))) + theta3;
                             tX = [cos(tMTST) .* obj.TickRadius, cos(obj.thetaSetT{j}) .* obj.TickRadius; ...
@@ -663,7 +686,9 @@ classdef chordChart < handle
                             tY = [sin(obj.thetaSetT{j}) .* obj.TickRadius; sin(obj.thetaSetT{j}) .* (obj.TickRadius + .02); nan .* ones(1, length(obj.thetaSetT{j}))];
                         end
                 end
-                
+                if isempty(tX)
+                    tX = nan(3, 1); tY = nan(3, 1);
+                end
                 obj.thetaTickTHdl(j) = plot(obj.ax, tX(:), tY(:), 'Color', [0, 0, 0], 'LineWidth', .8, 'Visible', 'off');
             end
 
@@ -679,7 +704,7 @@ classdef chordChart < handle
                     cumsumV = 0:obj.LinearTickSep:sum(tDMat(m, :));
                 else
                     cumsumV = [0, cumsum(obj.dataMat(m, end:-1:1))];
-                    cumsumV = cumsumV(uniListF{m});
+                    cumsumV = cumsumV(uniListS{m});
                 end
                 
                 for n = 1:length(obj.thetaSetS{m})
@@ -1289,7 +1314,7 @@ classdef chordChart < handle
             end
             tPnt1 = [cos(obj.iMidThetaSet(i, j)), sin(obj.iMidThetaSet(i, j))];
             tPnt2 = [cos(obj.jMidThetaSet(i, j)), sin(obj.jMidThetaSet(i, j))];
-            tLine = bezierCurve([tPnt1; 0, 0; tPnt2], 200);
+            tLine = bezierCurve([tPnt1; 0, 0; tPnt2.*.95], 200);
             tHdl.Line = plot(obj.ax, tLine(:,1), tLine(:,2), 'LineWidth', 1, 'Color', Color);
 
             tPnt3 = [cos(obj.jMidThetaSet(i, j) - pi/100) .* .95, sin(obj.jMidThetaSet(i, j) - pi/100) .* .95];

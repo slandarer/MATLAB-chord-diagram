@@ -355,7 +355,7 @@ classdef biChordChart < handle
             % Draw blocks and labels (绘制方块和标签)
             % =============================================================
             obj.squareHdl = gobjects(1, numC);
-            obj.labelHdl   = gobjects(1, numC);
+            obj.labelHdl  = gobjects(1, numC);
             obj.RTickHdl  = gobjects(1, numC);
             diffTheta = zeros(1, numC);
             for i = 1:numC
@@ -1070,7 +1070,7 @@ classdef biChordChart < handle
             end
             tPnt1 = [cos(obj.iMidThetaSet(i, j)), sin(obj.iMidThetaSet(i, j))];
             tPnt2 = [cos(obj.jMidThetaSet(i, j)), sin(obj.jMidThetaSet(i, j))];
-            tLine = bezierCurve([tPnt1; 0, 0; tPnt2], 200);
+            tLine = bezierCurve([tPnt1; 0, 0; tPnt2.*.95], 200);
             tHdl.Line = plot(obj.ax, tLine(:, 1), tLine(:, 2), 'LineWidth', 1, 'Color', Color);
 
             tPnt3 = [cos(obj.jMidThetaSet(i, j) - pi/100) .* 0.95, sin(obj.jMidThetaSet(i, j) - pi/100) .* 0.95];

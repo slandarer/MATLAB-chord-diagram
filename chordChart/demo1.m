@@ -8,6 +8,7 @@ rowName = {'S1','S2','S3'};
 
 % Create and render chord diagram object (创建弦图对象并渲染)
 CC = chordChart(dataMat, 'RowName',rowName, 'ColName',colName, 'Arrow','on');
+CC.LinearMinorTick = 'on';
 CC.draw();
 
 % Set Font for labels and show ticks (调整字体并显示刻度)
